@@ -94,7 +94,7 @@ Respond with ONLY valid JSON (no markdown):
     "should_trigger": true or false,
     "confidence": 0.0 to 1.0,
     "best_merchant_index": 0-based index from the merchant list (or -1 if none),
-    "trigger_type": "warm_drink" | "cold_drink" | "quick_meal" | "snack" | "shelter" | "evening_out" | "browse" | "none",
+    "trigger_type": "warm_drink" | "cold_drink" | "quick_meal" | "snack" | "breakfast" | "dinner" | "shelter" | "evening_out" | "weekend_brunch" | "afternoon_tea" | "browse" | "rainy_day_read" | "fresh_bread" | "happy_hour" | "none",
     "reasoning": "one sentence explaining your decision",
     "suggested_category": "what type of offer would fit best"
 }}"""
