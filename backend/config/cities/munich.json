@@ -1,0 +1,35 @@
+{
+    "city": "munich",
+    "display_name": "Munich",
+    "country": "DE",
+    "timezone": "Europe/Berlin",
+    "center": {
+        "lat": 48.1371,
+        "lon": 11.5754,
+        "name": "Marienplatz"
+    },
+    "search_radius_m": 500,
+    "merchant_types": [
+        "cafe",
+        "restaurant",
+        "bakery",
+        "bar",
+        "book_store",
+        "clothing_store",
+        "ice_cream_shop"
+    ],
+    "time_slots": {
+        "early_morning": {"start": "06:00", "end": "08:00"},
+        "morning": {"start": "08:00", "end": "11:30"},
+        "lunch_break": {"start": "11:30", "end": "14:00"},
+        "afternoon": {"start": "14:00", "end": "17:00"},
+        "evening": {"start": "17:00", "end": "21:00"},
+        "night": {"start": "21:00", "end": "06:00"}
+    },
+    "weather_triggers": {
+        "cold": {"max_temp": 10, "offers": ["hot_drinks", "warm_food", "indoor"]},
+        "hot": {"min_temp": 28, "offers": ["cold_drinks", "ice_cream", "outdoor"]},
+        "rainy": {"conditions": ["Rain", "Drizzle", "Thunderstorm"], "offers": ["indoor", "shelter", "warm_drinks"]},
+        "nice": {"min_temp": 15, "max_temp": 27, "conditions": ["Clear", "Clouds"], "offers": ["outdoor", "terrace", "walk"]}
+    }
+}
