@@ -3,7 +3,7 @@
 消费者端界面，负责展示AI生成的offer卡片、QR码结算、钱包等。
 
 ## 负责人
-前端队友A
+前端队友
 
 ## 技术栈
 React / Next.js + TypeScript + Tailwind CSS

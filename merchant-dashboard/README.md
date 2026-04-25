@@ -3,7 +3,7 @@
 商户端管理界面，负责优惠规则设置、数据分析、扫码核销等。
 
 ## 负责人
-前端队友B
+前端队友
 
 ## 技术栈
 React / Next.js + TypeScript + Tailwind CSS + Recharts (图表)

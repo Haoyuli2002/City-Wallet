@@ -73,5 +73,4 @@ open prototypes/merchant_dashboard.html       # 商户Dashboard
 | 模块 | 负责人 |
 |------|--------|
 | `backend/` | 后端开发 |
-| `consumer-app/` | 前端队友A |
-| `merchant-dashboard/` | 前端队友B |
+| `consumer-app/` + `merchant-dashboard/` | 前端队友 |
