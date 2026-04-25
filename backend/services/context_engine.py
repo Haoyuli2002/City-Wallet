@@ -1,16 +1,20 @@
 """
 Context aggregation engine — the brain of City Wallet.
-Collects all signals (weather, time, location, transaction density, user intent)
-and sends them to GPT-4o for intelligent analysis instead of hardcoded scoring.
+
+Three-step recommendation:
+1. Top 5 merchants by demand gap (most need customers)
+2. Top 5 merchants by user preference (7-day behavior history)
+3. LLM as Judge: GPT-4o picks the best one considering current context
 """
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from openai import AsyncOpenAI
 from config.settings import settings
 from services.weather import get_weather
 from services.places import search_nearby
 from services.transaction_sim import get_current_density
+from models.database import get_db
 
 _client = None
 
@@ -27,76 +31,141 @@ def _get_time_context() -> dict:
     now = datetime.now()
     hour = now.hour
     weekday = now.weekday()
-
     day_type = "weekend" if weekday >= 5 else "weekday"
 
-    if 6 <= hour < 8:
-        slot = "early_morning"
-    elif 8 <= hour < 11:
-        slot = "morning"
-    elif 11 <= hour < 14:
-        slot = "lunch_break"
-    elif 14 <= hour < 17:
-        slot = "afternoon"
-    elif 17 <= hour < 21:
-        slot = "evening"
-    else:
-        slot = "night"
+    if 6 <= hour < 8: slot = "early_morning"
+    elif 8 <= hour < 11: slot = "morning"
+    elif 11 <= hour < 14: slot = "lunch_break"
+    elif 14 <= hour < 17: slot = "afternoon"
+    elif 17 <= hour < 21: slot = "evening"
+    else: slot = "night"
 
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    slot_labels = {
-        "early_morning": "Early Morning", "morning": "Morning",
-        "lunch_break": "Lunch", "afternoon": "Afternoon",
-        "evening": "Evening", "night": "Night",
-    }
+    slot_labels = {"early_morning": "Early Morning", "morning": "Morning",
+                   "lunch_break": "Lunch", "afternoon": "Afternoon",
+                   "evening": "Evening", "night": "Night"}
     label = f"{days[weekday]} {slot_labels.get(slot, slot)}"
-
     return {"current": now.isoformat(), "slot": slot, "day_type": day_type, "label": label}
 
 
-async def _ai_analyze_context(weather: dict, time_ctx: dict, user_intent: str,
-                               confidence: float, merchants: list) -> dict:
-    """
-    Send all context signals to GPT-4o for intelligent analysis.
-    AI decides: should we show an offer? which merchant? what type?
-    """
-    # Build merchant summary for the prompt
-    merchant_summaries = []
-    for i, m in enumerate(merchants[:8]):  # Top 8 merchants
-        tx = m.get("tx_density", {})
-        merchant_summaries.append(
-            f"  {i+1}. {m['name']} ({m['category']}) — {m.get('distance_m', '?')}m away, "
-            f"★{m.get('rating', 0)}, demand: {tx.get('status', 'unknown')} "
-            f"({tx.get('current_hour', 0)} tx now vs {tx.get('avg_hour', 0)} avg)"
+# ==================== Step 1: Top 5 by Demand Gap ====================
+
+def _get_top5_by_demand(merchants: list) -> list:
+    """Get top 5 merchants sorted by demand gap (most quiet first)."""
+    sorted_m = sorted(merchants, key=lambda m: m.get("tx_density", {}).get("demand_gap", 0), reverse=True)
+    return sorted_m[:5]
+
+
+# ==================== Step 2: Top 5 by User Preference ====================
+
+async def _get_user_history(user_id: str) -> list:
+    """Get user's offer interaction history from past 7 days (max 21 records)."""
+    seven_days_ago = (datetime.now() - timedelta(days=7)).isoformat()
+    db = await get_db()
+    try:
+        cursor = await db.execute(
+            """SELECT o.merchant_id, m.category, m.name, o.status, o.discount_percent, o.created_at
+               FROM offers o JOIN merchants m ON o.merchant_id = m.id
+               WHERE o.user_id = ? AND o.created_at >= ?
+               ORDER BY o.created_at DESC LIMIT 21""",
+            [user_id, seven_days_ago]
         )
-    merchants_text = "\n".join(merchant_summaries) if merchant_summaries else "  No merchants nearby"
+        rows = await cursor.fetchall()
+        return [dict(row) for row in rows]
+    finally:
+        await db.close()
 
-    prompt = f"""You are the context analysis engine for City Wallet, an AI-powered local offer app.
 
-Analyze the following real-time context and decide whether to trigger a personalized offer.
+def _calculate_preference_scores(history: list) -> dict:
+    """Calculate preference score per category from user history.
+    
+    Score = (accepted * 1.0 + redeemed * 1.5 - dismissed * 0.5) / max(total, 1)
+    Range: roughly -0.5 to 1.5, higher = user likes this category more
+    """
+    category_stats = {}
+    for record in history:
+        cat = record["category"]
+        if cat not in category_stats:
+            category_stats[cat] = {"accepted": 0, "redeemed": 0, "dismissed": 0, "total": 0}
+        category_stats[cat]["total"] += 1
+        if record["status"] == "accepted":
+            category_stats[cat]["accepted"] += 1
+        elif record["status"] == "redeemed":
+            category_stats[cat]["redeemed"] += 1
+        elif record["status"] == "dismissed":
+            category_stats[cat]["dismissed"] += 1
+
+    scores = {}
+    for cat, stats in category_stats.items():
+        total = max(stats["total"], 1)
+        score = (stats["accepted"] * 1.0 + stats["redeemed"] * 1.5 - stats["dismissed"] * 0.5) / total
+        scores[cat] = round(score, 2)
+
+    return scores
+
+
+def _get_top5_by_preference(merchants: list, preference_scores: dict) -> list:
+    """Get top 5 merchants matching user preferences, with distance decay."""
+    for m in merchants:
+        cat_score = preference_scores.get(m["category"], 0.3)  # Default 0.3 for unknown
+        distance = m.get("distance_m", 200)
+        distance_decay = max(0, 1 - distance / 500)  # 0m=1.0, 500m=0.0
+        m["interest_score"] = round(cat_score * 0.7 + distance_decay * 0.3, 2)
+
+    sorted_m = sorted(merchants, key=lambda m: m.get("interest_score", 0), reverse=True)
+    return sorted_m[:5]
+
+
+# ==================== Step 3: LLM as Judge ====================
+
+async def _llm_judge(candidates: list, weather: dict, time_ctx: dict,
+                     user_intent: str, confidence: float,
+                     preference_scores: dict, history_summary: str) -> dict:
+    """
+    LLM as Judge: GPT-4o picks the best merchant from candidates
+    considering BOTH merchant need AND user interest AND current context.
+    """
+    candidate_lines = []
+    for i, m in enumerate(candidates):
+        tx = m.get("tx_density", {})
+        candidate_lines.append(
+            f"  {i+1}. {m['name']} ({m['category']}) — {m.get('distance_m', '?')}m, "
+            f"★{m.get('rating', 0)}, demand: {tx.get('status', '?')} "
+            f"(gap={tx.get('demand_gap', 0)}), "
+            f"user_preference: {m.get('interest_score', 0.3)}"
+        )
+    candidates_text = "\n".join(candidate_lines)
+
+    pref_text = ", ".join([f"{k}={v}" for k, v in sorted(preference_scores.items(), key=lambda x: -x[1])])
+
+    prompt = f"""You are the final recommendation judge for City Wallet.
+
+CANDIDATES (from two selection strategies):
+{candidates_text}
 
 CURRENT CONTEXT:
-- Weather: {weather.get('condition', 'unknown')} ({weather.get('temp', '?')}°C, feels like {weather.get('feels_like', '?')}°C), {weather.get('description', '')}
-- Time: {time_ctx.get('label', 'unknown')} ({time_ctx.get('slot', 'unknown')}, {time_ctx.get('day_type', 'unknown')})
-- User behavior: {user_intent} (confidence: {confidence})
-- Nearby merchants:
-{merchants_text}
+- Weather: {weather.get('condition', '?')} ({weather.get('temp', '?')}°C, feels like {weather.get('feels_like', '?')}°C)
+- Time: {time_ctx.get('label', '?')} ({time_ctx.get('slot', '?')}, {time_ctx.get('day_type', '?')})
+- User intent: {user_intent} (confidence: {confidence})
 
-RULES:
-- Only trigger if the context genuinely suggests the user would benefit from an offer
-- "commuting" or "stationary" users should rarely get offers
-- Prefer merchants that are quiet (low demand) AND close AND relevant to the user's likely need
-- Consider weather-category fit (cold→warm drinks, hot→cold drinks, rain→indoor, etc.)
-- Consider time-category fit (morning→coffee, lunch→food, evening→drinks/dinner)
+USER PREFERENCE (from past 7 days):
+- Preference scores: {pref_text if pref_text else 'no history yet'}
+- History: {history_summary if history_summary else 'new user, no history'}
 
-Respond with ONLY valid JSON (no markdown):
+SELECTION CRITERIA (consider ALL of these):
+1. User interest: pick something the user is likely to ACCEPT (based on preference scores)
+2. Merchant need: prefer merchants that are QUIET and need customers (high demand_gap)
+3. Context fit: match weather (cold→warm drinks, rain→indoor) and time (morning→coffee, lunch→food)
+4. Distance: closer is better
+5. Rating: higher rated merchants provide better experience
+
+Choose exactly ONE merchant. Respond with ONLY valid JSON:
 {{
-    "should_trigger": true or false,
-    "confidence": 0.0 to 1.0,
-    "best_merchant_index": 0-based index from the merchant list (or -1 if none),
+    "chosen_index": 0-based index from candidate list,
+    "merchant_name": "name",
+    "reasoning": "one sentence explaining why this is the best choice right now",
     "trigger_type": "warm_drink" | "cold_drink" | "quick_meal" | "snack" | "breakfast" | "dinner" | "shelter" | "evening_out" | "weekend_brunch" | "afternoon_tea" | "browse" | "rainy_day_read" | "fresh_bread" | "happy_hour" | "none",
-    "reasoning": "one sentence explaining your decision",
-    "suggested_category": "what type of offer would fit best"
+    "confidence": 0.0 to 1.0
 }}"""
 
     try:
@@ -104,90 +173,118 @@ Respond with ONLY valid JSON (no markdown):
         response = await client.chat.completions.create(
             model=settings.OPENAI_MODEL,
             messages=[
-                {"role": "system", "content": "You are a context analysis AI. Respond with valid JSON only."},
+                {"role": "system", "content": "You are a recommendation judge AI. Pick the single best merchant. Respond with valid JSON only."},
                 {"role": "user", "content": prompt},
             ],
-            temperature=0.3,  # Lower temperature for more consistent decisions
+            temperature=0.3,
             max_tokens=300,
         )
-
         content = response.choices[0].message.content.strip()
         if content.startswith("```"):
             content = content.split("\n", 1)[-1].rsplit("```", 1)[0]
-
-        analysis = json.loads(content)
-        return analysis
-
+        return json.loads(content)
     except Exception as e:
-        print(f"⚠️ AI context analysis failed: {e}. Using fallback.")
-        return _fallback_analysis(weather, time_ctx, user_intent, confidence, merchants)
+        print(f"⚠️ LLM Judge failed: {e}. Using fallback.")
+        return {
+            "chosen_index": 0,
+            "merchant_name": candidates[0]["name"] if candidates else "unknown",
+            "reasoning": "Fallback: selected first candidate",
+            "trigger_type": "browse",
+            "confidence": 0.4,
+        }
 
 
-def _fallback_analysis(weather: dict, time_ctx: dict, user_intent: str,
-                       confidence: float, merchants: list) -> dict:
-    """Simple fallback if GPT-4o is unavailable."""
-    if user_intent == "commuting":
-        return {"should_trigger": False, "confidence": 0.1, "best_merchant_index": -1,
-                "trigger_type": "none", "reasoning": "User is commuting", "suggested_category": "none"}
-
-    should = user_intent in ("browsing_food", "browsing_general") and len(merchants) > 0
-    return {
-        "should_trigger": should,
-        "confidence": 0.6 if should else 0.2,
-        "best_merchant_index": 0 if merchants else -1,
-        "trigger_type": "warm_drink" if weather.get("trigger") == "cold" else "quick_meal",
-        "reasoning": "Fallback: user is browsing near merchants",
-        "suggested_category": merchants[0]["category"] if merchants else "none",
-    }
-
+# ==================== Main Entry Point ====================
 
 async def build_context(lat: float, lon: float, user_intent: str = "browsing_general",
-                        confidence: float = 0.5, zone: str = "unknown") -> dict:
+                        confidence: float = 0.5, zone: str = "unknown",
+                        user_id: str = "anonymous") -> dict:
     """
-    Main entry point: collect all signals and let AI analyze the context.
+    Main entry point: three-step recommendation.
+    1. Top 5 by demand gap
+    2. Top 5 by user preference (7-day history)
+    3. LLM as Judge picks the winner
     """
-    # 1. Get weather
+    # Collect signals
     weather = await get_weather(lat, lon)
-
-    # 2. Get time context
     time_ctx = _get_time_context()
-
-    # 3. Get nearby merchants
     merchants = await search_nearby(lat, lon, radius=500)
 
-    # 4. Add transaction density to each merchant
+    # Add transaction density to each merchant
     for m in merchants:
         m["tx_density"] = await get_current_density(m["id"])
 
-    # 5. Sort by demand gap (quietest first)
-    merchants.sort(key=lambda m: m.get("tx_density", {}).get("demand_gap", 0), reverse=True)
+    # Step 1: Top 5 by demand gap
+    top5_demand = _get_top5_by_demand(merchants)
 
-    # 6. AI analyzes the context (replaces hardcoded scoring)
-    ai_analysis = await _ai_analyze_context(weather, time_ctx, user_intent, confidence, merchants)
+    # Step 2: Top 5 by user preference
+    history = await _get_user_history(user_id)
+    preference_scores = _calculate_preference_scores(history)
+    top5_preference = _get_top5_by_preference(list(merchants), preference_scores)
 
-    # 7. Map AI response to our format
-    trigger_score = ai_analysis.get("confidence", 0.5) if ai_analysis.get("should_trigger") else 0.0
-    best_idx = ai_analysis.get("best_merchant_index", 0)
+    # Merge candidates (deduplicate by id)
+    seen_ids = set()
+    candidates = []
+    for m in top5_demand + top5_preference:
+        if m["id"] not in seen_ids:
+            seen_ids.add(m["id"])
+            candidates.append(m)
 
-    # Reorder merchants: put AI's recommended merchant first
-    if 0 <= best_idx < len(merchants):
-        best = merchants.pop(best_idx)
-        merchants.insert(0, best)
+    # Build history summary for LLM
+    if history:
+        accepted_cats = [h["category"] for h in history if h["status"] in ("accepted", "redeemed")]
+        dismissed_cats = [h["category"] for h in history if h["status"] == "dismissed"]
+        history_summary = f"Accepted {len(accepted_cats)} offers ({', '.join(set(accepted_cats)) or 'none'}), dismissed {len(dismissed_cats)} ({', '.join(set(dismissed_cats)) or 'none'}) in past 7 days"
+    else:
+        history_summary = ""
+
+    # Step 3: LLM as Judge
+    if candidates and user_intent != "commuting":
+        judge_result = await _llm_judge(
+            candidates, weather, time_ctx,
+            user_intent, confidence,
+            preference_scores, history_summary
+        )
+    else:
+        judge_result = {
+            "chosen_index": -1,
+            "merchant_name": "",
+            "reasoning": "User is commuting or no candidates available",
+            "trigger_type": "none",
+            "confidence": 0.0,
+        }
+
+    # Reorder merchants: put judge's chosen merchant first
+    chosen_idx = judge_result.get("chosen_index", 0)
+    should_trigger = judge_result.get("confidence", 0) > 0.3 and chosen_idx >= 0
+
+    if should_trigger and 0 <= chosen_idx < len(candidates):
+        chosen_merchant = candidates[chosen_idx]
+        # Move chosen to front of full merchant list
+        merchants = [m for m in merchants if m["id"] != chosen_merchant["id"]]
+        merchants.insert(0, chosen_merchant)
+
+    trigger_score = judge_result.get("confidence", 0) if should_trigger else 0.0
 
     return {
         "weather": weather,
         "time": time_ctx,
-        "user_intent": {
-            "type": user_intent,
-            "confidence": confidence,
-        },
+        "user_intent": {"type": user_intent, "confidence": confidence},
         "nearby_merchants": merchants[:10],
         "events": [],
-        "composite_trigger": ai_analysis.get("trigger_type", "none"),
+        "composite_trigger": judge_result.get("trigger_type", "none"),
         "trigger_score": trigger_score,
         "ai_analysis": {
-            "should_trigger": ai_analysis.get("should_trigger", False),
-            "reasoning": ai_analysis.get("reasoning", ""),
-            "suggested_category": ai_analysis.get("suggested_category", ""),
+            "should_trigger": should_trigger,
+            "reasoning": judge_result.get("reasoning", ""),
+            "suggested_category": judge_result.get("trigger_type", "none"),
+            "chosen_merchant": judge_result.get("merchant_name", ""),
+        },
+        "recommendation_details": {
+            "top5_demand": [{"name": m["name"], "category": m["category"], "demand_gap": m.get("tx_density", {}).get("demand_gap", 0)} for m in top5_demand],
+            "top5_preference": [{"name": m["name"], "category": m["category"], "interest_score": m.get("interest_score", 0)} for m in top5_preference],
+            "total_candidates": len(candidates),
+            "user_preference_scores": preference_scores,
+            "history_count": len(history),
         },
     }

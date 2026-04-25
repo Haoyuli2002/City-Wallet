@@ -24,6 +24,7 @@ async def get_context(req: ContextRequest):
             user_intent=req.user_intent,
             confidence=req.confidence,
             zone=req.zone,
+            user_id=getattr(req, 'user_id', 'anonymous'),
         )
         return context
     except Exception as e:
