@@ -21,12 +21,12 @@ async def list_merchants(city: str = None):
     try:
         if city:
             cursor = await db.execute(
-                "SELECT id, name, category, address, rating, photo_url, city FROM merchants WHERE city = ? ORDER BY name",
+                "SELECT id, name, category, address, lat, lon, rating, photo_url, city FROM merchants WHERE city = ? ORDER BY name",
                 [city]
             )
         else:
             cursor = await db.execute(
-                "SELECT id, name, category, address, rating, photo_url, city FROM merchants ORDER BY city, name"
+                "SELECT id, name, category, address, lat, lon, rating, photo_url, city FROM merchants ORDER BY city, name"
             )
         rows = await cursor.fetchall()
         return [dict(row) for row in rows]
