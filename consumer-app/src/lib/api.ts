@@ -1,4 +1,4 @@
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://city-wallet-production.up.railway.app/api";
 const MAPS_KEY = process.env.NEXT_PUBLIC_MAPS_KEY || "AIzaSyBHpj6gdFSAMnuUTVqZavxu_9xNa5ujpek";
 
 export { MAPS_KEY };
