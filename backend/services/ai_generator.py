@@ -250,7 +250,7 @@ Respond with ONLY valid JSON (no markdown, no code blocks):
 
     # Create offer ID and save to database
     offer_id = f"offer_{uuid4().hex[:12]}"
-    now = datetime.now()
+    now = datetime.utcnow()
     expires_at = now + timedelta(minutes=offer_data.get("valid_minutes", 15))
 
     db = await get_db()
@@ -300,8 +300,8 @@ Respond with ONLY valid JSON (no markdown, no code blocks):
         "content": offer_data,
         "dynamic_pricing": pricing,
         "status": "generated",
-        "created_at": now.isoformat(),
-        "expires_at": expires_at.isoformat(),
+        "created_at": now.isoformat() + "Z",
+        "expires_at": expires_at.isoformat() + "Z",
     }
 
 
