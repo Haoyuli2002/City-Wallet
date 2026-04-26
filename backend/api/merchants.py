@@ -287,7 +287,8 @@ async def get_feed(merchant_id: str, limit: int = 20):
         for row in rows:
             status = row["status"]
             icon, label = icon_map.get(status, ("📋", status))
-            timestamp = row.get(f"{status}_at") or row["created_at"]
+            ts_field = f"{status}_at"
+            timestamp = dict(row).get(ts_field) or row["created_at"]
             if timestamp and "T" in timestamp:
                 timestamp = timestamp.split("T")[1][:5]
 

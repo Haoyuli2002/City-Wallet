@@ -2,75 +2,91 @@
 
 **Generative City-Wallet: Hyperpersonalized Offers for Anyone, Anywhere**
 
-AI驱动的城市钱包，为本地商户实时生成超个性化offer。
+An AI-powered city wallet that generates hyper-personalized offers for local merchants in real time.
 
-## 项目结构
+## Project Structure
 
 ```
 city-wallet/
-├── README.md                  ← 你在这里
-├── PRODUCT.md                 ← 产品文档
-├── API_DOCS.md                ← 前后端接口文档（13个接口详细说明）
+├── README.md                  ← You are here
+├── README_CN.md               ← Chinese version
+├── PRODUCT.md                 ← Product specification
+├── API_DOCS.md                ← Frontend/backend API documentation
+├── API_DOCS_CN.md             ← API docs (Chinese)
 ├── .gitignore
 │
-├── backend/                   ← 后端 (Python FastAPI)
-│   ├── main.py                   FastAPI入口
-│   ├── config/                   配置
-│   ├── models/                   数据库 + 数据模型
-│   ├── services/                 天气/商户/交易/上下文/AI/QR
-│   └── api/                      API端点
+├── backend/                   ← Backend (Python FastAPI)
+│   ├── main.py                   FastAPI entry point
+│   ├── config/                   Configuration
+│   ├── models/                   Database + data models
+│   ├── services/                 Weather / merchants / transactions / context / AI / QR
+│   └── api/                      API endpoints
 │
-├── consumer-app/              ← 消费者App (React/Next.js)
-│   └── src/                      地图 + GenUI offer卡片 + QR + 钱包
+├── consumer-app/              ← Consumer App (React/Next.js)
+│   └── src/                      Map + GenUI offer cards + QR + wallet
 │
-├── merchant-dashboard/        ← 商户Dashboard (React/Next.js)
-│   └── src/                      KPI + 漏斗 + 规则配置 + 扫码核销
+├── merchant-dashboard/        ← Merchant Dashboard (React/Next.js)
+│   └── src/                      KPI + funnel + rule config + QR scanning
 │
-└── prototypes/                ← 原型演示 (HTML)
-    ├── visualize_merchants.html  商户地图可视化
-    └── merchant_dashboard.html   商户Dashboard原型
+└── prototypes/                ← Prototype demos (HTML)
+    ├── visualize_merchants.html  Merchant map visualization
+    └── merchant_dashboard.html   Merchant dashboard prototype
 ```
 
-## 快速开始
+## Quick Start
 
-### 启动后端
+### Start the Backend
 ```bash
 cd backend
 pip install -r requirements.txt
-cp .env.example .env           # 填入API Keys
-python models/seed.py          # 注入慕尼黑商户数据
-uvicorn main:app --reload      # 启动 localhost:8000
+cp .env.example .env           # Fill in API keys
+python models/seed.py          # Seed Munich merchant data
+uvicorn main:app --reload      # Start at localhost:8000
 ```
 
-### 查看原型
+### Start the Consumer App
 ```bash
-open prototypes/visualize_merchants.html      # 商户地图
-open prototypes/merchant_dashboard.html       # 商户Dashboard
+cd consumer-app
+npm install
+npm run dev                    # Start at localhost:3000
 ```
 
-### 查看API文档
-启动后端后访问: http://localhost:8000/docs
+### Start the Merchant Dashboard
+```bash
+cd merchant-dashboard
+npm install
+npm run dev                    # Start at localhost:3001
+```
 
-## 技术栈
+### View Prototypes
+```bash
+open prototypes/visualize_merchants.html   # Merchant map
+open prototypes/merchant_dashboard.html    # Merchant dashboard
+```
 
-| 层 | 技术 |
-|----|------|
-| 后端 | Python FastAPI + SQLite |
+### View API Docs
+After starting the backend, visit: http://localhost:8000/docs
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Backend | Python FastAPI + SQLite |
 | AI | OpenAI GPT-4o |
-| 天气 | OpenWeatherMap API |
-| 商户数据 | Google Places API |
-| 消费者App | React/Next.js (队友实现) |
-| 商户Dashboard | React/Next.js (队友实现) |
+| Weather | OpenWeatherMap API |
+| Merchant Data | Google Places API |
+| Consumer App | React/Next.js 14 + TypeScript |
+| Merchant Dashboard | React/Next.js 14 + TypeScript |
 
-## API Keys 需要
+## Required API Keys
 
-1. **OpenAI** — AI生成offer内容
-2. **Google Maps/Places** — 真实商户数据 + 地图
-3. **OpenWeatherMap** — 实时天气数据
+1. **OpenAI** — AI offer generation
+2. **Google Maps/Places** — Real merchant data + map
+3. **OpenWeatherMap** — Real-time weather data
 
-## 分工
+## Team
 
-| 模块 | 负责人 |
-|------|--------|
-| `backend/` | 后端开发 |
-| `consumer-app/` + `merchant-dashboard/` | 前端队友 |
+| Module | Owner |
+|--------|-------|
+| `backend/` | Backend developer |
+| `consumer-app/` + `merchant-dashboard/` | Frontend developers |

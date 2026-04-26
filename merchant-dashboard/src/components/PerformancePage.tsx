@@ -14,6 +14,7 @@ export default function PerformancePage() {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [feed, setFeed] = useState<FeedEvent[]>([]);
   const [loading, setLoading] = useState(false);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const [period, setPeriod] = useState("today");
 
   useEffect(() => {
@@ -23,17 +24,22 @@ export default function PerformancePage() {
 
   const loadData = useCallback(async (id: string, p: string) => {
     setLoading(true);
+    setFetchError(null);
     try {
       const [a, f] = await Promise.all([getAnalytics(id, p), getFeed(id)]);
       setAnalytics(a);
       setFeed(f.events || []);
     } catch (e) {
       console.error(e);
-      // Merchant not found (stale ID after re-seed) — reset to selector
-      if (typeof window !== "undefined") {
-        window.localStorage.removeItem("cw_merchant");
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg.includes("404") || msg.includes("not found")) {
+        if (typeof window !== "undefined") {
+          window.localStorage.removeItem("cw_merchant");
+        }
+        setMerchant(null);
+      } else {
+        setFetchError("Could not reach backend. Make sure the server is running on localhost:8000.");
       }
-      setMerchant(null);
     } finally {
       setLoading(false);
     }
@@ -84,6 +90,24 @@ export default function PerformancePage() {
       />
 
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 88px", display: "flex", flexDirection: "column", gap: 12 }}>
+
+        {/* Error banner */}
+        {fetchError && (
+          <div style={{ padding: "14px 16px", background: "#fef2f2", border: "1px solid #fecaca", borderRadius: "var(--radius-md)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#dc2626", marginBottom: 2 }}>Backend not reachable</div>
+              <div style={{ fontSize: 12, color: "#ef4444" }}>{fetchError}</div>
+            </div>
+            <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+              <button onClick={() => loadData(merchant.id, period)} style={{ fontSize: 12, padding: "6px 10px", background: "#dc2626", color: "#fff", border: "none", borderRadius: "var(--radius-sm)", cursor: "pointer" }}>
+                Retry
+              </button>
+              <button onClick={() => { window.localStorage.removeItem("cw_merchant"); setMerchant(null); }} style={{ fontSize: 12, padding: "6px 10px", background: "transparent", color: "#dc2626", border: "1px solid #fecaca", borderRadius: "var(--radius-sm)", cursor: "pointer" }}>
+                Change store
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Hero */}
         <div style={{ background: "linear-gradient(135deg,#dbeafe 0%,#bfdbfe 100%)", borderRadius: "var(--radius-lg)", padding: "20px 18px", border: "1px solid #93c5fd" }}>
