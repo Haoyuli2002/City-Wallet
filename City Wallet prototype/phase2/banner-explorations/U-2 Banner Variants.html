@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>U-2 Push-Banner · 5 Varianten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="design-tokens.css">
+
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--text-primary);
+    background:
+      radial-gradient(circle at 15% 0%, #F2F2F2 0%, transparent 38%),
+      radial-gradient(circle at 85% 100%, #EFEFEF 0%, transparent 38%),
+      #F7F7F7;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1700px; margin: 0 auto; padding: 32px 28px 64px; }
+
+  .meta { padding-bottom: 22px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 32px; }
+  .meta__id {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--text-tertiary); text-transform: uppercase;
+  }
+  .meta__title { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin: 4px 0 6px; }
+  .meta__sub { font-size: 13px; color: var(--text-secondary); max-width: 720px; margin: 0; line-height: 1.45; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 24px;
+  }
+  @media (max-width: 1500px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 940px)  { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px)  { .grid { grid-template-columns: 1fr; } }
+
+  .variant { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+  .variant__label {
+    align-self: stretch;
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .variant__num {
+    font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .variant__id {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary);
+  }
+  .variant__name {
+    font-size: 13px; font-weight: 600; color: var(--text-primary); margin-top: 4px;
+  }
+  .variant__desc {
+    font-size: 11px; color: var(--text-secondary); line-height: 1.45;
+    align-self: stretch; min-height: 50px;
+  }
+
+  /* Phone (slimmer for grid of 5) */
+  .phone {
+    width: 280px;
+    height: 580px;
+    border-radius: 38px; background: #0A0A0A;
+    padding: 8px;
+    box-shadow:
+      0 24px 48px -16px rgba(0,0,0,0.25),
+      0 14px 30px -14px rgba(0,0,0,0.18),
+      inset 0 0 0 1px rgba(255,255,255,0.08);
+    position: relative;
+  }
+  .phone__screen {
+    width: 100%; height: 100%;
+    border-radius: 30px; background: #0A0A0A;
+    overflow: hidden; position: relative;
+    display: flex; flex-direction: column;
+  }
+  .statusbar {
+    height: 36px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 22px;
+    font-size: 12px; font-weight: 600; color: #fff;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+    position: relative;
+  }
+  .statusbar__notch {
+    position: absolute; top: 6px; left: 50%;
+    transform: translateX(-50%);
+    width: 84px; height: 22px; border-radius: 14px;
+    background: #0A0A0A;
+  }
+  .statusbar__icons { display: inline-flex; align-items: center; gap: 5px; }
+  .statusbar__icons svg { display: block; }
+  .home-indicator {
+    height: 18px; flex-shrink: 0;
+    display: flex; justify-content: center; align-items: flex-start;
+    padding-top: 6px;
+  }
+  .home-indicator span {
+    width: 100px; height: 4px; border-radius: 99px; background: #fff;
+  }
+
+  .lock {
+    flex: 1; position: relative; overflow: hidden;
+    background:
+      radial-gradient(ellipse at 30% 30%, rgba(80,90,110,0.55) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 70%, rgba(50,60,80,0.55) 0%, transparent 60%),
+      linear-gradient(180deg, #1A1F26 0%, #0A0E14 100%);
+    color: #fff;
+    display: flex; flex-direction: column;
+  }
+  .lock__skyline {
+    position: absolute; left: 0; right: 0; bottom: 50px; height: 90px;
+    background:
+      linear-gradient(transparent 60%, rgba(0,0,0,0.4) 100%),
+      repeating-linear-gradient(90deg,
+        transparent 0 10px,
+        rgba(255,255,255,0.04) 10px 16px,
+        transparent 16px 26px,
+        rgba(255,255,255,0.06) 26px 36px,
+        transparent 36px 50px);
+    mask: linear-gradient(180deg, transparent 0%, #000 40%, #000 100%);
+    -webkit-mask: linear-gradient(180deg, transparent 0%, #000 40%, #000 100%);
+    pointer-events: none;
+  }
+  .lock__top { text-align: center; padding: 36px 16px 0; }
+  .lock__date {
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .lock__time {
+    font-size: 60px; font-weight: 300; letter-spacing: -0.04em;
+    line-height: 1; font-feature-settings: "tnum" 1;
+    margin: 0;
+  }
+  .banner-zone {
+    margin-top: 22px;
+    padding: 0 10px;
+  }
+  .lock__bottom {
+    margin-top: auto;
+    padding: 0 16px 16px;
+    text-align: center;
+    font-size: 10px;
+    color: rgba(255,255,255,0.45);
+  }
+
+  /* ─── Common banner base (variant 1: current/baseline) ─── */
+  .banner {
+    background: rgba(40, 44, 52, 0.7);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 0.5px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 10px 12px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+    color: #fff;
+    font-size: 11px;
+  }
+  .b-icon {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    background: var(--brand-red);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-weight: 700; font-size: 11px; letter-spacing: -0.04em;
+    box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.2);
+    flex-shrink: 0;
+  }
+  .b-name {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 600;
+    font-size: 9.5px;
+    color: rgba(255,255,255,0.7);
+  }
+  .b-time {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    color: rgba(255,255,255,0.55);
+  }
+  .b-headline {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin: 0;
+  }
+  .b-meta {
+    font-size: 11px;
+    color: rgba(255,255,255,0.85);
+    margin-top: 2px;
+    line-height: 1.35;
+  }
+
+  /* ── Variant 1 — Conventional iOS push (baseline) ── */
+  .v1 {
+    display: grid;
+    grid-template-columns: 30px 1fr;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .v1 .b-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 2px;
+  }
+
+  /* ── Variant 2 — Editorial / no chrome row ── */
+  .v2 {
+    padding: 12px 14px 12px;
+  }
+  .v2 .b-top {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 8px;
+  }
+  .v2 .b-top .b-icon { width: 18px; height: 18px; border-radius: 4px; font-size: 7.5px; }
+  .v2 .b-top span { font-size: 9.5px; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.7); font-weight: 600; }
+  .v2 .b-top .b-time { margin-left: auto; }
+  .v2 .v2-headline {
+    font-size: 13px; font-weight: 600; line-height: 1.3; margin: 0 0 6px;
+  }
+  .v2 .v2-rule {
+    height: 1px; background: rgba(255,255,255,0.15);
+    margin: 8px 0;
+  }
+  .v2 .v2-meta {
+    font-size: 10.5px; color: rgba(255,255,255,0.65); display: flex; gap: 8px;
+    font-family: var(--font-mono); letter-spacing: 0.02em;
+  }
+  .v2 .v2-meta .sep { color: rgba(255,255,255,0.3); }
+
+  /* ── Variant 3 — Number-first ── */
+  .v3 {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+  }
+  .v3 .v3-num {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: #fff;
+    font-feature-settings: "tnum" 1;
+    padding-right: 12px;
+    border-right: 1px solid rgba(255,255,255,0.18);
+    text-align: center;
+  }
+  .v3 .v3-num small {
+    display: block;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.55);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .v3 .v3-body { display: flex; flex-direction: column; gap: 2px; }
+  .v3 .v3-body .b-name { color: var(--brand-red); }
+  .v3 .v3-body .b-headline { font-size: 11.5px; }
+
+  /* ── Variant 4 — Stacked / poster ── */
+  .v4 {
+    text-align: left;
+    padding: 14px 14px 12px;
+  }
+  .v4 .v4-top {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .v4 .v4-icon-row {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .v4 .v4-icon-row .b-icon { width: 16px; height: 16px; border-radius: 3px; font-size: 7px; }
+  .v4 .v4-icon-row span { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.65); font-weight: 600; }
+  .v4 .v4-trigger {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-red);
+    margin-bottom: 4px;
+  }
+  .v4 .v4-headline {
+    font-size: 14px; font-weight: 700; line-height: 1.25; margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .v4 .v4-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .v4 .v4-meta-grid > div {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .v4 .v4-meta-grid small {
+    font-family: var(--font-mono);
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+  }
+  .v4 .v4-meta-grid b {
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* ── Variant 5 — Asymmetric red accent / rule ── */
+  .v5 {
+    padding: 10px 12px 10px 0;
+    display: grid;
+    grid-template-columns: 4px 30px 1fr;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .v5 .v5-rule {
+    background: var(--brand-red);
+    border-radius: 0 4px 4px 0;
+  }
+  .v5 .v5-body {
+    padding: 2px 0;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .v5 .v5-head {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 9px;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .v5 .v5-head .b-time {
+    margin-left: auto;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .v5 .v5-head .v5-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--brand-red);
+    display: inline-block;
+  }
+  .v5 .v5-headline {
+    font-size: 12.5px; font-weight: 600; line-height: 1.3; margin: 0;
+  }
+  .v5 .v5-merchant {
+    font-size: 10.5px;
+    color: rgba(255,255,255,0.65);
+    display: flex; gap: 6px; align-items: center;
+  }
+  .v5 .v5-merchant .sep { color: rgba(255,255,255,0.3); }
+  .v5 .v5-merchant .v5-discount {
+    color: var(--brand-red);
+    font-weight: 600;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* ─── Recommendation block ─── */
+  .reco {
+    margin-top: 48px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-left: 3px solid var(--brand-red);
+    border-radius: 0 12px 12px 0;
+    padding: 18px 22px;
+    max-width: 760px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+  .reco h2 {
+    font-size: 14px; font-weight: 700; margin: 0 0 10px;
+    color: var(--text-primary);
+  }
+  .reco table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 12px;
+    font-size: 12px;
+  }
+  .reco th, .reco td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .reco th {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+    font-weight: 500;
+  }
+  .reco td b { color: var(--text-primary); font-weight: 600; }
+  .reco .pick {
+    background: var(--brand-red-soft);
+  }
+  .reco .pick td:first-child b { color: var(--brand-red-deep); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="meta">
+    <div class="meta__id">U-2 · Lockscreen Push-Banner · Variant Study</div>
+    <h1 class="meta__title">Fünf Layout-Varianten — Vergleich</h1>
+    <p class="meta__sub">Gleicher Content, gleiche Wallpaper-Umgebung, gleiche Pixel-Bühne. "Noch 15 Min." entfernt. Ziel: in 1 Sekunde lesbar, in 3 Sekunden überzeugend, ohne System-Convention zu brechen.</p>
+  </header>
+
+  <div class="grid">
+
+    <!-- ───────── V1 ───────── -->
+    <div class="variant">
+      <div class="variant__label">
+        <span class="variant__num">01</span>
+        <span class="variant__id">Baseline</span>
+      </div>
+      <div class="variant__name">iOS-konform · Standard-Push</div>
+      <div class="variant__desc">Wie heute. Kopfzeile mit App-Name + "jetzt", Headline, Meta. Vertraut, keine Reibung — aber das City-Wallet-Signal ist nur das Icon.</div>
+
+      <div class="phone">
+        <div class="phone__screen">
+          <div class="statusbar">
+            <div class="statusbar__notch"></div>
+            <span>14:30</span>
+            <div class="statusbar__icons">
+              <svg width="13" height="9" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+              <svg width="11" height="8" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+              <svg width="18" height="9" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/></svg>
+            </div>
+          </div>
+          <div class="lock">
+            <div class="lock__skyline"></div>
+            <div class="lock__top">
+              <div class="lock__date">Dienstag, 14. Oktober</div>
+              <div class="lock__time">14:30</div>
+            </div>
+            <div class="banner-zone">
+              <div class="banner v1">
+                <span class="b-icon">CW</span>
+                <div>
+                  <div class="b-head">
+                    <span class="b-name">City Wallet</span>
+                    <span class="b-time">jetzt</span>
+                  </div>
+                  <div class="b-headline">Draußen kalt? Dein Cappuccino wartet schon.</div>
+                  <div class="b-meta">Café Müller · 80 m · −20 %</div>
+                </div>
+              </div>
+            </div>
+            <div class="lock__bottom">Nach oben wischen</div>
+          </div>
+          <div class="home-indicator"><span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────── V2 ───────── -->
+    <div class="variant">
+      <div class="variant__label">
+        <span class="variant__num">02</span>
+        <span class="variant__id">Editorial</span>
+      </div>
+      <div class="variant__name">Headline first · Meta unter Trennlinie</div>
+      <div class="variant__desc">Headline rückt nach oben. Mono-Meta unter horizontalem Strich — Bauhaus-Editorial-Ton. App-Mark schrumpft zu kleinem Wortmark. Diszipliniert.</div>
+
+      <div class="phone">
+        <div class="phone__screen">
+          <div class="statusbar">
+            <div class="statusbar__notch"></div>
+            <span>14:30</span>
+            <div class="statusbar__icons">
+              <svg width="13" height="9" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+              <svg width="11" height="8" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+              <svg width="18" height="9" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/></svg>
+            </div>
+          </div>
+          <div class="lock">
+            <div class="lock__skyline"></div>
+            <div class="lock__top">
+              <div class="lock__date">Dienstag, 14. Oktober</div>
+              <div class="lock__time">14:30</div>
+            </div>
+            <div class="banner-zone">
+              <div class="banner v2">
+                <div class="b-top">
+                  <span class="b-icon">CW</span>
+                  <span>City Wallet</span>
+                  <span class="b-time">jetzt</span>
+                </div>
+                <h4 class="v2-headline">Draußen kalt? Dein Cappuccino wartet schon.</h4>
+                <div class="v2-rule"></div>
+                <div class="v2-meta">
+                  <span>Café Müller</span><span class="sep">·</span>
+                  <span>80 m</span><span class="sep">·</span>
+                  <span>−20 %</span>
+                </div>
+              </div>
+            </div>
+            <div class="lock__bottom">Nach oben wischen</div>
+          </div>
+          <div class="home-indicator"><span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────── V3 ───────── -->
+    <div class="variant">
+      <div class="variant__label">
+        <span class="variant__num">03</span>
+        <span class="variant__id">Number-first</span>
+      </div>
+      <div class="variant__name">Rabatt als visueller Anker</div>
+      <div class="variant__desc">"−20 %" wird zur typografischen Hauptfigur, wie ein Headline-Glyph. Bricht das iOS-Pattern bewusst — funktioniert nur, wenn Rabatt der eigentliche Auslöser ist. Hohe Lesbarkeit aus dem Augenwinkel.</div>
+
+      <div class="phone">
+        <div class="phone__screen">
+          <div class="statusbar">
+            <div class="statusbar__notch"></div>
+            <span>14:30</span>
+            <div class="statusbar__icons">
+              <svg width="13" height="9" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+              <svg width="11" height="8" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+              <svg width="18" height="9" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/></svg>
+            </div>
+          </div>
+          <div class="lock">
+            <div class="lock__skyline"></div>
+            <div class="lock__top">
+              <div class="lock__date">Dienstag, 14. Oktober</div>
+              <div class="lock__time">14:30</div>
+            </div>
+            <div class="banner-zone">
+              <div class="banner v3">
+                <div class="v3-num">−20 %<small>Cappuccino</small></div>
+                <div class="v3-body">
+                  <span class="b-name" style="color:var(--brand-red)">City Wallet · Café Müller</span>
+                  <div class="b-headline">Draußen kalt? Dein Cappuccino wartet schon.</div>
+                  <div class="b-meta" style="font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.04em">80 M · JETZT</div>
+                </div>
+              </div>
+            </div>
+            <div class="lock__bottom">Nach oben wischen</div>
+          </div>
+          <div class="home-indicator"><span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────── V4 ───────── -->
+    <div class="variant">
+      <div class="variant__label">
+        <span class="variant__num">04</span>
+        <span class="variant__id">Poster</span>
+      </div>
+      <div class="variant__name">3-Spalten-Meta · Bauhaus-Plakat</div>
+      <div class="variant__desc">Headline groß, drei Mini-Spalten unter Trennlinie für Händler / Distanz / Rabatt. Bauhaus-Plakat-Logik, sehr klare Hierarchie. Etwas größer als Standard-Push, dafür 3-Sekunden-perfekt.</div>
+
+      <div class="phone">
+        <div class="phone__screen">
+          <div class="statusbar">
+            <div class="statusbar__notch"></div>
+            <span>14:30</span>
+            <div class="statusbar__icons">
+              <svg width="13" height="9" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+              <svg width="11" height="8" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+              <svg width="18" height="9" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/></svg>
+            </div>
+          </div>
+          <div class="lock">
+            <div class="lock__skyline"></div>
+            <div class="lock__top">
+              <div class="lock__date">Dienstag, 14. Oktober</div>
+              <div class="lock__time">14:30</div>
+            </div>
+            <div class="banner-zone">
+              <div class="banner v4">
+                <div class="v4-top">
+                  <div class="v4-icon-row">
+                    <span class="b-icon">CW</span>
+                    <span>City Wallet</span>
+                  </div>
+                  <span class="b-time">jetzt</span>
+                </div>
+                <span class="v4-trigger" style="display:none"></span>
+                <h4 class="v4-headline">Dein Cappuccino wartet schon.</h4>
+                <div class="v4-meta-grid">
+                  <div><small>Händler</small><b>Café Müller</b></div>
+                  <div><small>Distanz</small><b>80 m</b></div>
+                  <div><small>Rabatt</small><b style="color:var(--brand-red)">−20 %</b></div>
+                </div>
+              </div>
+            </div>
+            <div class="lock__bottom">Nach oben wischen</div>
+          </div>
+          <div class="home-indicator"><span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ───────── V5 ───────── -->
+    <div class="variant">
+      <div class="variant__label">
+        <span class="variant__num">05</span>
+        <span class="variant__id">Brand rule</span>
+      </div>
+      <div class="variant__name">Roter Akzent-Strich · live-dot</div>
+      <div class="variant__desc">Linker 4-px-Brand-Strich (gleiches Pattern wie U-4-Top-Strip) markiert das City-Wallet-Signal. Live-Dot statt "jetzt"-Text. Subtil, brand-eindeutig, dünne Geometrie. Unser Vorschlag.</div>
+
+      <div class="phone">
+        <div class="phone__screen">
+          <div class="statusbar">
+            <div class="statusbar__notch"></div>
+            <span>14:30</span>
+            <div class="statusbar__icons">
+              <svg width="13" height="9" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+              <svg width="11" height="8" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+              <svg width="18" height="9" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/></svg>
+            </div>
+          </div>
+          <div class="lock">
+            <div class="lock__skyline"></div>
+            <div class="lock__top">
+              <div class="lock__date">Dienstag, 14. Oktober</div>
+              <div class="lock__time">14:30</div>
+            </div>
+            <div class="banner-zone">
+              <div class="banner v5">
+                <span class="v5-rule"></span>
+                <span class="b-icon">CW</span>
+                <div class="v5-body">
+                  <div class="v5-head">
+                    <span class="v5-dot"></span>
+                    <span>City Wallet</span>
+                    <span class="b-time">jetzt</span>
+                  </div>
+                  <h4 class="v5-headline">Draußen kalt? Dein Cappuccino wartet schon.</h4>
+                  <div class="v5-merchant">
+                    <span>Café Müller</span><span class="sep">·</span>
+                    <span>80 m</span><span class="sep">·</span>
+                    <span class="v5-discount">−20 %</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lock__bottom">Nach oben wischen</div>
+          </div>
+          <div class="home-indicator"><span></span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="reco">
+    <h2>Vergleichsmatrix · Empfehlung</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Variante</th>
+          <th>3-Sek-Lesbarkeit</th>
+          <th>Brand-Eindeutigkeit</th>
+          <th>iOS-Konformität</th>
+          <th>Pattern-Konsistenz mit U-4</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>01 Baseline</b></td>
+          <td>mittel</td><td>schwach (nur Icon)</td><td>perfekt</td><td>schwach</td>
+        </tr>
+        <tr>
+          <td><b>02 Editorial</b></td>
+          <td>gut</td><td>schwach</td><td>akzeptabel</td><td>gut (Mono-Meta)</td>
+        </tr>
+        <tr>
+          <td><b>03 Number-first</b></td>
+          <td>sehr stark</td><td>stark (rotes "−20 %")</td><td>bricht Pattern</td><td>schwach (Hierarchie kippt)</td>
+        </tr>
+        <tr class="pick">
+          <td><b>04 Poster</b></td>
+          <td>sehr stark</td><td>stark (3-Spalten-Grid)</td><td>akzeptabel · groß</td><td>sehr stark</td>
+        </tr>
+        <tr>
+          <td><b>05 Brand rule</b></td>
+          <td>stark</td><td>sehr stark (4-px-Strip)</td><td>perfekt</td><td>sehr stark</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin: 14px 0 0;"><b>Gewählt: 04 Poster.</b> 3-Spalten-Meta-Grid (Händler / Distanz / Rabatt) unter Trennlinie. Bauhaus-Plakat-Logik, klare Hierarchie. Übertrage ich jetzt in den Phase-2-Hauptscreen.</p>
+  </div>
+
+</div>
+
+</body>
+</html>

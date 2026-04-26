@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 64" width="200" height="64" role="img" aria-label="City Wallet">
+  <rect width="64" height="64" rx="8" fill="#FF0000"></rect>
+  <g fill="#FFFFFF">
+    <rect x="14" y="14" width="36" height="6"></rect>
+    <rect x="14" y="29" width="36" height="6"></rect>
+    <rect x="14" y="44" width="36" height="6"></rect>
+    <rect x="14" y="14" width="6" height="21"></rect>
+    <rect x="44" y="29" width="6" height="21"></rect>
+  </g>
+  <text x="78" y="29" font-family="Inter, Helvetica Neue, sans-serif" font-size="14" font-weight="500" fill="#8A8A8A" letter-spacing="0.08em">SPARKASSE</text>
+  <text x="78" y="50" font-family="Inter, Helvetica Neue, sans-serif" font-size="20" font-weight="700" fill="#1A1A1A" letter-spacing="-0.01em">City Wallet</text>
+</svg>

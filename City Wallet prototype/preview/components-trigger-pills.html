@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Trigger pills</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  .stack { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; background: var(--brand-red-soft); color: var(--brand-red-deep); font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; }
+  .pill svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .neutral { background: #F5F5F5; color: #4A4A4A; }
+  .lbl { font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); margin: 14px 0 6px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Trigger pills · Context reason</div>
+    <div class="card__sub">Letterspaced uppercase only here</div>
+  </div>
+
+  <div class="lbl">Live offer (red-soft)</div>
+  <div class="stack">
+    <span class="pill"><svg viewBox="0 0 24 24"><path d="M16 13a4 4 0 0 0 0-8 6 6 0 0 0-11.5 2A4 4 0 0 0 5 15"/><path d="M8 19v2M12 17v4M16 19v2"/></svg>ES REGNET · 11 °C</span>
+    <span class="pill"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>MITTAGSPAUSE · 12:32</span>
+    <span class="pill"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>IN DER NÄHE · 80 M</span>
+  </div>
+
+  <div class="lbl">Neutral context</div>
+  <div class="stack">
+    <span class="pill neutral">PAYONE · LOKALE TRENDS</span>
+    <span class="pill neutral">FEIERABEND · 17:00</span>
+  </div>
+</div>
+</body>
+</html>

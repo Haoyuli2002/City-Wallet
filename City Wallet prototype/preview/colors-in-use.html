@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Color in use</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  .demo { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; align-items: stretch; }
+  .ok, .bad { border-radius: 12px; padding: 14px 16px; border: 1px solid var(--stroke-1); }
+  .ok { background: var(--bg-1); }
+  .bad { background: var(--bg-1); position: relative; }
+  .label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+  .label.ok-l { color: #00875A; }
+  .label.bad-l { color: #DE350B; }
+  .pill { display: inline-block; background: var(--brand-red-soft); color: var(--brand-red-deep); font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 8px; border-radius: 999px; }
+  .h { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin: 6px 0 2px; }
+  .h .red { color: var(--brand-red); }
+  .sub { font-size: 13px; color: var(--fg-2); }
+  .btn { display: inline-block; background: var(--brand-red); color: #fff; padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; margin-top: 10px; }
+  .strike { color: #DE350B; text-decoration: line-through; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Color in use · One red CTA, one red data point</div>
+    <div class="card__sub">Right vs wrong</div>
+  </div>
+  <div class="demo">
+    <div class="ok">
+      <div class="label ok-l">Richtig</div>
+      <span class="pill">☔ ES REGNET · 11 °C</span>
+      <div class="h"><span class="red">−15 %</span></div>
+      <div class="sub">Cappuccino · Café Lotte · 80 m</div>
+      <div class="btn">Einlösen</div>
+    </div>
+    <div class="bad">
+      <div class="label bad-l">Falsch</div>
+      <span class="pill" style="background:#FF0000;color:#fff">☔ ES REGNET</span>
+      <div class="h" style="color:#FF0000">−15 %</div>
+      <div class="sub" style="color:#FF0000">Café Lotte · 80 m</div>
+      <div class="btn">Einlösen</div>
+      <div style="font-size:10px;color:var(--fg-3);margin-top:8px">Red competing with red.</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

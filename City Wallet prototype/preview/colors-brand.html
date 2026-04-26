@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Brand red</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  .swatches { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+  .sw { border-radius: 12px; overflow: hidden; border: 1px solid var(--stroke-1); }
+  .sw__chip { height: 88px; }
+  .sw__meta { padding: 10px 12px; background: var(--bg-1); }
+  .sw__name { font-size: 13px; font-weight: 600; color: var(--fg-1); }
+  .sw__hex { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); margin-top: 2px; font-feature-settings: "tnum" 1, "lnum" 1; }
+  .note { display: flex; gap: 8px; align-items: center; margin-top: 16px; font-size: 12px; color: var(--fg-3); }
+  .note .lock { width: 12px; height: 12px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Brand · Sparkassen-Rot HKS 13</div>
+    <div class="card__sub">Legally protected trademark</div>
+  </div>
+  <div class="swatches">
+    <div class="sw"><div class="sw__chip" style="background:#FF0000"></div><div class="sw__meta"><div class="sw__name">brand-red</div><div class="sw__hex">#FF0000</div></div></div>
+    <div class="sw"><div class="sw__chip" style="background:#C8102E"></div><div class="sw__meta"><div class="sw__name">brand-red-deep</div><div class="sw__hex">#C8102E</div></div></div>
+    <div class="sw"><div class="sw__chip" style="background:#6A0000"></div><div class="sw__meta"><div class="sw__name">brand-red-ink</div><div class="sw__hex">#6A0000</div></div></div>
+    <div class="sw"><div class="sw__chip" style="background:#FFE5E5"></div><div class="sw__meta"><div class="sw__name">brand-red-soft</div><div class="sw__hex">#FFE5E5</div></div></div>
+  </div>
+  <div class="note">Use deliberately, not decoratively. ≤ 1 red CTA + ≤ 1 red data point per card.</div>
+</div>
+</body>
+</html>

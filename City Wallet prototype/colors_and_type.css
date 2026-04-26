@@ -1,0 +1,224 @@
+/* =============================================================
+   City Wallet — colors_and_type.css
+   Layered on top of design-tokens.css. Adds semantic type
+   styles (h1, h2, etc.), color aliases, and component-level
+   typographic patterns specific to the offer-widget grammar.
+
+   Order: import design-tokens.css FIRST, then this file.
+   ============================================================= */
+
+/* ---------- Webfont (Inter) -----------------------------------
+   Used as the closest free analogue to the Otl Aicher / Rotis
+   heritage. Tabular numerals are mandatory for prices,
+   distances and countdowns.
+   ------------------------------------------------------------ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* =============================================================
+   SEMANTIC COLOR ALIASES
+   ============================================================= */
+:root {
+  /* Foreground stack (ink scale) — use these for text */
+  --fg-1: var(--text-primary);    /* primary text, headlines */
+  --fg-2: var(--text-secondary);  /* labels, supporting copy */
+  --fg-3: var(--text-tertiary);   /* meta, timestamps, GDPR microcopy */
+  --fg-on-red: var(--text-on-red);
+
+  /* Background stack */
+  --bg-1: var(--surface);         /* page, card surface */
+  --bg-2: var(--surface-muted);   /* subtle inset, dashboard tiles */
+  --bg-3: var(--surface-sunken);  /* deepest, list backgrounds */
+
+  /* Stroke */
+  --stroke-1: var(--border-subtle);
+  --stroke-2: var(--border-default);
+
+  /* Accent — brand-red only ever used deliberately */
+  --accent: var(--brand-red);
+  --accent-deep: var(--brand-red-deep);
+  --accent-soft: var(--brand-red-soft);
+  --accent-ink: var(--brand-red-ink);
+
+  /* Focus ring (a11y) — red-tinted, calm */
+  --focus-ring: 0 0 0 3px rgba(255, 0, 0, 0.25);
+}
+
+/* =============================================================
+   BASE TYPE
+   ============================================================= */
+html {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  color: var(--fg-1);
+  background: var(--bg-1);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-weight-regular);
+}
+
+/* Numerals — tabular everywhere by default for the wallet grammar */
+.num,
+.tnum,
+[data-num] {
+  font-feature-settings: var(--font-feature-numeric);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+/* =============================================================
+   SEMANTIC HEADINGS / TEXT STYLES
+   These map the type scale onto roles used in the product.
+   ============================================================= */
+
+/* Hero amount (e.g. "−20%") — rare, one per screen */
+.t-hero,
+h1.t-hero {
+  font-size: var(--text-3xl);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+  color: var(--fg-1);
+  font-feature-settings: var(--font-feature-numeric);
+}
+
+/* Offer headline / page title */
+.t-h1,
+h1 {
+  font-size: var(--text-2xl);
+  line-height: var(--leading-tight);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.015em;
+  color: var(--fg-1);
+}
+
+/* Card title / offer subject */
+.t-h2,
+h2 {
+  font-size: var(--text-xl);
+  line-height: var(--leading-snug);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
+  color: var(--fg-1);
+}
+
+/* Section label */
+.t-h3,
+h3 {
+  font-size: var(--text-lg);
+  line-height: var(--leading-snug);
+  font-weight: var(--font-weight-semibold);
+  color: var(--fg-1);
+}
+
+/* Body */
+.t-body,
+p {
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-weight-regular);
+  color: var(--fg-1);
+}
+
+/* Supporting / secondary copy */
+.t-secondary {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--fg-2);
+}
+
+/* Meta / GDPR microcopy / timestamps */
+.t-meta {
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+  color: var(--fg-3);
+}
+
+/* Trigger pill — the signature "ES REGNET · 11°C" style */
+.t-trigger {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-deep);
+}
+
+/* Countdown — warning color, tabular */
+.t-countdown {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--warning);
+  font-feature-settings: var(--font-feature-numeric);
+}
+
+/* CTA label */
+.t-cta {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0;
+}
+
+/* Mono — used for transaction IDs, debug, codes */
+.t-mono,
+code,
+pre {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-feature-settings: var(--font-feature-numeric);
+}
+
+/* Data point in dashboards */
+.t-data {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.015em;
+  font-feature-settings: var(--font-feature-numeric);
+  color: var(--fg-1);
+}
+
+/* Small caps label for dashboard metrics ("HEUTE", "WOCHE") */
+.t-label {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+/* =============================================================
+   LINKS — restrained, no underline-by-default flash
+   ============================================================= */
+a {
+  color: var(--accent-deep);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+a:hover {
+  border-bottom-color: var(--accent-deep);
+}
+a:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: 2px;
+}
+
+/* =============================================================
+   RESET / NORMALIZE — minimal, opinionated
+   ============================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}

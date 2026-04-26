@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Tabular numbers</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .col h4 { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fg-3); margin: 0 0 10px; }
+  .lines { display: flex; flex-direction: column; gap: 6px; }
+  .lines div { font-size: 18px; }
+  .tab { font-feature-settings: "tnum" 1, "lnum" 1; font-variant-numeric: tabular-nums lining-nums; }
+  .prop { font-feature-settings: normal; font-variant-numeric: normal; }
+  .ok { color: var(--fg-1); }
+  .bad { color: var(--fg-3); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Numerals · Always tabular</div>
+    <div class="card__sub">Prices · distances · countdowns</div>
+  </div>
+  <div class="grid">
+    <div class="col">
+      <h4>Tabular (richtig)</h4>
+      <div class="lines">
+        <div class="tab ok">4,90 €</div>
+        <div class="tab ok">12,40 €</div>
+        <div class="tab ok">  80 m</div>
+        <div class="tab ok"> 350 m</div>
+        <div class="tab ok">12:47</div>
+        <div class="tab ok">noch 24 Min.</div>
+      </div>
+    </div>
+    <div class="col">
+      <h4>Proportional (falsch)</h4>
+      <div class="lines">
+        <div class="prop bad">4,90 €</div>
+        <div class="prop bad">12,40 €</div>
+        <div class="prop bad">80 m</div>
+        <div class="prop bad">350 m</div>
+        <div class="prop bad">12:47</div>
+        <div class="prop bad">noch 24 Min.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Semantic colors</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+  .sem { border-radius: 12px; overflow: hidden; border: 1px solid var(--stroke-1); }
+  .sem__chip { height: 56px; }
+  .sem__meta { padding: 10px 12px; }
+  .sem__name { font-size: 12px; font-weight: 600; color: var(--fg-1); }
+  .sem__hex { font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); margin-top: 2px; }
+  .sem__use { font-size: 11px; color: var(--fg-2); margin-top: 6px; }
+  .warn { display: flex; gap: 6px; align-items: flex-start; margin-top: 14px; font-size: 11px; color: var(--fg-3); border-top: 1px solid var(--stroke-1); padding-top: 12px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Semantic · Use sparingly</div>
+    <div class="card__sub">Each has exactly one job</div>
+  </div>
+  <div class="grid">
+    <div class="sem"><div class="sem__chip" style="background:#00875A"></div><div class="sem__meta"><div class="sem__name">success</div><div class="sem__hex">#00875A</div><div class="sem__use">"Eingelöst"</div></div></div>
+    <div class="sem"><div class="sem__chip" style="background:#FF8A3D"></div><div class="sem__meta"><div class="sem__name">warning</div><div class="sem__hex">#FF8A3D</div><div class="sem__use">Expiry only</div></div></div>
+    <div class="sem"><div class="sem__chip" style="background:#DE350B"></div><div class="sem__meta"><div class="sem__name">error</div><div class="sem__hex">#DE350B</div><div class="sem__use">Form errors</div></div></div>
+    <div class="sem"><div class="sem__chip" style="background:#0052CC"></div><div class="sem__meta"><div class="sem__name">info</div><div class="sem__hex">#0052CC</div><div class="sem__use">System only</div></div></div>
+  </div>
+  <div class="warn">⚠ Blue (info) is reserved for Payone — never use as a primary accent in City Wallet.</div>
+</div>
+</body>
+</html>

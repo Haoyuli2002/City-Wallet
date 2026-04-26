@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Logo</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  body { background: #FAFAFA; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .tile { display: flex; align-items: center; justify-content: center; height: 110px; border-radius: 12px; border: 1px solid #EAEAEA; }
+  .tile.red { background: #FF0000; border-color: #FF0000; }
+  .tile.dark { background: #0A0A0A; border-color: #0A0A0A; }
+  .lbl { text-align: center; font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); margin-top: 8px; }
+  .mark { width: 56px; height: 56px; position: relative; border-radius: 6px; }
+  .mark .row { position: absolute; left: 18%; width: 64%; height: 11%; background: #fff; }
+  .mark .r1 { top: 22%; }
+  .mark .r2 { top: 45%; }
+  .mark .r3 { top: 68%; }
+  .mark .v1 { position: absolute; left: 18%; top: 22%; width: 11%; height: 34%; background: #fff; }
+  .mark .v2 { position: absolute; right: 18%; top: 45%; width: 11%; height: 34%; background: #fff; }
+  .red-mark { background: #FF0000; }
+  .red-mark .row, .red-mark .v1, .red-mark .v2 { background: #fff; }
+  .white-on-red .row, .white-on-red .v1, .white-on-red .v2 { background: #fff; }
+  .red-on-white { background: transparent; }
+  .red-on-white .row, .red-on-white .v1, .red-on-white .v2 { background: #FF0000; }
+  .white-on-dark { background: transparent; }
+  .white-on-dark .row, .white-on-dark .v1, .white-on-dark .v2 { background: #fff; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Sparkassen-S · Geometric mark</div>
+    <div class="card__sub">Aicher 1972 · LIGALUX 2022</div>
+  </div>
+  <div class="grid">
+    <div>
+      <div class="tile" style="background:#fff"><div class="mark red-on-white"><div class="row r1"></div><div class="row r2"></div><div class="row r3"></div><div class="v1"></div><div class="v2"></div></div></div>
+      <div class="lbl">red on white</div>
+    </div>
+    <div>
+      <div class="tile red"><div class="mark red-mark white-on-red"><div class="row r1"></div><div class="row r2"></div><div class="row r3"></div><div class="v1"></div><div class="v2"></div></div></div>
+      <div class="lbl">white on red</div>
+    </div>
+    <div>
+      <div class="tile dark"><div class="mark white-on-dark"><div class="row r1"></div><div class="row r2"></div><div class="row r3"></div><div class="v1"></div><div class="v2"></div></div></div>
+      <div class="lbl">white on ink</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
