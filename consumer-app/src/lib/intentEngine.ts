@@ -218,10 +218,11 @@ export async function initSLM(onProgress?: (progress: string) => void): Promise<
   
   try {
     // Dynamic import — WebLLM is only loaded if needed
+    // @ts-ignore - WebLLM is optional, only loaded at runtime in browser
     const webllm = await import("@mlc-ai/web-llm");
     
     // Check WebGPU support
-    if (!navigator.gpu) {
+    if (!(navigator as any).gpu) {
       console.warn("⚠️ WebGPU not supported. SLM disabled, using rule-based fallback.");
       slmAvailable = false;
       slmLoading = false;
