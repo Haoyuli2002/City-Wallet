@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Sparkassen-S">
+  <rect width="64" height="64" rx="8" fill="#FF0000"></rect>
+  
+  <g fill="#FFFFFF">
+    
+    <rect x="14" y="14" width="36" height="6" rx="0"></rect>
+    
+    <rect x="14" y="29" width="36" height="6" rx="0"></rect>
+    
+    <rect x="14" y="44" width="36" height="6" rx="0"></rect>
+    
+    <rect x="14" y="14" width="6" height="21"></rect>
+    
+    <rect x="44" y="29" width="6" height="21"></rect>
+  </g>
+</svg>

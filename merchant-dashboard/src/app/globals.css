@@ -1,0 +1,44 @@
+:root {
+  --ink: #0a0a0a;
+  --surface: #ffffff;
+  --surface-muted: #f4f4f5;
+  --border-default: #e4e4e7;
+  --border-subtle: #f0f0f0;
+  --text-primary: #0a0a0a;
+  --text-secondary: #525252;
+  --text-tertiary: #a1a1aa;
+  --brand-red: #e63946;
+  --brand-red-deep: #c1121f;
+  --green: #16a34a;
+  --font-mono: ui-monospace, "JetBrains Mono", "Fira Code", monospace;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+  font-size: 15px;
+  color: var(--text-primary);
+  background: var(--surface-muted);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+@keyframes livepulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(230,57,70,0.25); }
+  50% { box-shadow: 0 0 0 5px rgba(230,57,70,0.05); }
+}
+
+@keyframes greenpulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(22,163,74,0.15); }
+  50% { box-shadow: 0 0 0 5px rgba(22,163,74,0.05); }
+}

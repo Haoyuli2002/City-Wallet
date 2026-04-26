@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Type scale</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  .row-spec { display: grid; grid-template-columns: 90px 1fr 80px; align-items: baseline; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--stroke-1); }
+  .row-spec:last-child { border-bottom: none; }
+  .name { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); }
+  .px { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); text-align: right; }
+  .specimen { color: var(--fg-1); letter-spacing: -0.01em; font-feature-settings: "tnum" 1, "lnum" 1; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Type scale · Inter</div>
+    <div class="card__sub">Mobile-first, perfect-fourth-ish</div>
+  </div>
+  <div class="row-spec"><div class="name">3xl / 700</div><div class="specimen" style="font-size:40px;font-weight:700;letter-spacing:-0.02em">−20 %</div><div class="px">40 / 44</div></div>
+  <div class="row-spec"><div class="name">2xl / 700</div><div class="specimen" style="font-size:32px;font-weight:700">Heißer Kaffee</div><div class="px">32 / 36</div></div>
+  <div class="row-spec"><div class="name">xl / 600</div><div class="specimen" style="font-size:24px;font-weight:600">Cappuccino</div><div class="px">24 / 32</div></div>
+  <div class="row-spec"><div class="name">lg / 600</div><div class="specimen" style="font-size:18px;font-weight:600">Café Lotte</div><div class="px">18 / 24</div></div>
+  <div class="row-spec"><div class="name">base / 400</div><div class="specimen" style="font-size:16px">Bis 13:00 Uhr · 80 m</div><div class="px">16 / 24</div></div>
+  <div class="row-spec"><div class="name">sm / 400</div><div class="specimen" style="font-size:14px;color:var(--fg-2)">Verarbeitung auf Ihrem Gerät</div><div class="px">14 / 20</div></div>
+  <div class="row-spec"><div class="name">xs / 500</div><div class="specimen" style="font-size:12px;color:var(--fg-3)">Eingelöst um 12:47</div><div class="px">12 / 16</div></div>
+</div>
+</body>
+</html>

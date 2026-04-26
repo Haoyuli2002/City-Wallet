@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>City Wallet — Merchant Dashboard</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#FFF8F0;color:#3E2723;}
+        .top{background:linear-gradient(90deg,#5D4037,#795548);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;}
+        .top h1{font-size:18px;color:#fff;} .top h1 span{color:#FFB74D;}
+        .top .right{display:flex;align-items:center;gap:12px;}
+        .top select{padding:8px 12px;border:1px solid #A1887F;border-radius:8px;background:#5D4037;color:#fff;font-size:13px;}
+        .top .status{font-size:11px;color:#D7CCC8;}
+        .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px 20px;max-width:1200px;margin:0 auto;}
+        .card{background:#fff;border-radius:14px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+        .card h3{font-size:12px;color:#8D6E63;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;}
+        .card.full{grid-column:1/-1;}
+        /* KPI */
+        .kpi-row{display:flex;gap:10px;}
+        .kpi{flex:1;background:#FFF3E0;padding:14px;border-radius:10px;text-align:center;}
+        .kpi .num{font-size:26px;font-weight:700;color:#3E2723;}
+        .kpi .lbl{font-size:10px;color:#8D6E63;margin-top:2px;}
+        /* Rate bars */
+        .rate{display:flex;align-items:center;gap:10px;margin:6px 0;}
+        .rate .rlbl{font-size:12px;color:#8D6E63;width:90px;}
+        .rate .rbar{flex:1;height:8px;background:#EFEBE9;border-radius:4px;overflow:hidden;}
+        .rate .rfill{height:100%;border-radius:4px;}
+        .rate .rval{font-size:12px;font-weight:600;width:45px;text-align:right;}
+        /* Revenue */
+        .rev-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+        .rev-item{text-align:center;padding:10px;background:#FFF3E0;border-radius:8px;}
+        .rev-item .val{font-size:22px;font-weight:700;}
+        .rev-item .val.green{color:#2E7D32;}
+        .rev-item .lbl{font-size:10px;color:#8D6E63;margin-top:2px;}
+        /* Chart */
+        .hourly{display:flex;align-items:flex-end;gap:2px;height:80px;margin-top:8px;}
+        .hbar{flex:1;border-radius:3px 3px 0 0;min-width:4px;cursor:pointer;position:relative;}
+        .hbar:hover{opacity:0.8;}
+        .hbar .tip{display:none;position:absolute;bottom:105%;left:50%;transform:translateX(-50%);background:#3E2723;color:#fff;padding:3px 6px;border-radius:4px;font-size:9px;white-space:nowrap;}
+        .hbar:hover .tip{display:block;}
+        .chart-x{display:flex;justify-content:space-between;margin-top:3px;}
+        .chart-x span{font-size:9px;color:#A1887F;}
+        /* Funnel */
+        .funnel-row{display:flex;align-items:center;gap:8px;margin:4px 0;}
+        .funnel-lbl{font-size:11px;width:75px;color:#8D6E63;}
+        .funnel-bg{flex:1;height:18px;background:#EFEBE9;border-radius:6px;overflow:hidden;}
+        .funnel-bar{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:6px;}
+        .funnel-bar span{font-size:10px;color:#fff;font-weight:600;}
+        /* Rules */
+        .rule-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #EFEBE9;}
+        .rule-row:last-child{border-bottom:none;}
+        .rule-k{font-size:12px;color:#8D6E63;}
+        .rule-v select,.rule-v input{padding:5px 8px;border:1px solid #D7CCC8;border-radius:6px;font-size:12px;font-weight:600;}
+        .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+        .tag{padding:3px 8px;background:#EFEBE9;border-radius:8px;font-size:10px;color:#5D4037;}
+        .btn-save{width:100%;padding:10px;background:#E65100;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;margin-top:10px;}
+        .btn-save:hover{background:#BF360C;}
+        .confirm{display:none;margin-top:8px;padding:8px;background:#E8F5E9;color:#2E7D32;border-radius:8px;font-size:12px;text-align:center;}
+        /* Feed */
+        .feed{max-height:300px;overflow-y:auto;}
+        .feed-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid #EFEBE9;}
+        .feed-item:last-child{border-bottom:none;}
+        .feed-time{font-size:11px;color:#A1887F;width:40px;flex-shrink:0;}
+        .feed-icon{font-size:14px;}
+        .feed-msg{font-size:12px;color:#5D4037;flex:1;}
+        /* Redeem */
+        .redeem-box{padding:10px 0;}
+        .redeem-box label{font-size:12px;color:#8D6E63;display:block;margin-bottom:4px;}
+        .redeem-box input{width:100%;padding:8px;border:1px solid #D7CCC8;border-radius:8px;margin-bottom:8px;font-size:13px;}
+        .redeem-result{padding:14px;border-radius:10px;text-align:center;margin-top:8px;}
+        .empty{text-align:center;padding:30px;color:#A1887F;}
+        .empty .big{font-size:36px;margin-bottom:8px;}
+    </style>
+</head>
+<body>
+<div class="top">
+    <h1>🏪 City <span>Wallet</span> — Merchant Dashboard</h1>
+    <div class="right">
+        <select id="merchantSelect" onchange="loadMerchant()">
+            <option value="">— Select your store —</option>
+        </select>
+        <span class="status" id="srvStatus">⏳</span>
+    </div>
+</div>
+
+<div id="content">
+    <div class="empty" style="padding:80px 20px;">
+        <div class="big">🏪</div>
+        <p>Select a merchant above to view dashboard</p>
+    </div>
+</div>
+
+<script>
+const API='http://localhost:8000/api';
+let currentMerchant=null;
+
+async function init(){
+    try{
+        const r=await fetch(API+'/health');
+        const d=await r.json();
+        document.getElementById('srvStatus').textContent='✅ '+d.city;
+    }catch{document.getElementById('srvStatus').textContent='❌ offline';}
+    
+    // Load merchants
+    try{
+        const r=await fetch(API+'/merchants');
+        const list=await r.json();
+        const sel=document.getElementById('merchantSelect');
+        list.forEach(m=>{
+            const o=document.createElement('option');
+            o.value=m.id;
+            o.textContent=m.name+' ('+m.category+')';
+            sel.appendChild(o);
+        });
+    }catch(e){console.error(e);}
+}
+
+async function loadMerchant(){
+    const id=document.getElementById('merchantSelect').value;
+    if(!id)return;
+    currentMerchant=id;
+    
+    // Load merchant details + rules
+    const [detailR, analyticsR, feedR]=await Promise.all([
+        fetch(API+'/merchants/'+id),
+        fetch(API+'/merchants/'+id+'/analytics'),
+        fetch(API+'/merchants/'+id+'/feed'),
+    ]);
+    const detail=await detailR.json();
+    const analytics=await analyticsR.json();
+    const feed=await feedR.json();
+    
+    const m=detail.merchant||{};
+    const rules=detail.rules||{};
+    const f=analytics.funnel||{};
+    const rates=analytics.rates||{};
+    const rev=analytics.revenue||{};
+    const hourly=analytics.hourly_pattern||{};
+    const events=feed.events||[];
+    
+    // Render dashboard
+    document.getElementById('content').innerHTML=`
+    <div style="padding:12px 20px;background:#EFEBE9;display:flex;align-items:center;gap:12px;">
+        <span style="font-size:28px;">${{cafe:'☕',restaurant:'🍽️',bakery:'🥖',bar:'🍺',book_store:'📚'}[m.category]||'🏪'}</span>
+        <div>
+            <div style="font-size:16px;font-weight:700;">${m.name||''}</div>
+            <div style="font-size:12px;color:#8D6E63;">★${m.rating||0} · ${m.category||''} · ${m.address||''}</div>
+        </div>
+    </div>
+    <div class="grid">
+        <div class="card full">
+            <h3>📊 Today's Performance</h3>
+            <div class="kpi-row">
+                <div class="kpi"><div class="num">${f.generated||0}</div><div class="lbl">📤 Pushed</div></div>
+                <div class="kpi"><div class="num">${f.displayed||0}</div><div class="lbl">👁️ Read</div></div>
+                <div class="kpi"><div class="num">${f.accepted||0}</div><div class="lbl">✅ Accepted</div></div>
+                <div class="kpi"><div class="num">${f.redeemed||0}</div><div class="lbl">📱 Redeemed</div></div>
+                <div class="kpi"><div class="num">${(f.accepted||0)-(f.redeemed||0)}</div><div class="lbl">⏰ Expired</div></div>
+            </div>
+            <div style="margin-top:12px;">
+                <div class="rate"><span class="rlbl">Acceptance</span><div class="rbar"><div class="rfill" style="width:${Math.round((rates.acceptance_rate||0)*100)}%;background:#E65100;"></div></div><span class="rval">${Math.round((rates.acceptance_rate||0)*100)}%</span></div>
+                <div class="rate"><span class="rlbl">Redemption</span><div class="rbar"><div class="rfill" style="width:${Math.round((rates.redemption_rate||0)*100)}%;background:#2E7D32;"></div></div><span class="rval">${Math.round((rates.redemption_rate||0)*100)}%</span></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>💰 Revenue Impact</h3>
+            <div class="rev-grid">
+                <div class="rev-item"><div class="val">€${rev.total_transaction_value||0}</div><div class="lbl">Revenue</div></div>
+                <div class="rev-item"><div class="val" style="color:#E65100;">-€${rev.total_discount_given||0}</div><div class="lbl">Discount</div></div>
+                <div class="rev-item"><div class="val green">€${rev.estimated_incremental_revenue||0}</div><div class="lbl">Net</div></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>📈 Offer Funnel</h3>
+            ${renderFunnel(f)}
+        </div>
+        
+        <div class="card">
+            <h3>⏰ 24h Transaction Pattern</h3>
+            <div class="hourly" id="hourlyChart"></div>
+            <div class="chart-x"><span>0h</span><span>6h</span><span>12h</span><span>18h</span><span>23h</span></div>
+        </div>
+        
+        <div class="card">
+            <h3>🤖 AI Rules</h3>
+            ${renderRules(rules)}
+        </div>
+        
+        <div class="card full">
+            <h3>🔔 Live Feed</h3>
+            <div class="feed">${renderFeed(events)}</div>
+        </div>
+        
+        <div class="card">
+            <h3>📱 Redeem Offer</h3>
+            <div class="redeem-box">
+                <label>Token (from QR code)</label>
+                <input type="text" id="redeemToken" placeholder="CW-2026-...">
+                <label>Transaction amount (€)</label>
+                <input type="number" id="redeemAmount" value="4.50" step="0.50" min="1">
+                <button class="btn-save" onclick="redeemOffer()">📱 Redeem</button>
+                <div id="redeemResult"></div>
+            </div>
+        </div>
+    </div>`;
+    
+    renderHourlyChart(hourly, m.category);
+}
+
+function renderFunnel(f){
+    const max=Math.max(f.generated||1,1);
+    const expired=(f.accepted||0)-(f.redeemed||0);
+    const items=[
+        ['📤 Pushed',f.generated,'#795548'],
+        ['👁️ Read',f.displayed,'#8D6E63'],
+        ['✅ Accepted',f.accepted,'#FF8F00'],
+        ['📱 Redeemed',f.redeemed,'#E65100'],
+        ['⏰ Expired',expired,'#BCAAA4'],
+    ];
+    return items.map(([l,v,c])=>{
+        const pct=Math.round((v||0)/max*100);
+        return '<div class="funnel-row"><span class="funnel-lbl">'+l+'</span><div class="funnel-bg"><div class="funnel-bar" style="width:'+pct+'%;background:'+c+';"><span>'+(v||0)+'</span></div></div></div>';
+    }).join('');
+}
+
+function renderRules(r){
+    const discOpts=[5,10,15,20,25,30].map(v=>'<option value="'+v+'" '+(v===(r.max_discount_percent||15)?'selected':'')+'>'+v+'%</option>').join('');
+    const targetOpts=['fill_quiet_hours','lunch_rush','rainy_day_special','end_of_day_clearance','early_bird_special'].map(v=>'<option value="'+v+'" '+(v===r.target?'selected':'')+'>'+v.replace(/_/g,' ')+'</option>').join('');
+    const toneOpts=['cozy','professional','energetic','warm','fresh'].map(v=>'<option value="'+v+'" '+(v===r.brand_tone?'selected':'')+'>'+v+'</option>').join('');
+    let products=[];
+    try{products=typeof r.product_scope==='string'?JSON.parse(r.product_scope):r.product_scope||[];}catch(e){products=['all'];}
+    
+    return '<div class="rule-row"><span class="rule-k">Max Discount</span><span class="rule-v"><select id="rDisc">'+discOpts+'</select></span></div>'+
+        '<div class="rule-row"><span class="rule-k">Target</span><span class="rule-v"><select id="rTarget">'+targetOpts+'</select></span></div>'+
+        '<div class="rule-row"><span class="rule-k">Brand Tone</span><span class="rule-v"><select id="rTone">'+toneOpts+'</select></span></div>'+
+        '<div class="rule-row"><span class="rule-k">Daily Budget</span><span class="rule-v">€<input type="number" id="rBudget" value="'+(r.daily_budget_eur||50)+'" min="10" max="500" step="10" style="width:60px;"></span></div>'+
+        '<div class="rule-row"><span class="rule-k">Status</span><span class="rule-v" style="color:'+(r.is_active?'#2E7D32':'#E65100')+';font-weight:600;">'+(r.is_active?'✅ Active':'⏸️ Paused')+'</span></div>'+
+        '<div style="margin-top:6px;"><span class="rule-k">Products</span><div class="tags">'+products.map(p=>'<span class="tag">'+p.replace(/_/g,' ')+'</span>').join('')+'</div></div>'+
+        '<button class="btn-save" onclick="saveRules()">💾 Save Rules</button>'+
+        '<div class="confirm" id="saveConfirm">✅ Rules saved!</div>';
+}
+
+function renderFeed(events){
+    if(!events.length) return '<div class="empty"><div class="big">📭</div><p>No events yet</p></div>';
+    return events.map(e=>'<div class="feed-item"><span class="feed-time">'+(e.timestamp||'')+'</span><span class="feed-icon">'+(e.icon||'📋')+'</span><span class="feed-msg">'+(e.message||'')+'</span></div>').join('');
+}
+
+function renderHourlyChart(hourly, category){
+    const el=document.getElementById('hourlyChart');
+    if(!el)return;
+    let maxH=0;
+    for(let h=0;h<24;h++) maxH=Math.max(maxH,(hourly[h]||0));
+    const now=new Date().getHours();
+    const colors={cafe:'#795548',restaurant:'#E65100',bakery:'#FF8F00',bar:'#9C27B0',book_store:'#1565C0'};
+    const color=colors[category]||'#795548';
+    
+    let html='';
+    for(let h=0;h<24;h++){
+        const cnt=hourly[h]||0;
+        const pct=maxH>0?(cnt/maxH*100):2;
+        const quiet=cnt<maxH*0.3;
+        const isCurrent=h===now;
+        html+='<div class="hbar" style="height:'+Math.max(2,pct)+'%;background:'+(isCurrent?'#E65100':(quiet?'#FFCCBC':color))+';"><div class="tip">'+h+':00 — '+cnt+' tx'+(quiet?' ⚠️ quiet':'')+'</div></div>';
+    }
+    el.innerHTML=html;
+}
+
+async function saveRules(){
+    if(!currentMerchant)return;
+    const body={
+        max_discount_percent:parseInt(document.getElementById('rDisc').value),
+        target:document.getElementById('rTarget').value,
+        brand_tone:document.getElementById('rTone').value,
+        daily_budget_eur:parseFloat(document.getElementById('rBudget').value),
+    };
+    try{
+        const r=await fetch(API+'/merchants/'+currentMerchant+'/rules',{
+            method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)
+        });
+        const d=await r.json();
+        const c=document.getElementById('saveConfirm');
+        c.style.display='block';
+        setTimeout(()=>{c.style.display='none';},3000);
+    }catch(e){alert('Save error: '+e.message);}
+}
+
+async function redeemOffer(){
+    const token=document.getElementById('redeemToken').value.trim();
+    const amount=parseFloat(document.getElementById('redeemAmount').value)||4.50;
+    if(!token){alert('Enter token');return;}
+    
+    try{
+        // We need to find the offer_id from the token — use a generic endpoint
+        const r=await fetch(API+'/offers/unknown/redeem',{
+            method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({token,transaction_amount:amount})
+        });
+        const d=await r.json();
+        const el=document.getElementById('redeemResult');
+        if(d.status==='redeemed'){
+            el.innerHTML='<div class="redeem-result" style="background:#E8F5E9;color:#2E7D32;"><div style="font-size:20px;">🎉</div><b>Redeemed!</b><br>Discount: €'+d.discount_applied+' · Cashback: €'+d.cashback_credited+'<br>Wallet: €'+d.wallet_new_balance+'</div>';
+        }else{
+            el.innerHTML='<div class="redeem-result" style="background:#FFEBEE;color:#C62828;">❌ '+d.message+'</div>';
+        }
+    }catch(e){
+        document.getElementById('redeemResult').innerHTML='<div class="redeem-result" style="background:#FFEBEE;color:#C62828;">Error: '+e.message+'</div>';
+    }
+}
+
+init();
+</script>
+</body>
+</html>

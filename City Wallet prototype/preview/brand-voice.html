@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Voice</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  .row { display: grid; grid-template-columns: 70px 1fr; gap: 14px; padding: 10px 0; border-bottom: 1px dashed var(--stroke-1); }
+  .row:last-child { border-bottom: none; }
+  .tag { font-family: var(--font-mono); font-size: 11px; }
+  .tag.bad { color: #DE350B; }
+  .tag.ok { color: #00875A; }
+  .quote { font-size: 14px; color: var(--fg-1); }
+  .quote.muted { color: var(--fg-3); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Voice · Calm with controlled warmth</div>
+    <div class="card__sub">DE primary · EN secondary</div>
+  </div>
+  <div class="row"><div class="tag bad">✕ heiß</div><div class="quote muted">„Cold outside? Your cappuccino is waiting 🥺"</div></div>
+  <div class="row"><div class="tag bad">✕ kalt</div><div class="quote muted">„15% off Café Müller, 300m"</div></div>
+  <div class="row"><div class="tag ok">✓ DE</div><div class="quote">„Es regnet. Heißer Kaffee, 80 m. — Café Lotte, −15 % bis 13:00."</div></div>
+  <div class="row"><div class="tag ok">✓ EN</div><div class="quote">„Raining. Hot coffee, 80 m away. — Café Lotte, −15 % until 13:00."</div></div>
+</div>
+</body>
+</html>

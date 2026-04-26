@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Phase 3 · KI-Transparenz — City Wallet</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="phase3.css">
+
+<style>
+/* ───────── Phase 3 specific ───────── */
+.browser__stage { grid-template-columns: max-content; }
+
+/* Settings sub-page header */
+.settings-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 6px 16px 14px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.settings-head__back {
+  width: 32px; height: 32px;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.settings-head__back svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.settings-head__crumb {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-tertiary); margin-bottom: 1px;
+}
+.settings-head__title { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+
+/* Page intro */
+.ki-intro {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface);
+}
+.ki-intro__law {
+  font-family: var(--font-mono); font-size: 9.5px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-tertiary); margin-bottom: 8px;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.ki-intro__law::before {
+  content: ""; width: 14px; height: 1px; background: currentColor;
+}
+.ki-intro__text {
+  font-size: 13px; line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 0;
+  text-wrap: pretty;
+}
+.ki-intro__text b { color: var(--text-primary); font-weight: 600; }
+
+/* Two contrast lists */
+.ki-lists {
+  padding: 4px 16px 16px;
+  background: var(--surface);
+}
+.ki-list {
+  border-top: 1px solid var(--border-subtle);
+  padding: 14px 0 8px;
+}
+.ki-list__head {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+}
+.ki-list__sym {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+  flex-shrink: 0;
+}
+.ki-list__sym--yes { background: var(--ink); color: #fff; }
+.ki-list__sym--no  {
+  background: transparent; color: var(--text-secondary);
+  border: 1.5px solid var(--text-secondary);
+}
+.ki-list__sym--no::before { content: "✕"; font-size: 9px; line-height: 1; }
+.ki-list__sym--yes::before { content: "✓"; font-size: 10px; line-height: 1; }
+.ki-list__title {
+  font-size: 13px; font-weight: 600; letter-spacing: -0.005em;
+  color: var(--text-primary);
+}
+.ki-list__title em {
+  font-style: normal; color: var(--text-tertiary);
+  font-weight: 500; font-size: 12px;
+}
+
+.ki-row {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 16px; align-items: start;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border-subtle);
+}
+.ki-row:last-child { border-bottom: none; }
+.ki-row__lbl {
+  font-size: 12.5px; font-weight: 500; color: var(--text-primary);
+  line-height: 1.35;
+}
+.ki-row__lbl em {
+  display: block; font-style: normal;
+  font-size: 11px; font-weight: 400;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+.ki-row__val {
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--text-secondary);
+  text-align: right;
+  white-space: nowrap;
+}
+.ki-row__val--mute { color: var(--text-tertiary); }
+
+/* Anti-discrimination block */
+.ki-statement {
+  margin: 14px 16px 0;
+  padding: 14px;
+  border: 1px solid var(--border-subtle);
+  border-left: 3px solid var(--ink);
+  background: var(--surface);
+  border-radius: var(--radius-md);
+}
+.ki-statement__head {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-tertiary); margin-bottom: 6px;
+}
+.ki-statement__text {
+  font-size: 13px; line-height: 1.5;
+  color: var(--text-primary);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+/* Actions list */
+.ki-actions {
+  margin: 14px 16px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.ki-action {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 12px; align-items: center;
+  padding: 14px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: transparent;
+  border-left: none; border-right: none; border-top: none;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.ki-action:last-child { border-bottom: none; }
+.ki-action__main {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.ki-action__title {
+  font-size: 13.5px; font-weight: 600;
+  color: var(--text-primary);
+}
+.ki-action__title--primary { color: var(--brand-red-deep); }
+.ki-action__sub {
+  font-size: 11.5px; color: var(--text-tertiary);
+  line-height: 1.35;
+}
+.ki-action__chev {
+  color: var(--text-tertiary);
+}
+.ki-action__chev svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ki-action__pill {
+  font-family: var(--font-mono);
+  font-size: 9.5px; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-default);
+  padding: 3px 6px; border-radius: 3px;
+}
+
+/* Footer audit line */
+.ki-audit {
+  padding: 0 16px 24px;
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text-tertiary); letter-spacing: 0.04em;
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.ki-audit b { color: var(--text-secondary); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="meta">
+    <div>
+      <div class="meta__id">Phase 3 · Consumer · Compliance</div>
+      <h1 class="meta__title">EU AI Act · Transparenz</h1>
+      <p class="meta__sub">U-9b · Eine Settings-Unterseite. Faktenzeile, kein Marketing. Zwei kontrastive Listen — was die KI weiß, was nicht. Drei Aktionen, eine davon Pause.</p>
+    </div>
+    <div></div>
+    <span class="meta__phase">Phase 3 · for review</span>
+  </header>
+
+  <div class="browser">
+    <div class="browser__bar">
+      <div class="browser__lights"><span></span><span></span><span></span></div>
+      <div class="browser__url">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <span>app.citywallet.de<b>/einstellungen/ki-transparenz</b></span>
+      </div>
+      <div style="width:120px"></div>
+    </div>
+    <div class="browser__tabs">
+      <div class="browser__tab browser__tab--active">
+        <span style="width:6px;height:6px;border-radius:50%;background:#FF0000;"></span>
+        City Wallet — KI-Transparenz
+      </div>
+      <div class="browser__tab">+</div>
+    </div>
+
+    <div class="browser__stage">
+
+      <!-- Role switcher (read-only on Phase 3) -->
+      <div class="role-switcher">
+        <button class="active" type="button"><span class="dot"></span>Mia · Kundin</button>
+        <span class="swap">⇄</span>
+        <button type="button">Café Müller · Händlerin</button>
+      </div>
+
+      <!-- ════════════════════════════════════════════ -->
+      <!-- U-9b · KI-TRANSPARENZ -->
+      <!-- ════════════════════════════════════════════ -->
+      <div class="phone-wrap">
+        <div class="phone-label"><span class="phone-label__num">U-9b</span>Einstellungen · KI-Transparenz</div>
+        <div class="phone">
+          <div class="phone__screen">
+            <div class="statusbar">
+              <div class="statusbar__notch"></div>
+              <span>14:30</span>
+              <div class="statusbar__icons">
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+                <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx="0.5" fill="currentColor" fill-opacity="0.4"/></svg>
+              </div>
+            </div>
+
+            <div class="app">
+              <!-- Settings sub-page header replaces the topbar wordmark -->
+              <div class="settings-head">
+                <span class="settings-head__back">
+                  <svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+                </span>
+                <div>
+                  <div class="settings-head__crumb">Einstellungen</div>
+                  <div class="settings-head__title">KI-Transparenz</div>
+                </div>
+              </div>
+
+              <div class="app__body" style="padding:0">
+
+                <!-- Intro: factual, no marketing -->
+                <div class="ki-intro">
+                  <div class="ki-intro__law">EU-Verordnung 2024/1689 · KI-Verordnung · Art. 13</div>
+                  <p class="ki-intro__text">
+                    City Wallet nutzt ein <b>System mit begrenztem Risiko</b>, um dir Angebote vorzuschlagen. Du hast das Recht zu wissen, welche Daten dafür verarbeitet werden — und welche nicht.
+                  </p>
+                </div>
+
+                <!-- Two contrast lists -->
+                <div class="ki-lists">
+
+                  <div class="ki-list">
+                    <div class="ki-list__head">
+                      <span class="ki-list__sym ki-list__sym--yes"></span>
+                      <span class="ki-list__title">Was das System verwendet <em>· verarbeitet im Gerät und auf EU-Servern</em></span>
+                    </div>
+                    <div class="ki-row">
+                      <div class="ki-row__lbl">Standort auf Stadtteil-Ebene<em>z. B. „Stuttgart-Mitte" — keine Adresse, keine Route</em></div>
+                      <div class="ki-row__val">Stadtteil</div>
+                    </div>
+                    <div class="ki-row">
+                      <div class="ki-row__lbl">Bewegungstempo<em>stehend, gehend, fahrend — ohne Wegverlauf</em></div>
+                      <div class="ki-row__val">Tempo</div>
+                    </div>
+                    <div class="ki-row">
+                      <div class="ki-row__lbl">Bisher angenommene Angebote<em>aus den letzten 90 Tagen</em></div>
+                      <div class="ki-row__val">90 Tage</div>
+                    </div>
+                    <div class="ki-row">
+                      <div class="ki-row__lbl">Tageszeit, Wochentag, Wetter<em>öffentliche Kontextdaten</em></div>
+                      <div class="ki-row__val">Kontext</div>
+                    </div>
+                    <div class="ki-row">
+                      <div class="ki-row__lbl">Selbst gewählte Vorlieben<em>z. B. „kein Alkohol", „nur vegetarisch"</em></div>
+                      <div class="ki-row__val">Eingaben</div>
+                    </div>
+                  </div>
+
+                  <div class="ki-list">
+                    <div class="ki-list__head">
+                      <span class="ki-list__sym ki-list__sym--no"></span>
+                      <span class="ki-list__title">Was das System nicht erhält <em>· technisch entkoppelt</em></span>
+                    </div>
+                    <div class="ki-row">
+                      <div class="ki-row__lbl">Name, E-Mail, Telefonnummer</div>
+                      <div class="ki-row__val ki-row__val--mute">— niemals</div>
+                    </div>
+                    <div class="ki-row">
+                      <div class="ki-row__lbl">Genaue Adresse, GPS-Position, Wegverlauf</div>
+                      <div class="ki-row__val ki-row__val--mute">— niemals</div>
+                    </div>
+                    <div class="ki-row">
+                      <div class="ki-row__lbl">Zahlungs- oder Bankdaten</div>
+                      <div class="ki-row__val ki-row__val--mute">— niemals</div>
+                    </div>
+                    <div class="ki-row">
+                      <div class="ki-row__lbl">Inhalte aus anderen Apps oder dem Browser</div>
+                      <div class="ki-row__val ki-row__val--mute">— niemals</div>
+                    </div>
+                    <div class="ki-row">
+                      <div class="ki-row__lbl">Daten von Dritten (Werbenetzwerke, Datenhändler)</div>
+                      <div class="ki-row__val ki-row__val--mute">— niemals</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Anti-discrimination statement -->
+                <div class="ki-statement">
+                  <div class="ki-statement__head">Diskriminierungsfreiheit · § 4</div>
+                  <p class="ki-statement__text">
+                    Das System trifft keine Entscheidungen anhand von Geschlecht, Alter, Herkunft, Religion, Gesundheit oder politischer Einstellung. Diese Merkmale werden weder erhoben noch abgeleitet. Eine externe Prüfstelle bestätigt das jährlich.
+                  </p>
+                </div>
+
+                <!-- Actions -->
+                <div class="ki-actions">
+                  <button class="ki-action" type="button">
+                    <div class="ki-action__main">
+                      <span class="ki-action__title ki-action__title--primary">KI-Empfehlungen pausieren</span>
+                      <span class="ki-action__sub">Du erhältst weiter Angebote — aber rein chronologisch, ohne Personalisierung.</span>
+                    </div>
+                    <span class="ki-action__pill">Aus</span>
+                  </button>
+                  <button class="ki-action" type="button">
+                    <div class="ki-action__main">
+                      <span class="ki-action__title">Beschwerde einreichen</span>
+                      <span class="ki-action__sub">An die zuständige Marktaufsichtsbehörde nach Art. 85 EU-KI-VO.</span>
+                    </div>
+                    <span class="ki-action__chev"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                  </button>
+                  <button class="ki-action" type="button">
+                    <div class="ki-action__main">
+                      <span class="ki-action__title">Mehr zur EU-KI-Verordnung</span>
+                      <span class="ki-action__sub">Verlinkt auf den offiziellen Volltext (eur-lex.europa.eu).</span>
+                    </div>
+                    <span class="ki-action__chev"><svg viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></span>
+                  </button>
+                </div>
+
+                <!-- Audit footer -->
+                <div class="ki-audit">
+                  <span><b>Modell-ID</b> cw-reco-v3.1</span>
+                  <span><b>Letzte Prüfung</b> 14.06.2025</span>
+                  <span><b>Verantwortlich</b> City Wallet GmbH, Stuttgart</span>
+                </div>
+              </div>
+
+              <nav class="tabbar">
+                <a class="tabbar__item" href="#">
+                  <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+                  Start
+                </a>
+                <a class="tabbar__item" href="#">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>
+                  Wallet
+                </a>
+                <a class="tabbar__item tabbar__item--active" href="#">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  Einstellungen<span class="tabbar__dot"></span>
+                </a>
+              </nav>
+            </div>
+
+            <div class="home-indicator"><span></span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Designer notes -->
+  <section style="margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:24px;font-size:13px;color:var(--text-secondary);line-height:1.55">
+    <div>
+      <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:8px">Tonalität</div>
+      <p style="margin:0;text-wrap:pretty">Bewusst trocken. Kein „Deine Privatsphäre ist uns wichtig". Stattdessen: Paragraphen, Stadtteil-Ebene, „— niemals" als monospace-Token. Der EU-Verordnungs-Stempel oben verankert das Ganze als juristische Auskunft, nicht als Verkaufsfläche. Stadt-Affiniät bleibt durch Behörden-DNA erhalten.</p>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:8px">Judgment Calls</div>
+      <ul style="margin:0;padding-left:18px">
+        <li><b>Audit-Footer</b><span> · Modell-ID + letzte Prüfung sind nicht in der Spec — aber bei einer Behörden-konformen Auskunft erwartet ein deutscher Nutzer einen Verantwortlichen. Bitte fix oder raus, wenn juristisch heikel.</span></li>
+        <li><b>Pause als Aktion-1</b><span> · Spec ordnet Pause/Beschwerde/Mehr — Pause ist die einzige, die etwas tut, deshalb optisch leicht hervorgehoben (rote Schrift, Pille rechts).</span></li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+</body>
+</html>

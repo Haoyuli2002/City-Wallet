@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Radii</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  .row5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+  .item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .shape { width: 100%; aspect-ratio: 1.4 / 1; background: var(--bg-2); border: 1px solid var(--stroke-1); }
+  .name { font-family: var(--font-mono); font-size: 11px; color: var(--fg-1); }
+  .px { font-family: var(--font-mono); font-size: 10px; color: var(--fg-3); }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Radii · Geometric, not playful</div>
+    <div class="card__sub">md = inputs · lg = cards · xl = pills</div>
+  </div>
+  <div class="row5">
+    <div class="item"><div class="shape" style="border-radius:8px"></div><div class="name">sm</div><div class="px">8 px</div></div>
+    <div class="item"><div class="shape" style="border-radius:12px"></div><div class="name">md</div><div class="px">12 px</div></div>
+    <div class="item"><div class="shape" style="border-radius:16px"></div><div class="name">lg</div><div class="px">16 px</div></div>
+    <div class="item"><div class="shape" style="border-radius:24px"></div><div class="name">xl</div><div class="px">24 px</div></div>
+    <div class="item"><div class="shape" style="border-radius:9999px"></div><div class="name">full</div><div class="px">9999 px</div></div>
+  </div>
+</div>
+</body>
+</html>

@@ -15,13 +15,19 @@ router = APIRouter(tags=["Merchants"])
 
 
 @router.get("/merchants")
-async def list_merchants():
-    """List all merchants (for login/selection screen)."""
+async def list_merchants(city: str = None):
+    """List all merchants (for login/selection screen). Filter by city if provided."""
     db = await get_db()
     try:
-        cursor = await db.execute(
-            "SELECT id, name, category, address, rating, photo_url FROM merchants ORDER BY name"
-        )
+        if city:
+            cursor = await db.execute(
+                "SELECT id, name, category, address, rating, photo_url, city FROM merchants WHERE city = ? ORDER BY name",
+                [city]
+            )
+        else:
+            cursor = await db.execute(
+                "SELECT id, name, category, address, rating, photo_url, city FROM merchants ORDER BY city, name"
+            )
         rows = await cursor.fetchall()
         return [dict(row) for row in rows]
     finally:
@@ -159,14 +165,39 @@ async def get_analytics(merchant_id: str, period: str = "today"):
         dismissed = status_counts.get("dismissed", 0)
         expired = status_counts.get("expired", 0)
 
-        # If no real offers yet, show simulated data
+        # If no real offers yet, use deterministic simulated data.
+        # Seeded by merchant_id hash so each merchant has consistent numbers.
+        # Period multipliers ensure: month > week > today always.
         if generated == 0:
-            generated = random.randint(20, 35)
-            displayed = int(generated * random.uniform(0.65, 0.85))
-            accepted = int(displayed * random.uniform(0.25, 0.45))
-            dismissed = int(displayed * random.uniform(0.15, 0.30))
-            expired = max(0, displayed - accepted - dismissed)
-            redeemed = int(accepted * random.uniform(0.55, 0.85))
+            # Deterministic seed from merchant_id
+            seed = int(abs(hash(merchant_id)) % 10000)
+            
+            # Base numbers for "today"
+            base_generated = 20 + (seed % 16)        # 20-35
+            base_displayed  = int(base_generated * (0.65 + (seed % 20) / 100))  # 65-85%
+            base_accepted   = int(base_displayed * (0.25 + (seed % 20) / 100))  # 25-45%
+            base_dismissed  = int(base_displayed * (0.15 + (seed % 15) / 100))  # 15-30%
+            base_expired    = max(0, base_displayed - base_accepted - base_dismissed)
+            base_redeemed   = int(base_accepted * (0.55 + (seed % 30) / 100))   # 55-85%
+            
+            # Period multipliers (month > week > today, always consistent)
+            multipliers = {"today": 1.0, "week": 7.0, "month": 28.0}
+            mult = multipliers.get(period, 1.0)
+            # Add small variation per period using seed to look natural
+            week_var  = 1.0 + ((seed % 10) - 5) / 100   # ±5%
+            month_var = 1.0 + ((seed % 14) - 7) / 100   # ±7%
+            
+            if period == "week":
+                mult = mult * week_var
+            elif period == "month":
+                mult = mult * month_var
+            
+            generated = int(base_generated * mult)
+            displayed = int(base_displayed * mult)
+            accepted  = int(base_accepted * mult)
+            dismissed = int(base_dismissed * mult)
+            expired   = int(base_expired * mult)
+            redeemed  = int(base_redeemed * mult)
 
         # Rates
         acceptance_rate = round(accepted / max(displayed, 1), 2)
@@ -184,10 +215,13 @@ async def get_analytics(merchant_id: str, period: str = "today"):
         total_tx_value = rev["total_tx"] if rev else 0
         total_discount = rev["total_disc"] if rev else 0
 
-        # If no real redemptions, simulate
+        # If no real redemptions, simulate with deterministic values
         if total_tx_value == 0 and redeemed > 0:
-            total_tx_value = round(redeemed * random.uniform(4, 15), 2)
-            total_discount = round(total_tx_value * 0.12, 2)
+            seed = int(abs(hash(merchant_id)) % 10000)
+            avg_tx = 5.0 + (seed % 100) / 10.0   # €5.00-14.99 average transaction
+            total_tx_value = round(redeemed * avg_tx, 2)
+            discount_pct = 0.10 + (seed % 10) / 100.0   # 10-20% discount
+            total_discount = round(total_tx_value * discount_pct, 2)
 
         incremental = round(total_tx_value - total_discount, 2)
         cpa = round(total_discount / max(redeemed, 1), 2)

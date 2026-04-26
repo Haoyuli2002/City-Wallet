@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Status states</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .tile { border-radius: 12px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+  .tile svg { width: 20px; height: 20px; flex-shrink: 0; stroke: currentColor; fill: none; stroke-width: 2; margin-top: 1px; }
+  .tile h5 { margin: 0 0 2px; font-size: 14px; font-weight: 600; }
+  .tile p { margin: 0; font-size: 13px; color: #4A4A4A; }
+  .success { background: #E3FCEF; color: #00875A; }
+  .warning { background: #FFF4E5; color: #C95A0F; }
+  .error { background: #FDEBE7; color: #DE350B; }
+  .neutral { background: #F5F5F5; color: #4A4A4A; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Status · Inline messages</div>
+    <div class="card__sub">No animation, no icons-with-circles</div>
+  </div>
+  <div class="grid">
+    <div class="tile success">
+      <svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+      <div><h5>Eingelöst um 12:47</h5><p style="color:inherit;opacity:0.75">0,80 € Cashback gutgeschrieben</p></div>
+    </div>
+    <div class="tile warning">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <div><h5>noch 4 Min.</h5><p style="color:inherit;opacity:0.8">Angebot läuft um 13:00 ab</p></div>
+    </div>
+    <div class="tile error">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16v.01"/></svg>
+      <div><h5>Code abgelaufen</h5><p style="color:inherit;opacity:0.8">Bitte neu generieren</p></div>
+    </div>
+    <div class="tile neutral">
+      <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      <div><h5>Auf Ihrem Gerät</h5><p style="color:inherit;opacity:0.8">Keine Daten an Server gesendet</p></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

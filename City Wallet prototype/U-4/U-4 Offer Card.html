@@ -1,0 +1,1120 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>U-4 · Angebotskarte (GenUI Hero) — City Wallet</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="design-tokens.css">
+
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--text-primary);
+    background:
+      radial-gradient(circle at 20% 0%, #F2F2F2 0%, transparent 40%),
+      radial-gradient(circle at 80% 100%, #EFEFEF 0%, transparent 40%),
+      #F7F7F7;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .page {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 32px 32px 64px;
+  }
+
+  /* ─── Wireframe meta header (junior-designer notes) ─── */
+  .meta {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: end;
+    gap: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 40px;
+  }
+  .meta__id {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+  }
+  .meta__title {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin: 4px 0 0;
+  }
+  .meta__sub {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+    max-width: 520px;
+  }
+  .meta__phase {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    border: 1px solid var(--border-default);
+    padding: 6px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── Browser chrome ─── */
+  .browser {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.08), 0 1px 0 rgba(0,0,0,0.04);
+    border: 1px solid var(--border-subtle);
+    position: relative;
+  }
+  .browser__bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #ECECEC;
+    border-bottom: 1px solid #DCDCDC;
+  }
+  .browser__lights { display: flex; gap: 7px; }
+  .browser__lights span {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #D4D4D4;
+  }
+  .browser__lights span:nth-child(1) { background: #FF5F57; }
+  .browser__lights span:nth-child(2) { background: #FEBC2E; }
+  .browser__lights span:nth-child(3) { background: #28C840; }
+  .browser__url {
+    flex: 1;
+    height: 28px;
+    background: #FFFFFF;
+    border: 1px solid #D4D4D4;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .browser__url svg { flex-shrink: 0; }
+  .browser__url b { color: var(--text-primary); font-weight: 500; }
+  .browser__tabs {
+    display: flex;
+    gap: 0;
+    padding: 0 10px;
+    background: #ECECEC;
+    border-bottom: 1px solid #DCDCDC;
+  }
+  .browser__tab {
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    border-right: 1px solid #DCDCDC;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .browser__tab--active {
+    background: #fff;
+    color: var(--text-primary);
+    border-top: 2px solid var(--brand-red);
+    margin-top: -1px;
+    padding-top: 7px;
+  }
+  .browser__stage {
+    position: relative;
+    background:
+      linear-gradient(#FAFAFA 1px, transparent 1px) 0 0 / 24px 24px,
+      linear-gradient(90deg, #FAFAFA 1px, transparent 1px) 0 0 / 24px 24px,
+      #FFFFFF;
+    padding: 56px 40px 64px;
+    min-height: 920px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+
+  /* ─── Role switcher pill (floats outside phones) ─── */
+  .role-switcher {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    display: inline-flex;
+    align-items: stretch;
+    background: #fff;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-full);
+    padding: 4px;
+    box-shadow: var(--shadow-sm);
+    z-index: 5;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .role-switcher button {
+    border: none;
+    background: transparent;
+    padding: 6px 12px;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font: inherit;
+  }
+  .role-switcher button.active {
+    background: var(--ink);
+    color: #fff;
+  }
+  .role-switcher .swap {
+    align-self: center;
+    color: var(--text-tertiary);
+    padding: 0 6px;
+    font-size: 12px;
+  }
+  .role-switcher .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--brand-red);
+    display: inline-block;
+  }
+
+  /* ─── Phone mockup ─── */
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .phone-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .phone-label__num {
+    background: var(--ink);
+    color: #fff;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: var(--font-sans);
+    letter-spacing: 0;
+  }
+
+  .phone {
+    width: 380px;
+    height: 820px;
+    border-radius: 48px;
+    background: #0A0A0A;
+    padding: 10px;
+    box-shadow:
+      0 30px 60px -20px rgba(0,0,0,0.25),
+      0 18px 36px -18px rgba(0,0,0,0.2),
+      inset 0 0 0 1px rgba(255,255,255,0.08);
+    position: relative;
+  }
+  .phone__screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 38px;
+    background: var(--surface);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Static fake status bar */
+  .statusbar {
+    height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-feature-settings: var(--font-feature-numeric);
+    position: relative;
+  }
+  .statusbar__notch {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 30px;
+    border-radius: 20px;
+    background: #0A0A0A;
+  }
+  .statusbar__icons {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .statusbar__icons svg { display: block; }
+
+  /* Home indicator */
+  .home-indicator {
+    height: 24px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 8px;
+  }
+  .home-indicator span {
+    width: 134px;
+    height: 5px;
+    border-radius: 99px;
+    background: var(--ink);
+  }
+
+  /* ─── App chrome inside phone ─── */
+  .app {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background: var(--surface-sunken);
+  }
+  .app__topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 20px 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .app__wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .app__wordmark::before {
+    content: "";
+    width: 10px; height: 10px;
+    background: var(--brand-red);
+    display: inline-block;
+    transform: translateY(1px);
+  }
+  .app__wordmark span { color: var(--text-tertiary); font-weight: 500; font-size: 12px; letter-spacing: 0; }
+  .app__icons {
+    display: inline-flex;
+    gap: 12px;
+    color: var(--text-secondary);
+  }
+  .app__icons svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+  .app__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px 20px;
+  }
+
+  /* ─── The OFFER CARD itself ─── */
+  .offer {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    font-feature-settings: var(--font-feature-numeric);
+    position: relative;
+  }
+  .offer__strip {
+    height: 4px;
+    background: var(--brand-red);
+  }
+  .offer__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px 0;
+  }
+  .icon-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--surface-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+  }
+  .icon-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--brand-red-soft);
+    color: var(--brand-red-deep);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 6px 11px;
+    border-radius: var(--radius-full);
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .ai-badge svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+  .offer__hero {
+    margin: 12px 16px 0;
+    height: 200px;
+    border-radius: var(--radius-md);
+    background:
+      repeating-linear-gradient(
+        135deg,
+        #EFEFEF 0 12px,
+        #F7F7F7 12px 24px
+      );
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .offer__hero-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: rgba(255,255,255,0.85);
+    padding: 6px 10px;
+    border-radius: 4px;
+  }
+  .offer__hero-corner {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-tertiary);
+    background: rgba(255,255,255,0.9);
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+
+  .offer__pad { padding: 18px 20px 20px; }
+
+  .trigger-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--brand-red-soft);
+    color: var(--brand-red-deep);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 11px;
+    border-radius: var(--radius-full);
+    margin-bottom: 12px;
+  }
+  .trigger-pill svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .offer__headline {
+    font-size: 28px;
+    line-height: 1.1;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin: 0;
+  }
+  .offer__sub {
+    font-size: 17px;
+    line-height: 1.3;
+    color: var(--text-secondary);
+    margin: 6px 0 0;
+    font-weight: 400;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 16px 0;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+  .meta-row .sep {
+    color: var(--border-default);
+    font-weight: 400;
+  }
+  .meta-row .discount {
+    color: var(--brand-red-deep);
+    font-weight: 600;
+  }
+  .validity {
+    font-size: 13px;
+    color: var(--warning);
+    margin-top: 8px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .validity svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+  .cashback {
+    margin-top: 12px;
+    background: var(--success-soft);
+    border-radius: var(--radius-md);
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--text-primary);
+  }
+  .cashback__icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--success);
+    color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .cashback__icon svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .cashback b { font-weight: 600; }
+  .cashback__amount { color: var(--success); font-weight: 600; }
+
+  .cta {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px;
+    background: var(--brand-red);
+    color: var(--text-on-red);
+    border: none;
+    border-radius: var(--radius-xl);
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    font-family: inherit;
+    height: 48px;
+  }
+  .cta-secondary {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .gdpr {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 10px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    justify-content: center;
+  }
+  .gdpr svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+  /* ─── State (b): explanation overlay ─── */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background: var(--surface-overlay);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .sheet {
+    width: 100%;
+    background: var(--surface);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 20px 20px 24px;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.12);
+    max-height: 90%;
+    overflow-y: auto;
+  }
+  .sheet__handle {
+    width: 36px; height: 4px;
+    background: var(--border-default);
+    border-radius: 99px;
+    margin: 0 auto 14px;
+  }
+  .sheet__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .sheet__title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .sheet__close {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--surface-muted);
+    border: none;
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--text-secondary);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .sheet__close svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+  .sheet__lead {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 16px;
+    line-height: 1.45;
+  }
+
+  .reasons {
+    list-style: none;
+    margin: 0 0 16px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .reasons li {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--surface);
+  }
+  .reasons__icon {
+    width: 28px; height: 28px;
+    background: var(--surface-muted);
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+  }
+  .reasons__icon svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .reasons__txt {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .reasons__lbl {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+  }
+  .reasons__val {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .reasons__weight {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.04em;
+  }
+
+  .privacy {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    background: var(--surface-muted);
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    margin-bottom: 14px;
+  }
+  .privacy svg { width: 16px; height: 16px; stroke: var(--text-primary); fill: none; stroke-width: 2; flex-shrink: 0; margin-top: 2px; }
+  .privacy__txt {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+  }
+  .privacy__txt b { color: var(--text-primary); font-weight: 600; display: block; margin-bottom: 2px; }
+
+  .sheet__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sheet__btn {
+    padding: 12px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    border: 1px solid var(--border-default);
+    background: var(--surface);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .sheet__btn--ghost {
+    border: none;
+    color: var(--text-secondary);
+    background: transparent;
+  }
+
+  /* ─── Footnotes / specs ─── */
+  .specs {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .spec {
+    border-top: 1px solid var(--ink);
+    padding-top: 14px;
+  }
+  .spec__id {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+    margin-bottom: 6px;
+  }
+  .spec__title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .spec ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .spec li {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.45;
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 12px;
+  }
+  .spec li b {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .note {
+    margin-top: 32px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border-subtle);
+    border-left: 3px solid var(--brand-red);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    max-width: 760px;
+  }
+  .note b { color: var(--text-primary); font-weight: 600; }
+
+  @media (max-width: 980px) {
+    .browser__stage { padding: 32px 16px; gap: 32px; }
+    .specs { grid-template-columns: 1fr; }
+    .role-switcher { position: static; margin: 12px auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Wireframe meta -->
+  <header class="meta">
+    <div>
+      <div class="meta__id">U-4 · Consumer · Wireframe v1</div>
+      <h1 class="meta__title">Angebotskarte (GenUI Hero)</h1>
+      <p class="meta__sub">Die wichtigste Komponente der App. Eine kontextgenerierte Offerte, in 3 Sekunden lesbar. Zwei Zustände: (a) Standard, (b) KI-Erklärung aufgeklappt.</p>
+    </div>
+    <div></div>
+    <span class="meta__phase">Phase 1 · awaiting approval</span>
+  </header>
+
+  <!-- Browser chrome -->
+  <div class="browser">
+    <div class="browser__bar">
+      <div class="browser__lights"><span></span><span></span><span></span></div>
+      <div class="browser__url">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <span>app.citywallet.de<b>/wallet</b></span>
+      </div>
+      <div style="width:120px"></div>
+    </div>
+
+    <div class="browser__tabs">
+      <div class="browser__tab browser__tab--active">
+        <span style="width:6px;height:6px;border-radius:50%;background:#FF0000;"></span>
+        City Wallet — Wallet
+      </div>
+      <div class="browser__tab">+</div>
+    </div>
+
+    <div class="browser__stage">
+
+      <!-- Floating role switcher pill -->
+      <div class="role-switcher" role="group" aria-label="Rolle wechseln">
+        <button class="active" type="button">
+          <span class="dot"></span>
+          Mia · Kundin
+        </button>
+        <span class="swap">⇄</span>
+        <button type="button">
+          Café Müller · Händlerin
+        </button>
+      </div>
+
+      <!-- ─── State (a): Default offer card ─── -->
+      <div class="phone-wrap">
+        <div class="phone-label">
+          <span class="phone-label__num">a</span>
+          Standard · Angebot eingeblendet
+        </div>
+
+        <div class="phone">
+          <div class="phone__screen">
+            <!-- Status bar -->
+            <div class="statusbar">
+              <div class="statusbar__notch"></div>
+              <span>14:30</span>
+              <div class="statusbar__icons">
+                <!-- signal -->
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+                <!-- wifi -->
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+                <!-- battery -->
+                <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx="0.5" fill="currentColor" fill-opacity="0.4"/></svg>
+              </div>
+            </div>
+
+            <!-- App -->
+            <div class="app">
+              <div class="app__topbar">
+                <div class="app__wordmark">City Wallet <span>· Stuttgart</span></div>
+                <div class="app__icons">
+                  <!-- map -->
+                  <svg viewBox="0 0 24 24"><polygon points="3 6 9 4 15 6 21 4 21 18 15 20 9 18 3 20 3 6"/><line x1="9" y1="4" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="20"/></svg>
+                  <!-- bell -->
+                  <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                  <!-- profile -->
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                </div>
+              </div>
+
+              <div class="app__body">
+
+                <!-- THE OFFER CARD -->
+                <article class="offer">
+                  <div class="offer__strip"></div>
+
+                  <header class="offer__top">
+                    <button class="icon-btn" type="button" aria-label="Schließen">
+                      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                    </button>
+                    <button class="ai-badge" type="button">
+                      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10c.5-1.5 2-2.5 3.5-2 1.5.5 2 2 1 3.5L12 14"/><circle cx="12" cy="17.5" r="0.6" fill="currentColor"/></svg>
+                      KI · Warum das?
+                    </button>
+                  </header>
+
+                  <div class="offer__hero" role="img" aria-label="Bildplatzhalter">
+                    <span class="offer__hero-corner">340 × 200 · placeholder</span>
+                    <span class="offer__hero-label">Cappuccino · Café-Innenraum</span>
+                  </div>
+
+                  <div class="offer__pad">
+                    <span class="trigger-pill">
+                      <svg viewBox="0 0 24 24"><path d="M16 13a4 4 0 0 0 0-8 6 6 0 0 0-11.5 2A4 4 0 0 0 5 15"/><path d="M8 19v2M12 17v4M16 19v2"/></svg>
+                      Draußen kalt · 8 °C
+                    </span>
+
+                    <h2 class="offer__headline">Draußen kalt?</h2>
+                    <p class="offer__sub">Dein Cappuccino wartet schon.</p>
+
+                    <div class="divider"></div>
+
+                    <div class="meta-row">
+                      <span>Café Müller</span>
+                      <span class="sep">·</span>
+                      <span>80 m</span>
+                      <span class="sep">·</span>
+                      <span class="discount">−20 %</span>
+                    </div>
+
+                    <div class="validity">
+                      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                      Gültig 15 Min.
+                    </div>
+
+                    <div class="cashback">
+                      <span class="cashback__icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                      </span>
+                      <div>Du erhältst <span class="cashback__amount">0,80 €</span> Cashback</div>
+                    </div>
+
+                    <div class="divider"></div>
+
+                    <button class="cta" type="button">Einlösen</button>
+                    <button class="cta-secondary" type="button">Nicht jetzt</button>
+
+                    <div class="gdpr">
+                      <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                      Lokal auf deinem Gerät verarbeitet
+                    </div>
+                  </div>
+                </article>
+
+              </div>
+            </div>
+
+            <!-- Home indicator -->
+            <div class="home-indicator"><span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── State (b): AI explanation overlay ─── -->
+      <div class="phone-wrap">
+        <div class="phone-label">
+          <span class="phone-label__num">b</span>
+          KI-Badge angetippt · Erklärung
+        </div>
+
+        <div class="phone">
+          <div class="phone__screen">
+            <!-- Status bar -->
+            <div class="statusbar">
+              <div class="statusbar__notch"></div>
+              <span>14:30</span>
+              <div class="statusbar__icons">
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+                <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx="0.5" fill="currentColor" fill-opacity="0.4"/></svg>
+              </div>
+            </div>
+
+            <div class="app">
+              <div class="app__topbar">
+                <div class="app__wordmark">City Wallet <span>· Stuttgart</span></div>
+                <div class="app__icons">
+                  <svg viewBox="0 0 24 24"><polygon points="3 6 9 4 15 6 21 4 21 18 15 20 9 18 3 20 3 6"/><line x1="9" y1="4" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="20"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                </div>
+              </div>
+
+              <div class="app__body">
+                <!-- Dimmed offer card behind -->
+                <article class="offer" style="opacity:0.45;">
+                  <div class="offer__strip"></div>
+                  <header class="offer__top">
+                    <button class="icon-btn" type="button"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+                    <button class="ai-badge" type="button" style="background:var(--brand-red);color:#fff;">
+                      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 10c.5-1.5 2-2.5 3.5-2 1.5.5 2 2 1 3.5L12 14"/><circle cx="12" cy="17.5" r="0.6" fill="currentColor"/></svg>
+                      KI · Warum das?
+                    </button>
+                  </header>
+                  <div class="offer__hero" role="img"><span class="offer__hero-label">Cappuccino · Café-Innenraum</span></div>
+                  <div class="offer__pad">
+                    <span class="trigger-pill"><svg viewBox="0 0 24 24"><path d="M16 13a4 4 0 0 0 0-8 6 6 0 0 0-11.5 2A4 4 0 0 0 5 15"/></svg>Draußen kalt · 8 °C</span>
+                    <h2 class="offer__headline">Draußen kalt?</h2>
+                    <p class="offer__sub">Dein Cappuccino wartet schon.</p>
+                  </div>
+                </article>
+              </div>
+
+              <!-- Scrim + sheet -->
+              <div class="scrim">
+                <div class="sheet">
+                  <div class="sheet__handle"></div>
+
+                  <div class="sheet__head">
+                    <h3 class="sheet__title">Warum siehst du dieses Angebot?</h3>
+                    <button class="sheet__close" type="button" aria-label="Schließen">
+                      <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                    </button>
+                  </div>
+
+                  <p class="sheet__lead">Die KI hat vier Signale kombiniert. Du kannst jedes Signal einzeln deaktivieren.</p>
+
+                  <ul class="reasons">
+                    <li>
+                      <span class="reasons__icon">
+                        <svg viewBox="0 0 24 24"><path d="M16 13a4 4 0 0 0 0-8 6 6 0 0 0-11.5 2A4 4 0 0 0 5 15"/><path d="M8 19v2M12 17v4M16 19v2"/></svg>
+                      </span>
+                      <span class="reasons__txt">
+                        <span class="reasons__lbl">Wetter</span>
+                        <span class="reasons__val">Stuttgart · 8 °C, leichter Regen</span>
+                      </span>
+                      <span class="reasons__weight">+++</span>
+                    </li>
+                    <li>
+                      <span class="reasons__icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                      </span>
+                      <span class="reasons__txt">
+                        <span class="reasons__lbl">Tageszeit</span>
+                        <span class="reasons__val">Mittagspause · 14:30 Uhr</span>
+                      </span>
+                      <span class="reasons__weight">++</span>
+                    </li>
+                    <li>
+                      <span class="reasons__icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 12h3l3-9 6 18 3-9h3"/></svg>
+                      </span>
+                      <span class="reasons__txt">
+                        <span class="reasons__lbl">Händlersignal</span>
+                        <span class="reasons__val">Café Müller · momentan ruhig</span>
+                      </span>
+                      <span class="reasons__weight">++</span>
+                    </li>
+                    <li>
+                      <span class="reasons__icon">
+                        <svg viewBox="0 0 24 24"><path d="M20.84 4.6a5.5 5.5 0 0 0-7.78 0L12 5.7l-1.06-1.1a5.5 5.5 0 0 0-7.78 7.8l1.06 1 7.78 7.8 7.78-7.8 1.06-1a5.5 5.5 0 0 0 0-7.8z"/></svg>
+                      </span>
+                      <span class="reasons__txt">
+                        <span class="reasons__lbl">Deine Vorlieben</span>
+                        <span class="reasons__val">Kaffee · 7× in 4 Wochen eingelöst</span>
+                      </span>
+                      <span class="reasons__weight">+</span>
+                    </li>
+                  </ul>
+
+                  <div class="privacy">
+                    <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                    <div class="privacy__txt">
+                      <b>Lokal auf deinem Gerät verarbeitet</b>
+                      Wetter, Standort und Vorlieben verlassen dein Telefon nicht. Nur die finale Auswahl wird an Café Müller übermittelt — erst nach dem Einlösen.
+                    </div>
+                  </div>
+
+                  <div class="sheet__actions">
+                    <button class="sheet__btn" type="button">Diese Signale anpassen</button>
+                    <button class="sheet__btn sheet__btn--ghost" type="button">Solche Angebote nicht mehr zeigen</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="home-indicator"><span></span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Spec footnotes -->
+  <section class="specs">
+    <div class="spec">
+      <div class="spec__id">01 · Tokens applied</div>
+      <div class="spec__title">Was aus dem Design-System kommt</div>
+      <ul>
+        <li><b>Color</b><span>--brand-red (Strip + CTA), --brand-red-deep (Trigger-Pill-Text), --brand-red-soft (Pill BG, AI-Badge), --warning (Gültigkeit), --success (Cashback), --surface, --surface-muted</span></li>
+        <li><b>Type</b><span>Inter · Headline 28 (≈ text-2xl), Subhead 17, Body 14 (text-sm), Pill 11 (text-xs uppercase). Tabular numerals an überall wo Zahlen.</span></li>
+        <li><b>Spacing</b><span>8-pt-Grid · Card padding --space-5, Stack gaps --space-3/--space-4, Phone gutter --space-4</span></li>
+        <li><b>Radii</b><span>Card --radius-lg (16), Button --radius-xl pill (24+), Hero --radius-md (12)</span></li>
+        <li><b>Elevation</b><span>--shadow-md auf der Karte, kein Glow im Ruhezustand</span></li>
+      </ul>
+    </div>
+
+    <div class="spec">
+      <div class="spec__id">02 · Intentional omissions</div>
+      <div class="spec__title">Was bewusst NICHT drin ist</div>
+      <ul>
+        <li><b>Branding</b><span>Kein Sparkassen-S-Logo — neutraler "City Wallet"-Wortmark, da diese Marke geschützt ist. Rot bleibt das Leitsignal.</span></li>
+        <li><b>Hero-Bild</b><span>Schraffierter Platzhalter statt AI-Stockbild; finales Bild kommt aus Händler-Asset-Pipeline.</span></li>
+        <li><b>Trigger-Pill</b><span>Spec hat nur Headline · ich habe einen Trigger-Pill ergänzt (steht im DS), weil sonst der Wetterkontext nur in der Headline implizit ist. Bitte freigeben oder weglassen.</span></li>
+        <li><b>Animationen</b><span>Keine — Wireframe. Press-State (scale 0.98 + red-glow) folgt im Hi-Fi-Mockup.</span></li>
+        <li><b>Map / Bell / Profile</b><span>Top-Bar-Icons sind angedeutet aber nicht funktional.</span></li>
+      </ul>
+    </div>
+
+    <div class="spec">
+      <div class="spec__id">03 · Suggested for Phase 2</div>
+      <div class="spec__title">Vorschlag, sobald du U-4 freigibst</div>
+      <ul>
+        <li><b>U-3 Start</b><span>4-Kachel-Grid Wetter / Standort / Intent / Händler · gleicher Karten-Body wie U-4 für Konsistenz, jeweils Tap → U-4.</span></li>
+        <li><b>U-5 Wallet</b><span>Eingelöste-Liste + Cashback-Saldo-Karte oben. Re-use Offer-Card-Compact-Variante.</span></li>
+        <li><b>U-6 QR</b><span>Vollbild · großer QR · Countdown 14 Min in --warning · Place-Hero unter QR.</span></li>
+        <li><b>U-2 Lock</b><span>Fake iOS-Lockscreen (Wallpaper Stuttgart-Skyline-Platzhalter) · Push-Banner gleitet ein, kein roter Dot.</span></li>
+        <li><b>Reihenfolge-Frage</b><span>Soll U-3 oder U-2 zuerst? U-2 ist der Einstiegspunkt im Storytelling, U-3 ist der App-State. Du entscheidest.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="note">
+    <b>Designer-Notiz zur Markennutzung:</b> Die Spec verweist auf "Sparkassen-Rot HKS 13 (#FF0000)" und das Sparkassen-S-Logo. Da City Wallet hier als <b>eigenständiges, unmarkiertes Konzept</b> gestaltet ist (kein offizielles Sparkassen-Asset-Mandat in dieser Session), nutze ich das Rot und die funktionalistische Bauhaus-Disziplin als <b>Designprinzipien</b>, ohne das geschützte S-Logo oder die Wortmarke zu rendern. Stattdessen ein neutraler "City Wallet"-Wortmark mit rotem Quadrat-Akzent. Sobald die offizielle Markenfreigabe vorliegt, lässt sich der Wortmark in der Topbar austauschen — das Layout bleibt identisch.
+  </div>
+
+</div>
+
+</body>
+</html>

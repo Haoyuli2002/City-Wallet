@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Spacing scale</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  .scale { display: flex; flex-direction: column; gap: 8px; }
+  .step { display: grid; grid-template-columns: 70px 1fr 60px; align-items: center; gap: 14px; }
+  .name { font-family: var(--font-mono); font-size: 11px; color: var(--fg-3); }
+  .bar { height: 12px; background: #FF0000; border-radius: 2px; }
+  .px { font-family: var(--font-mono); font-size: 11px; color: var(--fg-2); text-align: right; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Spacing · 8-pt grid</div>
+    <div class="card__sub">space-1 → space-9</div>
+  </div>
+  <div class="scale">
+    <div class="step"><div class="name">space-1</div><div><div class="bar" style="width:4px"></div></div><div class="px">4 px</div></div>
+    <div class="step"><div class="name">space-2</div><div><div class="bar" style="width:8px"></div></div><div class="px">8 px</div></div>
+    <div class="step"><div class="name">space-3</div><div><div class="bar" style="width:12px"></div></div><div class="px">12 px</div></div>
+    <div class="step"><div class="name">space-4</div><div><div class="bar" style="width:16px"></div></div><div class="px">16 px</div></div>
+    <div class="step"><div class="name">space-5</div><div><div class="bar" style="width:24px"></div></div><div class="px">24 px</div></div>
+    <div class="step"><div class="name">space-6</div><div><div class="bar" style="width:32px"></div></div><div class="px">32 px</div></div>
+    <div class="step"><div class="name">space-7</div><div><div class="bar" style="width:48px"></div></div><div class="px">48 px</div></div>
+    <div class="step"><div class="name">space-8</div><div><div class="bar" style="width:64px"></div></div><div class="px">64 px</div></div>
+    <div class="step"><div class="name">space-9</div><div><div class="bar" style="width:96px"></div></div><div class="px">96 px</div></div>
+  </div>
+</div>
+</body>
+</html>

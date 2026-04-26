@@ -1,0 +1,60 @@
+/* Shared specimen-card styles. Used by every preview/*.html card.
+   Cards target ~700px wide with a transparent letterboxing host. */
+@import url('../design-tokens.css');
+@import url('../colors_and_type.css');
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-1);
+  color: var(--fg-1);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.card {
+  padding: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.card__title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+.card__sub {
+  font-size: 12px;
+  color: var(--fg-3);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--fg-3);
+  font-feature-settings: "tnum" 1, "lnum" 1;
+}

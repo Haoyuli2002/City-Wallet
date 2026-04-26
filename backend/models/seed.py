@@ -22,7 +22,7 @@ from config.settings import settings
 
 # ==================== Google Places Fetch ====================
 
-async def fetch_merchants_from_google(lat: float, lon: float, radius: int = 500):
+async def fetch_merchants_from_google(lat: float, lon: float, radius: int = 500, city: str = 'munich'):
     """Fetch real merchants from Google Places API."""
     import googlemaps
 
@@ -71,6 +71,7 @@ async def fetch_merchants_from_google(lat: float, lon: float, radius: int = 500)
                     "opening_hours": json.dumps(
                         place.get("opening_hours", {}).get("weekday_text", [])
                     ),
+                    "city": city,
                 }
                 merchants.append(merchant)
         
@@ -85,7 +86,7 @@ async def fetch_merchants_from_google(lat: float, lon: float, radius: int = 500)
 
 # ==================== Fallback Data ====================
 
-def get_fallback_merchants():
+def get_fallback_merchants(city: str = "munich"):
     """Hardcoded Munich merchants for when Google API is unavailable."""
     return [
         {
@@ -97,6 +98,7 @@ def get_fallback_merchants():
             "lat": 48.1358, "lon": 11.5766,
             "rating": 4.5, "photo_url": None, "phone": "",
             "opening_hours": "[]",
+            "city": city,
         },
         {
             "id": "m_cafe002",
@@ -107,6 +109,7 @@ def get_fallback_merchants():
             "lat": 48.1425, "lon": 11.5720,
             "rating": 4.3, "photo_url": None, "phone": "",
             "opening_hours": "[]",
+            "city": city,
         },
         {
             "id": "m_rest001",
@@ -117,6 +120,7 @@ def get_fallback_merchants():
             "lat": 48.1385, "lon": 11.5735,
             "rating": 4.2, "photo_url": None, "phone": "",
             "opening_hours": "[]",
+            "city": city,
         },
         {
             "id": "m_rest002",
@@ -127,6 +131,7 @@ def get_fallback_merchants():
             "lat": 48.1372, "lon": 11.5756,
             "rating": 4.0, "photo_url": None, "phone": "",
             "opening_hours": "[]",
+            "city": city,
         },
         {
             "id": "m_bake001",
@@ -137,6 +142,7 @@ def get_fallback_merchants():
             "lat": 48.1368, "lon": 11.5760,
             "rating": 4.4, "photo_url": None, "phone": "",
             "opening_hours": "[]",
+            "city": city,
         },
         {
             "id": "m_bar001",
@@ -147,6 +153,7 @@ def get_fallback_merchants():
             "lat": 48.1376, "lon": 11.5799,
             "rating": 4.3, "photo_url": None, "phone": "",
             "opening_hours": "[]",
+            "city": city,
         },
         {
             "id": "m_book001",
@@ -157,6 +164,7 @@ def get_fallback_merchants():
             "lat": 48.1374, "lon": 11.5748,
             "rating": 4.1, "photo_url": None, "phone": "",
             "opening_hours": "[]",
+            "city": city,
         },
         {
             "id": "m_cafe003",
@@ -167,6 +175,7 @@ def get_fallback_merchants():
             "lat": 48.1320, "lon": 11.5690,
             "rating": 4.6, "photo_url": None, "phone": "",
             "opening_hours": "[]",
+            "city": city,
         },
         {
             "id": "m_rest003",
@@ -177,6 +186,7 @@ def get_fallback_merchants():
             "lat": 48.1268, "lon": 11.5850,
             "rating": 4.4, "photo_url": None, "phone": "",
             "opening_hours": "[]",
+            "city": city,
         },
         {
             "id": "m_bake002",
@@ -187,6 +197,7 @@ def get_fallback_merchants():
             "lat": 48.1360, "lon": 11.5790,
             "rating": 4.3, "photo_url": None, "phone": "",
             "opening_hours": "[]",
+            "city": "munich",
         },
     ]
 
@@ -322,19 +333,31 @@ async def seed():
     await init_db()
     print()
 
-    # Step 2: Fetch merchants
-    print("📍 Fetching merchants...")
-    merchants = await fetch_merchants_from_google(
+    # Step 2: Fetch merchants for all cities
+    print("📍 Fetching merchants for Munich...")
+    munich_merchants = await fetch_merchants_from_google(
         settings.DEFAULT_LAT,
         settings.DEFAULT_LON,
-        settings.PLACES_SEARCH_RADIUS
+        settings.PLACES_SEARCH_RADIUS,
+        city="munich"
     )
-    
-    if merchants is None:
-        print("   Using fallback merchant data...")
-        merchants = get_fallback_merchants()
-    
-    print(f"   Total merchants: {len(merchants)}")
+    if munich_merchants is None:
+        print("   Using fallback Munich data...")
+        munich_merchants = get_fallback_merchants(city="munich")
+
+    print("📍 Fetching merchants for Stuttgart...")
+    stuttgart_merchants = await fetch_merchants_from_google(
+        48.7758,  # Königstraße Stuttgart
+        9.1829,
+        settings.PLACES_SEARCH_RADIUS,
+        city="stuttgart"
+    )
+    if stuttgart_merchants is None:
+        print("   Using fallback Stuttgart data...")
+        stuttgart_merchants = get_fallback_merchants(city="stuttgart")
+
+    merchants = munich_merchants + stuttgart_merchants
+    print(f"   Total merchants: {len(merchants)} ({len(munich_merchants)} Munich + {len(stuttgart_merchants)} Stuttgart)")
     print()
 
     # Step 3: Insert into database
@@ -354,12 +377,13 @@ async def seed():
         # Insert merchants
         print("🏪 Inserting merchants...")
         for m in merchants:
+            city_val = m.get("city", "munich")
             await db.execute(
-                """INSERT INTO merchants (id, place_id, name, category, address, lat, lon, rating, photo_url, phone, opening_hours)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                """INSERT INTO merchants (id, place_id, name, category, address, lat, lon, rating, photo_url, phone, opening_hours, city)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 [m["id"], m["place_id"], m["name"], m["category"], m["address"],
                  m["lat"], m["lon"], m["rating"], m["photo_url"], m["phone"],
-                 m["opening_hours"]]
+                 m["opening_hours"], city_val]
             )
             print(f"   ✅ {m['name']} ({m['category']}) — ★{m['rating']}")
         await db.commit()

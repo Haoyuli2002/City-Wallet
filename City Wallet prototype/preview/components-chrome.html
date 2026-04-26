@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Bottom nav</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  body { background: #FAFAFA; }
+  .nav { display: flex; justify-content: space-around; background: #fff; border-top: 1px solid #EAEAEA; padding: 10px 8px 14px; max-width: 380px; margin: 0 auto; border-radius: 0; }
+  .item { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; color: #8A8A8A; }
+  .item.active { color: #FF0000; }
+  .item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+  .item .label { font-size: 11px; font-weight: 500; }
+  .head { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: #fff; border-bottom: 1px solid #EAEAEA; max-width: 380px; margin: 0 auto; }
+  .brand { display: flex; align-items: center; gap: 8px; }
+  .mark { width: 24px; height: 24px; background: #FF0000; border-radius: 4px; position: relative; }
+  .mark::before, .mark::after { content: ''; position: absolute; background: #fff; }
+  .mark::before { left: 4px; top: 4px; width: 16px; height: 3px; box-shadow: 0 6px 0 #fff, 0 12px 0 #fff; }
+  .mark::after { left: 4px; top: 4px; width: 3px; height: 9px; box-shadow: 13px 6px 0 #fff; }
+  .head .title { font-size: 13px; font-weight: 600; color: #1A1A1A; }
+  .head .meta { font-size: 11px; color: #8A8A8A; font-feature-settings: "tnum" 1; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Chrome · Header & bottom nav</div>
+    <div class="card__sub">Flat, hairline divider, no shadow</div>
+  </div>
+  <div class="head">
+    <div class="brand"><div class="mark"></div><div class="title">City Wallet</div></div>
+    <div class="meta">Hamburg · 11 °C</div>
+  </div>
+  <div style="height:18px"></div>
+  <div class="nav">
+    <div class="item active">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <div class="label">Heute</div>
+    </div>
+    <div class="item">
+      <svg viewBox="0 0 24 24"><path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg>
+      <div class="label">Angebote</div>
+    </div>
+    <div class="item">
+      <svg viewBox="0 0 24 24"><path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+      <div class="label">Verlauf</div>
+    </div>
+    <div class="item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+      <div class="label">Profil</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

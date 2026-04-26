@@ -1,0 +1,999 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Phase 4 · Merchant flow — City Wallet · Geschäft</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="phase4.css">
+
+<style>
+/* ───────────────────────────────────────────────────────────
+   Phase 4 specific — merchant surface
+   Same brand DNA as consumer side, but:
+   · Subdued ink-charcoal accents (less brand-red shouting)
+   · Money lives in a tabular monospace, big and proud
+   · Headline numbers always carry € — never %
+─────────────────────────────────────────────────────────── */
+
+/* Merchant top bar variant */
+.app__wordmark--merchant span {
+  color: var(--text-tertiary); font-weight: 500;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Three columns instead of two */
+.browser__stage { grid-template-columns: repeat(3, max-content); gap: 40px 40px; }
+
+/* ─── M-2 · MONEY card ─── */
+.money-card {
+  background: var(--surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 18px 18px 16px;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+.money-card__label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.money-card__live {
+  display: inline-flex; align-items: center; gap: 5px;
+  color: var(--text-secondary);
+}
+.money-card__live::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--brand-red);
+  box-shadow: 0 0 0 3px rgba(255,0,0,0.12);
+}
+.money-card__hero {
+  font-size: 44px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-feature-settings: var(--font-feature-numeric);
+  display: flex; align-items: baseline; gap: 4px;
+  margin-bottom: 4px;
+}
+.money-card__hero em { font-style: normal; color: var(--text-tertiary); font-weight: 500; font-size: 22px; }
+.money-card__sublabel {
+  font-size: 12px; color: var(--text-tertiary); margin-bottom: 14px;
+}
+
+.money-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 12px;
+  padding-top: 12px;
+}
+.money-grid__cell {
+  padding: 0 10px;
+  border-right: 1px solid var(--border-subtle);
+  display: flex; flex-direction: column; gap: 3px;
+}
+.money-grid__cell:first-child { padding-left: 0; }
+.money-grid__cell:last-child { border-right: none; padding-right: 0; }
+.money-grid__lbl {
+  font-family: var(--font-mono);
+  font-size: 9px; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.money-grid__val {
+  font-size: 15px; font-weight: 600;
+  color: var(--text-primary);
+  font-feature-settings: var(--font-feature-numeric);
+}
+.money-grid__val--cost { color: var(--text-secondary); }
+.money-grid__val--gross { color: var(--brand-red-deep); }
+
+/* ─── AI status quote card ─── */
+.ai-card {
+  background: var(--surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 16px 16px 14px;
+  margin-top: 12px;
+}
+.ai-card__head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.ai-card__name {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+.ai-card__name::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: #16A34A;
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.15);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 3px rgba(22,163,74,0.15); }
+  50% { box-shadow: 0 0 0 5px rgba(22,163,74,0.05); }
+}
+.ai-card__status {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+.ai-card__quote {
+  font-size: 14px; line-height: 1.5;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+  padding-left: 12px;
+  border-left: 2px solid var(--ink);
+  text-wrap: pretty;
+}
+.ai-card__quote b { font-weight: 600; }
+.ai-card__why {
+  font-size: 11.5px; color: var(--text-tertiary);
+  line-height: 1.45; padding-left: 14px; margin: 0 0 12px;
+}
+.ai-card__actions {
+  display: flex; gap: 8px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 10px;
+}
+.ai-card__btn {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 12px; font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.ai-card__btn--ghost { color: var(--text-secondary); }
+
+/* ─── Suggestion card ─── */
+.suggest-card {
+  background: var(--surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  margin-top: 12px;
+  display: grid; grid-template-columns: 1fr;
+  gap: 10px;
+}
+.suggest-card__head {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.suggest-card__head::before {
+  content: "→"; color: var(--text-primary); font-weight: 600;
+}
+.suggest-card__text {
+  font-size: 14px; line-height: 1.45;
+  color: var(--text-primary); margin: 0;
+}
+.suggest-card__text b { font-weight: 600; }
+.suggest-card__row {
+  display: flex; gap: 8px;
+}
+.suggest-card__btn {
+  padding: 9px 14px; border-radius: 6px;
+  border: 1px solid var(--border-default);
+  background: transparent;
+  font: inherit; font-size: 12.5px; font-weight: 500;
+  cursor: pointer; flex: 1;
+}
+.suggest-card__btn--primary {
+  background: var(--ink); color: #fff; border-color: var(--ink);
+}
+.suggest-card__btn--ghost { color: var(--text-secondary); }
+
+/* ─── Bar chart (newspaper-simple) ─── */
+.bars {
+  margin-top: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 14px 14px 10px;
+}
+.bars__head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 12px;
+}
+.bars__title {
+  font-size: 12.5px; font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.005em;
+}
+.bars__legend {
+  font-family: var(--font-mono); font-size: 9.5px;
+  color: var(--text-tertiary); letter-spacing: 0.04em;
+  display: inline-flex; gap: 10px;
+}
+.bars__legend span { display: inline-flex; align-items: center; gap: 4px; }
+.bars__legend i { width: 8px; height: 8px; display: inline-block; font-style: normal; }
+.bars__legend i.lw { background: var(--border-default); }
+.bars__legend i.tw { background: var(--ink); }
+
+.bars__chart {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 8px; align-items: end;
+  height: 110px; padding-top: 4px;
+}
+.bars__col {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  height: 100%;
+}
+.bars__pair {
+  flex: 1; display: flex; align-items: end; gap: 3px;
+  width: 100%; justify-content: center;
+}
+.bars__pair span {
+  width: 11px; display: block;
+  background: var(--border-default);
+  border-radius: 1px;
+}
+.bars__pair span.tw { background: var(--ink); }
+.bars__day {
+  font-family: var(--font-mono); font-size: 9.5px;
+  color: var(--text-tertiary); letter-spacing: 0.04em;
+}
+
+/* Sticky scan button — inside the app body, but pinned visually */
+.scan-cta {
+  position: sticky; bottom: 0;
+  margin: 18px -16px -16px;
+  padding: 12px 16px 14px;
+  background: linear-gradient(180deg, rgba(247,247,247,0) 0%, var(--surface-sunken) 30%);
+}
+.scan-cta__btn {
+  width: 100%;
+  background: var(--ink); color: #fff;
+  border: none; border-radius: 12px;
+  padding: 14px 18px;
+  font: inherit; font-size: 15px; font-weight: 600;
+  cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  letter-spacing: -0.005em;
+}
+.scan-cta__btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ─── M-3 · Templates list ─── */
+.tpl-list {
+  display: flex; flex-direction: column; gap: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  overflow: hidden;
+}
+.tpl {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 14px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.tpl:last-child { border-bottom: none; }
+.tpl__icon {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--surface-muted);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--text-secondary);
+}
+.tpl__icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.tpl__title {
+  font-size: 13.5px; font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+.tpl__sub {
+  font-size: 11.5px; color: var(--text-tertiary);
+  line-height: 1.35;
+}
+.tpl__pill {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border: 1px solid var(--border-default);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.tpl__pill--on {
+  background: var(--ink); color: #fff; border-color: var(--ink);
+}
+.tpl__pill--on::before { content: "✓ "; }
+
+/* Custom rule block */
+.custom-rule {
+  margin-top: 14px;
+  background: var(--surface);
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+.custom-rule__head {
+  font-size: 13px; font-weight: 600;
+  color: var(--text-primary); margin-bottom: 4px;
+  display: flex; align-items: center; gap: 8px;
+}
+.custom-rule__head::before {
+  content: "+"; font-weight: 700;
+  width: 18px; height: 18px; border-radius: 4px;
+  background: var(--ink); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; line-height: 1;
+}
+.custom-rule__sub {
+  font-size: 11.5px; color: var(--text-tertiary);
+  margin-bottom: 14px;
+  font-family: var(--font-mono); letter-spacing: 0.04em;
+}
+
+.madlib {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text-primary);
+  text-wrap: pretty;
+}
+.madlib__chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--surface-muted);
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: var(--font-sans);
+}
+.madlib__chip::after {
+  content: "▾"; font-size: 9px;
+  color: var(--text-tertiary);
+  margin-left: 2px;
+}
+.madlib__chip--num { font-family: var(--font-mono); font-feature-settings: var(--font-feature-numeric); }
+
+/* ─── M-4 · Active rule detail ─── */
+.detail-head {
+  background: var(--surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+}
+.detail-head__row {
+  display: flex; justify-content: space-between; align-items: start;
+  gap: 12px;
+}
+.detail-head__title {
+  font-size: 18px; font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+.detail-head__when {
+  font-size: 12px; color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.status-pill {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  border-radius: 4px;
+  display: inline-flex; align-items: center; gap: 5px;
+  white-space: nowrap;
+}
+.status-pill--active {
+  background: rgba(22,163,74,0.1);
+  color: #15803D;
+}
+.status-pill--active::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: #16A34A;
+}
+
+/* KV stats list */
+.kv {
+  margin-top: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 4px 14px;
+}
+.kv__head {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-tertiary);
+  padding: 12px 0 6px;
+  display: flex; justify-content: space-between;
+}
+.kv__row {
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 16px; align-items: baseline;
+  padding: 10px 0;
+  border-top: 1px dashed var(--border-subtle);
+}
+.kv__lbl {
+  font-size: 13px; color: var(--text-primary);
+}
+.kv__lbl em {
+  display: block; font-style: normal;
+  font-size: 11px; color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+.kv__val {
+  font-size: 15px; font-weight: 600;
+  color: var(--text-primary);
+  font-feature-settings: var(--font-feature-numeric);
+  white-space: nowrap;
+}
+.kv__val--gross {
+  color: var(--brand-red-deep);
+  font-size: 17px;
+}
+
+/* AI explanation block */
+.explain {
+  margin-top: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border-default);
+  border-left: 3px solid var(--ink);
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+}
+.explain__head {
+  font-family: var(--font-mono); font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-tertiary); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.explain__head::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%;
+  background: #16A34A;
+}
+.explain__quote {
+  font-size: 13.5px; line-height: 1.55;
+  color: var(--text-primary);
+  margin: 0;
+  text-wrap: pretty;
+}
+.explain__quote b { font-weight: 600; }
+.explain__meta {
+  margin-top: 10px;
+  font-family: var(--font-mono); font-size: 10px;
+  color: var(--text-tertiary); letter-spacing: 0.04em;
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.explain__meta b { color: var(--text-secondary); font-weight: 500; }
+
+/* Bottom action stack */
+.detail-actions {
+  margin-top: 14px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.detail-actions__btn {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border-default);
+  background: var(--surface);
+  border-radius: 8px;
+  font: inherit; font-size: 13.5px; font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  display: flex; justify-content: space-between; align-items: center;
+  color: var(--text-primary);
+}
+.detail-actions__btn em {
+  font-style: normal; color: var(--text-tertiary);
+  font-size: 11.5px; font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+.detail-actions__btn--danger {
+  color: var(--text-tertiary);
+  border-style: dashed;
+  background: transparent;
+}
+.detail-actions__btn--danger em { color: var(--text-tertiary); }
+
+/* Merchant tab bar */
+.tabbar--merchant .tabbar__item--active { color: var(--ink); }
+.tabbar--merchant .tabbar__item--active .tabbar__dot { background: var(--ink); }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="meta">
+    <div>
+      <div class="meta__id">Phase 4 · Merchant · Wireframes v1</div>
+      <h1 class="meta__title">Frau Müllers Geschäft</h1>
+      <p class="meta__sub">M-2 Heute · M-3 Aktionen · M-4 Aktion-Detail. Sie-Ansprache. Geld zuerst, Prozentwerte raus. Gleiche Karten-Sprache wie Consumer, aber zurückhaltender — Tinte statt Rot.</p>
+    </div>
+    <div></div>
+    <span class="meta__phase">Phase 4 · for review</span>
+  </header>
+
+  <div class="browser">
+    <div class="browser__bar">
+      <div class="browser__lights"><span></span><span></span><span></span></div>
+      <div class="browser__url">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <span>geschaeft.citywallet.de<b>/heute</b></span>
+      </div>
+      <div style="width:120px"></div>
+    </div>
+    <div class="browser__tabs">
+      <div class="browser__tab browser__tab--active">
+        <span style="width:6px;height:6px;border-radius:50%;background:#000;"></span>
+        City Wallet — Geschäft
+      </div>
+      <div class="browser__tab">+</div>
+    </div>
+
+    <div class="browser__stage">
+
+      <!-- Role switcher (Merchant active now) -->
+      <div class="role-switcher">
+        <button type="button">Mia · Kundin</button>
+        <span class="swap">⇄</span>
+        <button class="active" type="button"><span class="dot" style="background:#000"></span>Café Müller · Händlerin</button>
+      </div>
+
+      <!-- ════════════════════════════════════════════ -->
+      <!-- M-2 · HEUTE -->
+      <!-- ════════════════════════════════════════════ -->
+      <div class="phone-wrap">
+        <div class="phone-label"><span class="phone-label__num">M-2</span>Heute · Geld + KI-Status + Vorschlag</div>
+        <div class="phone">
+          <div class="phone__screen">
+            <div class="statusbar">
+              <div class="statusbar__notch"></div>
+              <span>14:30</span>
+              <div class="statusbar__icons">
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+                <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx="0.5" fill="currentColor" fill-opacity="0.4"/></svg>
+              </div>
+            </div>
+
+            <div class="app">
+              <div class="app__topbar">
+                <div class="app__wordmark app__wordmark--merchant">
+                  City Wallet <span>· Geschäft</span>
+                </div>
+                <div class="app__icons">
+                  <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                </div>
+              </div>
+
+              <div class="app__body">
+                <h2 class="greet">Guten Tag, Frau Müller</h2>
+                <div class="greet__date">Dienstag, 14. Oktober · 14:30</div>
+
+                <!-- Card 1 — MONEY -->
+                <div class="money-card">
+                  <div class="money-card__label">
+                    <span>Heute durch City Wallet</span>
+                    <span class="money-card__live">Live</span>
+                  </div>
+                  <div class="money-card__hero">
+                    <span>+&thinsp;127,40&nbsp;€</span>
+                  </div>
+                  <div class="money-card__sublabel">netto eingenommen · seit 06:00 Uhr</div>
+
+                  <div class="money-grid">
+                    <div class="money-grid__cell">
+                      <span class="money-grid__lbl">Gäste</span>
+                      <span class="money-grid__val">23</span>
+                    </div>
+                    <div class="money-grid__cell">
+                      <span class="money-grid__lbl">Rabatt-Aufwand</span>
+                      <span class="money-grid__val money-grid__val--cost">−&thinsp;31,80&nbsp;€</span>
+                    </div>
+                    <div class="money-grid__cell">
+                      <span class="money-grid__lbl">Brutto</span>
+                      <span class="money-grid__val money-grid__val--gross">159,20&nbsp;€</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card 2 — AI status -->
+                <div class="ai-card">
+                  <div class="ai-card__head">
+                    <span class="ai-card__name">KI-Assistent</span>
+                    <span class="ai-card__status">aktiv · zuletzt 14:28</span>
+                  </div>
+                  <p class="ai-card__quote">
+                    Ich biete gerade <b>Cappuccino zu −20 %</b> an Passanten in der Königstraße — bei 8 °C und Regen. <b>4 Personen</b> sind in den letzten 30 Min. vorbeigegangen.
+                  </p>
+                  <p class="ai-card__why">
+                    Auslöser: Ihre „Schlechtwetter-Aktion" · Wetter unter 12 °C · zwischen 14:00–17:00 Uhr.
+                  </p>
+                  <div class="ai-card__actions">
+                    <button class="ai-card__btn ai-card__btn--ghost" type="button">Pausieren</button>
+                    <button class="ai-card__btn" type="button">Details ansehen</button>
+                  </div>
+                </div>
+
+                <!-- Card 3 — Suggestion -->
+                <div class="suggest-card">
+                  <div class="suggest-card__head">Vorschlag für morgen</div>
+                  <p class="suggest-card__text">
+                    Morgen wird's wieder kalt. Soll ich die <b>Schlechtwetter-Aktion</b> automatisch ab 13 Uhr starten?
+                  </p>
+                  <div class="suggest-card__row">
+                    <button class="suggest-card__btn suggest-card__btn--primary" type="button">Ja, einrichten</button>
+                    <button class="suggest-card__btn suggest-card__btn--ghost" type="button">Nein, danke</button>
+                  </div>
+                </div>
+
+                <!-- Bar chart -->
+                <div class="bars">
+                  <div class="bars__head">
+                    <span class="bars__title">Diese Woche vs. letzte Woche</span>
+                    <span class="bars__legend">
+                      <span><i class="lw"></i>letzte</span>
+                      <span><i class="tw"></i>diese</span>
+                    </span>
+                  </div>
+                  <div class="bars__chart">
+                    <div class="bars__col"><div class="bars__pair"><span style="height:55%"></span><span class="tw" style="height:62%"></span></div><span class="bars__day">Mo</span></div>
+                    <div class="bars__col"><div class="bars__pair"><span style="height:48%"></span><span class="tw" style="height:71%"></span></div><span class="bars__day">Di</span></div>
+                    <div class="bars__col"><div class="bars__pair"><span style="height:62%"></span><span class="tw" style="height:78%"></span></div><span class="bars__day">Mi</span></div>
+                    <div class="bars__col"><div class="bars__pair"><span style="height:70%"></span><span class="tw" style="height:88%"></span></div><span class="bars__day">Do</span></div>
+                    <div class="bars__col"><div class="bars__pair"><span style="height:80%"></span><span class="tw" style="height:95%"></span></div><span class="bars__day">Fr</span></div>
+                    <div class="bars__col"><div class="bars__pair"><span style="height:90%"></span><span class="tw" style="height:0%;border:1px dashed var(--border-default);background:transparent"></span></div><span class="bars__day">Sa</span></div>
+                    <div class="bars__col"><div class="bars__pair"><span style="height:35%"></span><span class="tw" style="height:0%;border:1px dashed var(--border-default);background:transparent"></span></div><span class="bars__day">So</span></div>
+                  </div>
+                </div>
+
+                <!-- Sticky scan CTA -->
+                <div class="scan-cta">
+                  <button class="scan-cta__btn" type="button">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM21 14v3M14 21h3M17 17h4M21 21v0"/></svg>
+                    Code scannen
+                  </button>
+                </div>
+              </div>
+
+              <nav class="tabbar tabbar--merchant">
+                <a class="tabbar__item tabbar__item--active" href="#">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                  Heute<span class="tabbar__dot"></span>
+                </a>
+                <a class="tabbar__item" href="#">
+                  <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>
+                  Aktionen
+                </a>
+                <a class="tabbar__item" href="#">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  Einstellungen
+                </a>
+              </nav>
+            </div>
+
+            <div class="home-indicator"><span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════ -->
+      <!-- M-3 · AKTIONEN -->
+      <!-- ════════════════════════════════════════════ -->
+      <div class="phone-wrap">
+        <div class="phone-label"><span class="phone-label__num">M-3</span>Aktionen · Vorlagen + eigene Aktion</div>
+        <div class="phone">
+          <div class="phone__screen">
+            <div class="statusbar">
+              <div class="statusbar__notch"></div>
+              <span>14:30</span>
+              <div class="statusbar__icons">
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+                <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx="0.5" fill="currentColor" fill-opacity="0.4"/></svg>
+              </div>
+            </div>
+
+            <div class="app">
+              <div class="app__topbar">
+                <div class="app__wordmark app__wordmark--merchant">
+                  City Wallet <span>· Aktionen</span>
+                </div>
+                <div class="app__icons">
+                  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                </div>
+              </div>
+
+              <div class="app__body">
+                <h2 class="greet" style="margin-top:2px">Aktionen</h2>
+                <div class="greet__date">3 aktiv · 6 Vorlagen verfügbar</div>
+
+                <div class="section-h">
+                  <h3>Schnellstart-Vorlagen</h3>
+                  <span class="section-h__more">in 1 Tipp aktiv</span>
+                </div>
+
+                <div class="tpl-list">
+                  <div class="tpl">
+                    <span class="tpl__icon">
+                      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/></svg>
+                    </span>
+                    <div>
+                      <div class="tpl__title">Nachmittagstief</div>
+                      <div class="tpl__sub">Werktags 14–16 Uhr · wenn weniger als 5 Gäste/h</div>
+                    </div>
+                    <button class="tpl__pill" type="button">Aktivieren</button>
+                  </div>
+                  <div class="tpl">
+                    <span class="tpl__icon">
+                      <svg viewBox="0 0 24 24"><path d="M3 15h18"/><path d="M7 11a5 5 0 0 1 10 0"/><path d="M5 19h14"/><path d="M9 7l1-2M15 7l-1-2"/></svg>
+                    </span>
+                    <div>
+                      <div class="tpl__title">Schlechtwetter</div>
+                      <div class="tpl__sub">Bei Regen oder unter 12 °C · 14–17 Uhr</div>
+                    </div>
+                    <button class="tpl__pill tpl__pill--on" type="button">Aktiviert</button>
+                  </div>
+                  <div class="tpl">
+                    <span class="tpl__icon">
+                      <svg viewBox="0 0 24 24"><path d="M12 2v6M12 22v-6"/><circle cx="12" cy="12" r="4"/><path d="M16 12h6M2 12h6"/></svg>
+                    </span>
+                    <div>
+                      <div class="tpl__title">Feierabend-Boost</div>
+                      <div class="tpl__sub">Mo–Fr ab 17 Uhr · Pendler-Zone</div>
+                    </div>
+                    <button class="tpl__pill" type="button">Aktivieren</button>
+                  </div>
+                  <div class="tpl">
+                    <span class="tpl__icon">
+                      <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="1"/><path d="M3 10h18"/><path d="M7 3v4M17 3v4"/></svg>
+                    </span>
+                    <div>
+                      <div class="tpl__title">Wochenmarkt-Sonntag</div>
+                      <div class="tpl__sub">Sonntags 9–13 Uhr · Frequenz Markt-Bereich</div>
+                    </div>
+                    <button class="tpl__pill tpl__pill--on" type="button">Aktiviert</button>
+                  </div>
+                  <div class="tpl">
+                    <span class="tpl__icon">
+                      <svg viewBox="0 0 24 24"><path d="M12 21s-7-5-7-12a5 5 0 0 1 9-3 5 5 0 0 1 9 3c0 7-7 12-7 12z" transform="translate(-1 0)"/></svg>
+                    </span>
+                    <div>
+                      <div class="tpl__title">Stammkunden</div>
+                      <div class="tpl__sub">Gäste mit ≥ 5 Besuchen · jederzeit gültig</div>
+                    </div>
+                    <button class="tpl__pill tpl__pill--on" type="button">Aktiviert</button>
+                  </div>
+                  <div class="tpl">
+                    <span class="tpl__icon">
+                      <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V11l7-5 7 5v10M9 13h2v8H9zM13 13h2v8h-2z"/></svg>
+                    </span>
+                    <div>
+                      <div class="tpl__title">Geburtstag</div>
+                      <div class="tpl__sub">Am Geburtstag des Gastes · gilt nur an dem Tag</div>
+                    </div>
+                    <button class="tpl__pill" type="button">Aktivieren</button>
+                  </div>
+                </div>
+
+                <!-- Custom rule -->
+                <div class="custom-rule">
+                  <div class="custom-rule__head">Eigene Aktion erstellen</div>
+                  <div class="custom-rule__sub">SO LIEST DAS DIE KI:</div>
+                  <p class="madlib">
+                    Wenn
+                    <button type="button" class="madlib__chip">Wetter unter 12 °C</button>
+                    und
+                    <button type="button" class="madlib__chip">weniger als 5 Gäste/h</button>
+                    zwischen
+                    <button type="button" class="madlib__chip madlib__chip--num">14:00 — 17:00</button>,
+                    dann biete ich
+                    <button type="button" class="madlib__chip">Cappuccino</button>
+                    mit
+                    <button type="button" class="madlib__chip madlib__chip--num">−20 %</button>
+                    Rabatt für
+                    <button type="button" class="madlib__chip">15 Min.</button>
+                    pro Gast.
+                  </p>
+                </div>
+              </div>
+
+              <nav class="tabbar tabbar--merchant">
+                <a class="tabbar__item" href="#">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                  Heute
+                </a>
+                <a class="tabbar__item tabbar__item--active" href="#">
+                  <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>
+                  Aktionen<span class="tabbar__dot"></span>
+                </a>
+                <a class="tabbar__item" href="#">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  Einstellungen
+                </a>
+              </nav>
+            </div>
+
+            <div class="home-indicator"><span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════ -->
+      <!-- M-4 · AKTION-DETAIL · Schlechtwetter -->
+      <!-- ════════════════════════════════════════════ -->
+      <div class="phone-wrap">
+        <div class="phone-label"><span class="phone-label__num">M-4</span>Aktion-Detail · Schlechtwetter</div>
+        <div class="phone">
+          <div class="phone__screen">
+            <div class="statusbar">
+              <div class="statusbar__notch"></div>
+              <span>14:30</span>
+              <div class="statusbar__icons">
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+                <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx="0.5" fill="currentColor" fill-opacity="0.4"/></svg>
+              </div>
+            </div>
+
+            <div class="app">
+              <div class="settings-head" style="background:var(--surface);border-bottom:1px solid var(--border-subtle);display:flex;align-items:center;gap:12px;padding:6px 16px 14px">
+                <span class="settings-head__back" style="width:32px;height:32px;border:1px solid var(--border-default);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:var(--text-secondary);flex-shrink:0">
+                  <svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M15 6l-6 6 6 6"/></svg>
+                </span>
+                <div>
+                  <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:1px">Aktionen</div>
+                  <div style="font-size:17px;font-weight:700;letter-spacing:-0.01em">Schlechtwetter</div>
+                </div>
+              </div>
+
+              <div class="app__body">
+
+                <!-- Detail header -->
+                <div class="detail-head">
+                  <div class="detail-head__row">
+                    <div>
+                      <h3 class="detail-head__title">Cappuccino · −20 %</h3>
+                      <div class="detail-head__when">14–17 Uhr · bei Regen oder &lt; 12 °C</div>
+                    </div>
+                    <span class="status-pill status-pill--active">Aktiv</span>
+                  </div>
+                </div>
+
+                <!-- Stats KV -->
+                <div class="kv">
+                  <div class="kv__head">
+                    <span>Diese Woche</span>
+                    <span>Mo · 14. — Heute</span>
+                  </div>
+                  <div class="kv__row">
+                    <div class="kv__lbl">Ausgelöst<em>Wann die Regel feuerte</em></div>
+                    <div class="kv__val">14&times;</div>
+                  </div>
+                  <div class="kv__row">
+                    <div class="kv__lbl">Angenommen<em>Gäste, die das Angebot öffneten</em></div>
+                    <div class="kv__val">38</div>
+                  </div>
+                  <div class="kv__row">
+                    <div class="kv__lbl">Eingelöst<em>Tatsächlich gekauft</em></div>
+                    <div class="kv__val">26</div>
+                  </div>
+                  <div class="kv__row">
+                    <div class="kv__lbl">Rabatt-Aufwand<em>Was Sie nachgelassen haben</em></div>
+                    <div class="kv__val">−&thinsp;46,80&nbsp;€</div>
+                  </div>
+                  <div class="kv__row">
+                    <div class="kv__lbl">Umsatz aus dieser Aktion<em>Brutto · 26 Bestellungen</em></div>
+                    <div class="kv__val kv__val--gross">187,20&nbsp;€</div>
+                  </div>
+                </div>
+
+                <!-- AI explanation -->
+                <div class="explain">
+                  <div class="explain__head">KI-Erklärung · warum heute ausgelöst</div>
+                  <p class="explain__quote">
+                    Heute um <b>14:08 Uhr</b> waren 8 °C und Regen — beide Bedingungen Ihrer Regel erfüllt. Ich habe an Passanten in der Königstraße ein Cappuccino-Angebot geschickt. <b>4 Gäste</b> sind seitdem hereingekommen und haben das Angebot eingelöst.
+                  </p>
+                  <div class="explain__meta">
+                    <span><b>Modell</b> cw-reco-v3.1</span>
+                    <span><b>Region</b> Stuttgart-Mitte</span>
+                    <span><b>Reichweite</b> 80–200 m Radius</span>
+                  </div>
+                </div>
+
+                <!-- Bottom actions -->
+                <div class="detail-actions">
+                  <button class="detail-actions__btn" type="button">
+                    <span>Pausieren</span>
+                    <em>kein neues Angebot mehr</em>
+                  </button>
+                  <button class="detail-actions__btn" type="button">
+                    <span>Bearbeiten</span>
+                    <em>Bedingungen, Rabatt, Zeit</em>
+                  </button>
+                  <button class="detail-actions__btn detail-actions__btn--danger" type="button">
+                    <span>Löschen</span>
+                    <em>endgültig entfernen</em>
+                  </button>
+                </div>
+              </div>
+
+              <nav class="tabbar tabbar--merchant">
+                <a class="tabbar__item" href="#">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                  Heute
+                </a>
+                <a class="tabbar__item tabbar__item--active" href="#">
+                  <svg viewBox="0 0 24 24"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>
+                  Aktionen<span class="tabbar__dot"></span>
+                </a>
+                <a class="tabbar__item" href="#">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  Einstellungen
+                </a>
+              </nav>
+            </div>
+
+            <div class="home-indicator"><span></span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Designer notes -->
+  <section style="margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:24px;font-size:13px;color:var(--text-secondary);line-height:1.55">
+    <div>
+      <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:8px">Tonalität-Pass · Sie / € statt %</div>
+      <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">
+        <li><b>Sie statt Du</b><span> · „Guten Tag, Frau Müller" — kein Vorname. „Soll ich für Sie?" Konsequent durchgezogen.</span></li>
+        <li><b>€ statt %</b><span> · Hero-Zahl ist <b>+127,40 €</b>, nicht „+18 % vs. gestern". KV-Liste in M-4 zeigt nur €-Beträge plus absolute Counts (14×, 38, 26). Konversionsrate kommt nirgends vor.</span></li>
+        <li><b>Ink-Akzent statt Rot</b><span> · CTAs in Tinte, nicht Brand-Rot. Das Rot bleibt für Live-Indikatoren reserviert. Wirkt seriöser für eine 55-jährige Café-Inhaberin.</span></li>
+      </ul>
+    </div>
+    <div>
+      <div style="font-family:var(--font-mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-tertiary);margin-bottom:8px">Judgment Calls</div>
+      <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px">
+        <li><b>KI-Status als Zitat</b><span> · Ich-Form („Ich biete gerade Cappuccino zu −20 % an") macht das System ansprechbar — wichtig, damit Frau Müller versteht, was passiert. Kein Status-Dashboard, sondern eine Person.</span></li>
+        <li><b>Prozent in Mad-Lib erlaubt</b><span> · Bei der Rabatt-Eingabe ist „−20 %" notwendig, weil sie selbst den Wert setzt. Aber überall, wo Erfolg gemessen wird, € statt %.</span></li>
+        <li><b>Suggest-Card mit Ja/Nein</b><span> · Nicht „Annehmen / Ablehnen" — wir reden mit ihr wie ein Mitarbeiter, der fragt: „Soll ich?".</span></li>
+        <li><b>Löschen optisch schwächer</b><span> · Gestrichelter Rahmen, graue Schrift. Bewusst kein gefährliches Rot — destruktive Aktion soll auffindbar, aber nicht einladend sein.</span></li>
+        <li><b>Bar-Chart bewusst simpel</b><span> · Keine Achsenbeschriftung, kein Tooltip. Zwei Höhen pro Tag, zwei Farben. Wie eine Zeitungsgrafik, nicht wie Stripe-Dashboard.</span></li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+</body>
+</html>

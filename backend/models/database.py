@@ -36,6 +36,7 @@ async def init_db():
                 photo_url TEXT,
                 phone TEXT,
                 opening_hours TEXT,
+                city TEXT DEFAULT 'munich',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         """)
@@ -161,6 +162,14 @@ async def init_db():
         await db.execute("CREATE INDEX IF NOT EXISTS idx_sim_tx_merchant ON simulated_transactions(merchant_id)")
         await db.execute("CREATE INDEX IF NOT EXISTS idx_sim_tx_time ON simulated_transactions(timestamp)")
         await db.execute("CREATE INDEX IF NOT EXISTS idx_wallet_tx_user ON wallet_transactions(user_id)")
+
+        # Add city column if not exists (migration for existing DBs)
+        try:
+            await db.execute("ALTER TABLE merchants ADD COLUMN city TEXT DEFAULT 'munich'")
+            await db.commit()
+            print("✅ Added city column to merchants")
+        except Exception:
+            pass  # Column already exists
 
         await db.commit()
         print("✅ 数据库初始化完成：7张表已创建")

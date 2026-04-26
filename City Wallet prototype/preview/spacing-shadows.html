@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Shadows</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; padding: 16px 4px 24px; }
+  .item { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .box { width: 100%; height: 80px; background: #fff; border-radius: 12px; }
+  .sm { box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+  .md { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+  .lg { box-shadow: 0 12px 32px rgba(0,0,0,0.12); }
+  .glow { box-shadow: 0 8px 24px rgba(255,0,0,0.18); }
+  .name { font-family: var(--font-mono); font-size: 11px; color: var(--fg-1); }
+  .use { font-size: 10px; color: var(--fg-3); text-align: center; }
+</style>
+</head>
+<body>
+<div class="card" style="background:var(--bg-3)">
+  <div class="card__head">
+    <div class="card__title">Elevation · Restrained</div>
+    <div class="card__sub">Three steps + one red glow (press only)</div>
+  </div>
+  <div class="grid">
+    <div class="item"><div class="box sm"></div><div class="name">shadow-sm</div><div class="use">chips, badges</div></div>
+    <div class="item"><div class="box md"></div><div class="name">shadow-md</div><div class="use">cards at rest</div></div>
+    <div class="item"><div class="box lg"></div><div class="name">shadow-lg</div><div class="use">modals, sheets</div></div>
+    <div class="item"><div class="box glow"></div><div class="name">red-glow</div><div class="use">redeem press</div></div>
+  </div>
+</div>
+</body>
+</html>

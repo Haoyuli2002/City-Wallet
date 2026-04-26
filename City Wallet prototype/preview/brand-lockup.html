@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light">
+<title>Lockup</title>
+<link rel="stylesheet" href="card.css">
+<style>
+  .lockup { display: flex; align-items: center; gap: 16px; padding: 18px 22px; border: 1px solid #EAEAEA; border-radius: 12px; }
+  .mark { width: 48px; height: 48px; background: #FF0000; border-radius: 6px; position: relative; flex-shrink: 0; }
+  .mark .row { position: absolute; left: 18%; width: 64%; height: 11%; background: #fff; }
+  .mark .r1 { top: 22%; } .mark .r2 { top: 45%; } .mark .r3 { top: 68%; }
+  .mark .v1 { position: absolute; left: 18%; top: 22%; width: 11%; height: 34%; background: #fff; }
+  .mark .v2 { position: absolute; right: 18%; top: 45%; width: 11%; height: 34%; background: #fff; }
+  .text .super { font-size: 11px; color: #8A8A8A; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 500; }
+  .text .name { font-size: 22px; font-weight: 700; color: #1A1A1A; letter-spacing: -0.01em; margin-top: 2px; }
+  .meta { display: flex; gap: 24px; margin-top: 16px; }
+  .meta div { font-size: 12px; color: #4A4A4A; }
+  .meta b { display: block; color: #1A1A1A; font-weight: 600; font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card__head">
+    <div class="card__title">Lockup · Mark + wordmark</div>
+    <div class="card__sub">Always horizontal, fixed proportion</div>
+  </div>
+  <div class="lockup">
+    <div class="mark"><div class="row r1"></div><div class="row r2"></div><div class="row r3"></div><div class="v1"></div><div class="v2"></div></div>
+    <div class="text">
+      <div class="super">Sparkasse</div>
+      <div class="name">City Wallet</div>
+    </div>
+  </div>
+  <div class="meta">
+    <div><b>Mindestgröße</b>24 px Höhe (digital)</div>
+    <div><b>Schutzraum</b>1 × Markenkante</div>
+    <div><b>Hintergrund</b>#FFFFFF oder #FF0000</div>
+  </div>
+</div>
+</body>
+</html>

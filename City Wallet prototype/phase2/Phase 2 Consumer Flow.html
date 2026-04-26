@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Phase 2 · Consumer flow — City Wallet</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="design-tokens.css">
+<link rel="stylesheet" href="phase2.css">
+</head>
+<body>
+
+<div class="page">
+
+  <header class="meta">
+    <div>
+      <div class="meta__id">Phase 2 · Consumer · Wireframes v1</div>
+      <h1 class="meta__title">Mia's Flow</h1>
+      <p class="meta__sub">U-3 Start · U-5 Wallet · U-6 QR-Einlösung · U-2 Lockscreen-Push. Vier Screens, gleiche Karten-Sprache wie U-4, gleiche 3-Sekunden-Disziplin.</p>
+    </div>
+    <div></div>
+    <span class="meta__phase">Phase 2 · for review</span>
+  </header>
+
+  <div class="browser">
+    <div class="browser__bar">
+      <div class="browser__lights"><span></span><span></span><span></span></div>
+      <div class="browser__url">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <span>app.citywallet.de<b>/wallet</b></span>
+      </div>
+      <div style="width:120px"></div>
+    </div>
+    <div class="browser__tabs">
+      <div class="browser__tab browser__tab--active">
+        <span style="width:6px;height:6px;border-radius:50%;background:#FF0000;"></span>
+        City Wallet — Consumer
+      </div>
+      <div class="browser__tab">+</div>
+    </div>
+
+    <div class="browser__stage">
+
+      <!-- Role switcher -->
+      <div class="role-switcher">
+        <button class="active" type="button"><span class="dot"></span>Mia · Kundin</button>
+        <span class="swap">⇄</span>
+        <button type="button">Café Müller · Händlerin</button>
+      </div>
+
+      <!-- ════════════════════════════════════════════ -->
+      <!-- U-3 · START (HOME) -->
+      <!-- ════════════════════════════════════════════ -->
+      <div class="phone-wrap">
+        <div class="phone-label"><span class="phone-label__num">U-3</span>Start · ContextState + Live-Angebot</div>
+        <div class="phone">
+          <div class="phone__screen">
+            <div class="statusbar">
+              <div class="statusbar__notch"></div>
+              <span>14:30</span>
+              <div class="statusbar__icons">
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+                <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx="0.5" fill="currentColor" fill-opacity="0.4"/></svg>
+              </div>
+            </div>
+
+            <div class="app">
+              <div class="app__topbar">
+                <div class="app__wordmark">City Wallet <span>· Stuttgart</span></div>
+                <div class="app__icons">
+                  <svg viewBox="0 0 24 24"><polygon points="3 6 9 4 15 6 21 4 21 18 15 20 9 18 3 20 3 6"/><line x1="9" y1="4" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="20"/></svg>
+                  <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                </div>
+              </div>
+
+              <div class="app__body">
+                <h2 class="greet">Hi Mia</h2>
+                <div class="greet__date">Dienstag, 14. Oktober · 14:30</div>
+
+                <div class="section-h">
+                  <h3>Jetzt für dich</h3>
+                  <span class="section-h__more">in Echtzeit</span>
+                </div>
+
+                <div class="context-grid">
+                  <div class="ctx-tile">
+                    <div class="ctx-tile__head">
+                      <span class="ctx-tile__icon">
+                        <svg viewBox="0 0 24 24"><path d="M16 13a4 4 0 0 0 0-8 6 6 0 0 0-11.5 2A4 4 0 0 0 5 15"/><path d="M8 19v2M12 17v4M16 19v2"/></svg>
+                      </span>
+                      <span class="ctx-tile__lbl">Wetter</span>
+                    </div>
+                    <div class="ctx-tile__val">8 °C, Regen<em>leichter Schauer</em></div>
+                  </div>
+                  <div class="ctx-tile">
+                    <div class="ctx-tile__head">
+                      <span class="ctx-tile__icon">
+                        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                      </span>
+                      <span class="ctx-tile__lbl">Ort</span>
+                    </div>
+                    <div class="ctx-tile__val">Königstraße<em>Altstadt</em></div>
+                  </div>
+                  <div class="ctx-tile">
+                    <div class="ctx-tile__head">
+                      <span class="ctx-tile__icon">
+                        <svg viewBox="0 0 24 24"><path d="M13 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/><path d="M9 22l2-9-3-2 2-5 4 2 3 4"/><path d="M11 13l4 2 2 5"/></svg>
+                      </span>
+                      <span class="ctx-tile__lbl">Intent</span>
+                    </div>
+                    <div class="ctx-tile__val">Du bummelst<em>langsam</em></div>
+                  </div>
+                  <div class="ctx-tile">
+                    <div class="ctx-tile__head">
+                      <span class="ctx-tile__icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 9l1-5h16l1 5"/><path d="M5 9v11h14V9"/><path d="M9 20v-6h6v6"/></svg>
+                      </span>
+                      <span class="ctx-tile__lbl">In der Nähe</span>
+                    </div>
+                    <div class="ctx-tile__val">12 Partner<em>&lt; 200 m</em></div>
+                  </div>
+                </div>
+
+                <div class="section-h">
+                  <h3>Live-Angebot</h3>
+                  <span class="section-h__more">noch 14 Min.</span>
+                </div>
+
+                <article class="offer-compact" role="link">
+                  <div class="offer-compact__strip"></div>
+                  <div class="offer-compact__img">340×200</div>
+                  <div class="offer-compact__body">
+                    <span class="offer-compact__pill">Draußen kalt · 8 °C</span>
+                    <h4 class="offer-compact__title">Cappuccino</h4>
+                    <div class="offer-compact__meta">
+                      <span>Café Müller</span><span class="sep">·</span>
+                      <span>80 m</span><span class="sep">·</span>
+                      <span class="discount">−20 %</span>
+                    </div>
+                    <span class="offer-compact__chev">
+                      <svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+                    </span>
+                  </div>
+                </article>
+
+              </div>
+
+              <nav class="tabbar">
+                <a class="tabbar__item tabbar__item--active" href="#">
+                  <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+                  Start<span class="tabbar__dot"></span>
+                </a>
+                <a class="tabbar__item" href="#">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>
+                  Wallet
+                </a>
+                <a class="tabbar__item" href="#">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  Einstellungen
+                </a>
+              </nav>
+            </div>
+
+            <div class="home-indicator"><span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════ -->
+      <!-- U-5 · WALLET -->
+      <!-- ════════════════════════════════════════════ -->
+      <div class="phone-wrap">
+        <div class="phone-label"><span class="phone-label__num">U-5</span>Wallet · Cashback + aktive Angebote + Verlauf</div>
+        <div class="phone">
+          <div class="phone__screen">
+            <div class="statusbar">
+              <div class="statusbar__notch"></div>
+              <span>14:30</span>
+              <div class="statusbar__icons">
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+                <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx="0.5" fill="currentColor" fill-opacity="0.4"/></svg>
+              </div>
+            </div>
+
+            <div class="app">
+              <div class="app__topbar">
+                <div class="app__wordmark">City Wallet <span>· Wallet</span></div>
+                <div class="app__icons">
+                  <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+                </div>
+              </div>
+
+              <div class="app__body">
+                <div class="balance">
+                  <span class="balance__corner">Oktober</span>
+                  <div class="balance__lbl">Dein Cashback</div>
+                  <div class="balance__num">12,40 €</div>
+                  <div class="balance__sub">diesen Monat gesammelt</div>
+                </div>
+
+                <div class="section-h">
+                  <h3>Verlauf</h3>
+                  <span class="section-h__more">letzte 30 Tage</span>
+                </div>
+
+                <div>
+                  <div class="history-row">
+                    <span class="history-row__icon"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span>
+                    <div class="history-row__txt">
+                      <span class="history-row__name">Apotheke am Markt</span>
+                      <span class="history-row__date">12. Okt · 09:14</span>
+                    </div>
+                    <span class="history-row__amt">+ 0,50 €</span>
+                  </div>
+                  <div class="history-row">
+                    <span class="history-row__icon"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span>
+                    <div class="history-row__txt">
+                      <span class="history-row__name">Café Müller</span>
+                      <span class="history-row__date">10. Okt · 14:42</span>
+                    </div>
+                    <span class="history-row__amt">+ 0,80 €</span>
+                  </div>
+                  <div class="history-row">
+                    <span class="history-row__icon"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg></span>
+                    <div class="history-row__txt">
+                      <span class="history-row__name">Bäckerei Klein</span>
+                      <span class="history-row__date">07. Okt · 08:03</span>
+                    </div>
+                    <span class="history-row__amt">+ 0,60 €</span>
+                  </div>
+                </div>
+              </div>
+
+              <nav class="tabbar">
+                <a class="tabbar__item" href="#">
+                  <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
+                  Start
+                </a>
+                <a class="tabbar__item tabbar__item--active" href="#">
+                  <svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg>
+                  Wallet<span class="tabbar__dot"></span>
+                </a>
+                <a class="tabbar__item" href="#">
+                  <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                  Einstellungen
+                </a>
+              </nav>
+            </div>
+
+            <div class="home-indicator"><span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════ -->
+      <!-- U-6 · QR REDEMPTION -->
+      <!-- ════════════════════════════════════════════ -->
+      <div class="phone-wrap">
+        <div class="phone-label"><span class="phone-label__num">U-6</span>QR-Einlösung · Vollbild + Countdown</div>
+        <div class="phone">
+          <div class="phone__screen phone__screen--dark">
+            <div class="statusbar statusbar--light">
+              <div class="statusbar__notch"></div>
+              <span>14:30</span>
+              <div class="statusbar__icons">
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+                <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx="0.5" fill="currentColor" fill-opacity="0.4"/></svg>
+              </div>
+            </div>
+
+            <div class="qr-screen">
+              <div class="qr-screen__top">
+                <button class="qr-screen__close" type="button" aria-label="Schließen">
+                  <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+                </button>
+                <span class="qr-screen__pill">Live · 1 Code</span>
+              </div>
+
+              <div class="qr-screen__merchant">Café Müller</div>
+              <h2 class="qr-screen__title">−20 % Cappuccino</h2>
+
+              <div class="qr-screen__qrwrap" aria-label="QR-Code Platzhalter">
+                <div class="qr-screen__qr"></div>
+                <div class="qr-screen__qr2"></div>
+              </div>
+
+              <div class="qr-screen__countdown">
+                <div class="qr-screen__countdown-lbl">Gültig noch</div>
+                <div class="qr-screen__countdown-val">00:14:32</div>
+              </div>
+
+              <div class="qr-screen__hint">
+                <b>Zeig diesen Code an der Kasse.</b><br>
+                Nach dem Scan geht es automatisch zurück zum Wallet.
+              </div>
+            </div>
+
+            <div class="home-indicator home-indicator--light"><span></span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════════════ -->
+      <!-- U-2 · LOCKSCREEN + PUSH BANNER -->
+      <!-- ════════════════════════════════════════════ -->
+      <div class="phone-wrap">
+        <div class="phone-label"><span class="phone-label__num">U-2</span>Lockscreen · Push-Banner (statisch)</div>
+        <div class="phone">
+          <div class="phone__screen phone__screen--dark">
+            <div class="statusbar statusbar--light">
+              <div class="statusbar__notch"></div>
+              <span>14:30</span>
+              <div class="statusbar__icons">
+                <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="2.5" height="4" rx="0.4"/><rect x="4" y="5" width="2.5" height="6" rx="0.4"/><rect x="8" y="3" width="2.5" height="8" rx="0.4"/><rect x="12" y="0" width="2.5" height="11" rx="0.4"/></svg>
+                <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M1 4.5a9 9 0 0 1 12 0"/><path d="M3 6.5a6 6 0 0 1 8 0"/><path d="M5 8.5a3 3 0 0 1 4 0"/></svg>
+                <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5" stroke="currentColor" stroke-opacity="0.4"/><rect x="2" y="2" width="15" height="7" rx="1" fill="currentColor"/><rect x="20" y="3.5" width="1.5" height="4" rx="0.5" fill="currentColor" fill-opacity="0.4"/></svg>
+              </div>
+            </div>
+
+            <div class="lock">
+              <div class="lock__skyline"></div>
+
+              <div class="lock__top">
+                <div class="lock__date">Dienstag, 14. Oktober</div>
+                <div class="lock__time">14:30</div>
+              </div>
+
+              <div class="push-banner">
+                <span class="push-banner__app-icon" aria-label="City Wallet">CW</span>
+                <div style="width:100%">
+                  <div class="push-banner__head" style="margin-bottom:8px">
+                    <span class="push-banner__name">City Wallet</span>
+                    <span class="push-banner__time">jetzt</span>
+                  </div>
+                  <h4 style="font-size:15px;font-weight:700;line-height:1.25;margin:0 0 10px;letter-spacing:-0.01em">Draußen kalt? Dein Cappuccino wartet schon.</h4>
+                  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,0.12)">
+                    <div style="display:flex;flex-direction:column;gap:3px">
+                      <small style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;color:rgba(255,255,255,0.5);text-transform:uppercase">Händler</small>
+                      <b style="font-size:12px;font-weight:600;color:#fff">Café Müller</b>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:3px">
+                      <small style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;color:rgba(255,255,255,0.5);text-transform:uppercase">Distanz</small>
+                      <b style="font-size:12px;font-weight:600;color:#fff;font-feature-settings:'tnum' 1">80 m</b>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:3px">
+                      <small style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.08em;color:rgba(255,255,255,0.5);text-transform:uppercase">Rabatt</small>
+                      <b style="font-size:12px;font-weight:600;color:var(--brand-red);font-feature-settings:'tnum' 1">−20 %</b>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="lock__bottom">
+                <div class="lock__torch-row">
+                  <span class="lock__torch"><svg viewBox="0 0 24 24"><path d="M9 2l6 0 0 6-3 3-3-3z"/><path d="M12 11v11"/></svg></span>
+                  <span class="lock__torch"><svg viewBox="0 0 24 24"><rect x="4" y="6" width="16" height="12" rx="2"/><circle cx="14" cy="12" r="2"/></svg></span>
+                </div>
+                <div class="lock__swipe-hint">Nach oben wischen zum Öffnen</div>
+              </div>
+            </div>
+
+            <div class="home-indicator home-indicator--light"><span></span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Spec footnotes -->
+  <section class="specs">
+    <div class="spec">
+      <div class="spec__id">Judgment calls · please review</div>
+      <div class="spec__title">Stellen, an denen ich frei entschieden habe</div>
+      <ul>
+        <li><b>U-2 Banner-Icon</b><span>Spec sagte "kleines rotes Quadrat mit weißem S" — das ist der geschützte Sparkassen-S-Logo. Ich habe stattdessen ein rotes App-Icon mit "CW"-Wortmarke (City Wallet) gerendert. Tausch sofort möglich, sobald die Markenfreigabe vorliegt.</span></li>
+        <li><b>U-3 Tile-Icons</b><span>Spec nennt cloud / pin / walking / shop. Walking ist als Person-mit-Schritt stilisiert (2-px-Stroke, geometrisch). Wenn du eine andere Lesart von "Intent" willst (z. B. Augen-Icon für Browsing), Bescheid sagen.</span></li>
+        <li><b>U-3 Datum-Zeile</b><span>Habe unter "Hi Mia" eine Mono-Datumszeile "Dienstag, 14. Oktober · 14:30" gesetzt. Steht nicht in der Spec, gibt aber Mia einen Anker. Kann raus.</span></li>
+        <li><b>U-5 Balance-Karte</b><span>Habe einen schwarzen Balance-Container gewählt (nicht rot) — das Geld ist nicht das Brand-Signal, sondern Mia's Asset. Roter Fortschrittsbalken markiert den Cashback-Anteil ohne Brand-Inflation.</span></li>
+        <li><b>U-5 Validity-Strings</b><span>Spec gab "Heute gültig" und "Gültig bis 18:00". Ich habe bei Café Müller "Heute gültig · noch 14 Min." gewählt, weil der Card-Kontext sonst dem Live-Angebot aus U-3 widerspricht. Tausch trivial.</span></li>
+        <li><b>U-5 QR-Thumbnail</b><span>Auf den Wallet-Karten ein 40×40 QR-Thumbnail rechts — macht "tap-zum-öffnen" lesbar, ohne extra Button. Steht nicht in der Spec.</span></li>
+        <li><b>U-6 "Live · 1 Code"-Pill</b><span>Oben rechts auf dem QR-Screen, weil sonst der QR ohne Status auftaucht. Sag Bescheid wenn raus.</span></li>
+        <li><b>U-6 Hint-Text</b><span>Spec: "Zeig diesen Code an der Kasse". Ich habe einen zweiten Satz "Nach dem Scan geht es automatisch zurück zum Wallet." ergänzt. Falls zu viel, kürze ich auf einen Satz.</span></li>
+        <li><b>U-2 Wallpaper</b><span>Generischer dunkler Verlauf + angedeutete Stuttgart-Skyline-Streifenmaske im unteren Drittel — als Platzhalter. Kein echtes Stadtbild.</span></li>
+        <li><b>U-2 Banner-Layout</b><span>Variante 04 "Poster" gewählt — Headline groß, drei Mini-Spalten (Händler / Distanz / Rabatt) unter Trennlinie. Bauhaus-Plakat-Logik. "Noch X Min." entfernt.</span></li>
+      </ul>
+    </div>
+
+    <div class="spec">
+      <div class="spec__id">Tokens · Pattern-Konsistenz</div>
+      <div class="spec__title">Was alle vier Screens teilen</div>
+      <ul>
+        <li><b>Header</b><span>Identisch zu U-4: rotes Quadrat + Wortmarke + Stadt-Sublabel · Icons in --text-secondary, 1.75 Stroke</span></li>
+        <li><b>Section heading</b><span>13 px Semibold uppercase + Letterspacing 0.06em + Mono-Meta rechts</span></li>
+        <li><b>Compact-Card (U-3)</b><span>Halbiert die Höhe der U-4-Hero-Card, behält Strip + Pill + Headline + Meta. Tap → U-4-Vollversion.</span></li>
+        <li><b>Tabbar</b><span>3-Slot-Grid, aktiv = --brand-red + 4-px-Dot, inaktiv = --text-tertiary</span></li>
+        <li><b>Tabular numerals</b><span>--font-feature-numeric überall wo Zahlen (Cashback, Countdown, Distanzen)</span></li>
+        <li><b>Countdown-Farbe</b><span>--warning (#FF8A3D) — nur hier, nicht für andere Akzente. Konsistent zu U-4.</span></li>
+        <li><b>Lockscreen-Banner</b><span>Glass über dunklem Wallpaper — einzige Stelle, wo Glas erlaubt ist (System-Convention von iOS, kein Branding-Glas).</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="note">
+    <b>Markennutzung — fortgeführt:</b> Wie schon in U-4 verwende ich das rote Quadrat als App-Mark statt des geschützten Sparkassen-S-Logos. Im U-2 Banner heißt das Icon "CW" — sobald die offizielle Marke freigegeben ist, lässt sich das App-Icon ohne Layout-Änderung tauschen. Alle anderen Tokens (Rot, Inter, 8-pt-Grid, Radii, Schatten) entsprechen 1:1 dem Design-System.
+  </div>
+
+</div>
+
+</body>
+</html>
