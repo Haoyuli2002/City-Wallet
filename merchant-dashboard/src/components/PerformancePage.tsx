@@ -77,7 +77,11 @@ export default function PerformancePage() {
 
   return (
     <div style={{ maxWidth: 430, margin: "0 auto", minHeight: "100dvh", display: "flex", flexDirection: "column", background: "var(--surface-muted)" }}>
-      <TopBar merchantName={merchant.name} onScan={() => router.push("/scanner")} />
+      <TopBar
+        merchantName={merchant.name}
+        onScan={() => router.push("/scanner")}
+        onLogout={() => { window.localStorage.removeItem("cw_merchant"); setMerchant(null); }}
+      />
 
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 88px", display: "flex", flexDirection: "column", gap: 12 }}>
 
@@ -205,13 +209,7 @@ export default function PerformancePage() {
           )}
         </div>
 
-        {/* Switch store */}
-        <button
-          onClick={() => { localStorage.removeItem("cw_merchant"); setMerchant(null); }}
-          style={{ padding: "12px", border: "1px dashed var(--border-default)", borderRadius: "var(--radius-md)", background: "transparent", fontSize: 13, color: "var(--text-tertiary)", cursor: "pointer" }}
-        >
-          Switch store
-        </button>
+
 
       </div>
       <TabBar />

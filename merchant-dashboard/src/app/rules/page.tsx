@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import TopBar from "@/components/TopBar";
 import TabBar from "@/components/TabBar";
 import { getMerchant, updateRules, type MerchantRules } from "@/lib/api";
@@ -27,6 +28,7 @@ const ALL_PRODUCTS = [
 ];
 
 export default function RulesPage() {
+  const router = useRouter();
   const [merchant, setMerchant] = useState<{ id: string; name: string } | null>(null);
   const [rules, setRules] = useState<MerchantRules | null>(null);
   const [loading, setLoading] = useState(true);
@@ -133,7 +135,10 @@ export default function RulesPage() {
         .tc-front, .tc-back { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
         .tc-back { transform: rotateY(180deg); }
       `}</style>
-      <TopBar merchantName={merchant.name} />
+      <TopBar
+        merchantName={merchant.name}
+        onLogout={() => { window.localStorage.removeItem("cw_merchant"); setMerchant(null); }}
+      />
 
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 88px", display: "flex", flexDirection: "column", gap: 12 }}>
 

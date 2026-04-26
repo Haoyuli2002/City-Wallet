@@ -46,7 +46,13 @@ export default function ScannerPage() {
 
   return (
     <div style={{ maxWidth: 430, margin: "0 auto", minHeight: "100dvh", display: "flex", flexDirection: "column", background: "var(--surface-muted)" }}>
-      <TopBar merchantName={merchantName} />
+      <TopBar
+        merchantName={merchantName}
+        onLogout={() => {
+          if (typeof window !== "undefined") window.localStorage.removeItem("cw_merchant");
+          window.location.href = "/";
+        }}
+      />
 
       <div style={{ flex: 1, overflowY: "auto", padding: "16px 16px 88px", display: "flex", flexDirection: "column", gap: 12 }}>
 
