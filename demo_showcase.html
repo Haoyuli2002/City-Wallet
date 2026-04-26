@@ -6,53 +6,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#0f0f1a; color:#e0e0e0; }
-        .top { background:linear-gradient(90deg,#1a1a2e,#16213e); padding:12px 24px; display:flex; align-items:center; justify-content:space-between; }
-        .top h1 { font-size:18px; color:#fff; } .top h1 span { color:#e94560; }
-        .top .info { font-size:11px; color:#888; display:flex; gap:16px; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#FFF8F0; color:#3E2723; }
+        .top { background:linear-gradient(90deg,#5D4037,#795548); padding:12px 24px; display:flex; align-items:center; justify-content:space-between; }
+        .top h1 { font-size:18px; color:#fff; } .top h1 span { color:#FFB74D; }
+        .top .info { font-size:11px; color:#D7CCC8; display:flex; gap:16px; }
         .layout { display:flex; height:calc(100vh - 44px); }
         /* Map */
         .map-side { flex:1; position:relative; }
         #map { width:100%; height:100%; }
-        .ctx-bar { position:absolute; top:10px; left:10px; right:10px; z-index:10; background:rgba(26,26,46,0.92); padding:8px 14px; border-radius:10px; display:flex; gap:14px; font-size:12px; color:#aaa; backdrop-filter:blur(8px); }
-        .ctx-bar b { color:#e94560; }
+        .ctx-bar { position:absolute; top:10px; left:10px; right:10px; z-index:10; background:rgba(93,64,55,0.92); padding:8px 14px; border-radius:10px; display:flex; gap:14px; font-size:12px; color:#D7CCC8; backdrop-filter:blur(8px); }
+        .ctx-bar b { color:#FFB74D; }
         .ctrls { position:absolute; bottom:16px; left:10px; right:10px; z-index:10; display:flex; gap:8px; }
         .ctrls select, .ctrls button { padding:10px 14px; border:none; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; }
-        .ctrls select { background:#1a1a2e; color:#fff; border:1px solid #333; flex:0.4; }
-        .ctrls button { background:#e94560; color:#fff; flex:1; }
+        .ctrls select { background:#5D4037; color:#fff; border:1px solid #795548; flex:0.4; }
+        .ctrls button { background:#E65100; color:#fff; flex:1; }
         .ctrls button:disabled { opacity:0.5; }
         /* Right panel */
-        .panel { width:420px; background:#13132a; border-left:1px solid #222; overflow-y:auto; }
-        .step { border-bottom:1px solid #1a1a3a; }
+        .panel { width:420px; background:#FFF3E0; border-left:1px solid #D7CCC8; overflow-y:auto; }
+        .step { border-bottom:1px solid #EFEBE9; }
         .step-header { padding:12px 16px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; }
-        .step-header:hover { background:#1a1a3a; }
-        .step-num { background:#e94560; color:#fff; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; margin-right:8px; }
-        .step-title { font-size:13px; font-weight:600; }
-        .step-status { font-size:11px; color:#666; }
+        .step-header:hover { background:#EFEBE9; }
+        .step-num { background:#E65100; color:#fff; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; margin-right:8px; }
+        .step-title { font-size:13px; font-weight:600; color:#3E2723; }
+        .step-status { font-size:11px; color:#8D6E63; }
         .step-body { padding:0 16px 14px; display:none; }
         .step.open .step-body { display:block; }
-        .step.done .step-num { background:#2ecc71; }
-        .step.active .step-num { background:#f39c12; animation:pulse 1s infinite; }
+        .step.done .step-num { background:#2E7D32; }
+        .step.active .step-num { background:#FF8F00; animation:pulse 1s infinite; }
         @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
         /* Signal cards */
-        .sig { background:#1a1a3a; border-radius:8px; padding:10px 12px; margin:4px 0; font-size:12px; }
-        .sig .label { color:#888; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; }
-        .sig .val { color:#fff; font-weight:600; margin-top:2px; }
+        .sig { background:#EFEBE9; border-radius:8px; padding:10px 12px; margin:4px 0; font-size:12px; }
+        .sig .label { color:#8D6E63; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; }
+        .sig .val { color:#3E2723; font-weight:600; margin-top:2px; }
         /* Candidate list */
-        .cand { display:flex; align-items:center; gap:8px; padding:6px 8px; margin:2px 0; border-radius:6px; font-size:12px; }
-        .cand.top { background:#1a2a1a; border:1px solid #2ecc71; }
-        .cand .rank { width:20px; height:20px; border-radius:50%; background:#333; color:#fff; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; }
-        .cand .name { flex:1; color:#ccc; }
-        .cand .score { color:#e94560; font-weight:600; font-size:11px; }
+        .cand { display:flex; align-items:center; gap:8px; padding:6px 8px; margin:2px 0; border-radius:6px; font-size:12px; color:#5D4037; }
+        .cand.top { background:#E8F5E9; border:1px solid #4CAF50; }
+        .cand .rank { width:20px; height:20px; border-radius:50%; background:#795548; color:#fff; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; }
+        .cand .name { flex:1; color:#5D4037; }
+        .cand .score { color:#E65100; font-weight:600; font-size:11px; }
         /* Pricing */
         .price-row { display:flex; justify-content:space-between; padding:4px 0; font-size:12px; }
-        .price-row .k { color:#888; } .price-row .v { color:#fff; font-weight:600; }
-        .price-final { background:#e94560; color:#fff; padding:8px 12px; border-radius:8px; text-align:center; font-size:16px; font-weight:700; margin-top:6px; }
+        .price-row .k { color:#8D6E63; } .price-row .v { color:#3E2723; font-weight:600; }
+        .price-final { background:#E65100; color:#fff; padding:8px 12px; border-radius:8px; text-align:center; font-size:16px; font-weight:700; margin-top:6px; }
         /* LLM output */
-        .llm-quote { background:#1a2a3a; border-left:3px solid #3498db; padding:10px 12px; border-radius:0 8px 8px 0; margin:6px 0; font-size:12px; color:#aaa; font-style:italic; }
-        .llm-choice { background:#2ecc71; color:#fff; padding:8px 12px; border-radius:8px; font-size:13px; font-weight:600; margin:6px 0; }
+        .llm-quote { background:#FFF8E1; border-left:3px solid #FF8F00; padding:10px 12px; border-radius:0 8px 8px 0; margin:6px 0; font-size:12px; color:#5D4037; font-style:italic; }
+        .llm-choice { background:#2E7D32; color:#fff; padding:8px 12px; border-radius:8px; font-size:13px; font-weight:600; margin:6px 0; }
         /* JSON output */
-        .json-box { background:#0a0a1a; border:1px solid #222; border-radius:8px; padding:10px; font-family:monospace; font-size:10px; color:#8be; max-height:200px; overflow-y:auto; white-space:pre-wrap; word-break:break-all; }
+        .json-box { background:#EFEBE9; border:1px solid #D7CCC8; border-radius:8px; padding:10px; font-family:monospace; font-size:10px; color:#4E342E; max-height:200px; overflow-y:auto; white-space:pre-wrap; word-break:break-all; }
         /* Popup offer on map */
         .map-popup { background:#fff; border-radius:16px; padding:20px; width:300px; box-shadow:0 8px 30px rgba(0,0,0,0.3); }
         .map-popup .icon { font-size:32px; }
@@ -81,22 +81,14 @@
             <span>🎯 <b id="sigTrig">--</b></span>
         </div>
         <div id="map"></div>
-        <div class="ctrls" style="flex-direction:column;gap:6px;">
-            <div style="display:flex;gap:6px;">
-                <input id="searchBox" type="text" placeholder="🔍 Search location (e.g. Marienplatz Munich)" 
-                    style="flex:1;padding:10px 14px;border:1px solid #333;border-radius:10px;background:#1a1a2e;color:#fff;font-size:13px;"
-                    onkeydown="if(event.key==='Enter')searchLocation()">
-                <button onclick="searchLocation()" style="padding:10px 14px;border:none;border-radius:10px;background:#3498db;color:#fff;font-size:13px;font-weight:600;cursor:pointer;">📍 Go</button>
-            </div>
-            <div style="display:flex;gap:6px;">
-                <select id="intent" style="flex:0.4;padding:10px 14px;border:1px solid #333;border-radius:10px;background:#1a1a2e;color:#fff;font-size:13px;">
-                    <option value="browsing_food">🍽️ Browsing Food</option>
-                    <option value="browsing_general">🚶 General</option>
-                    <option value="commuting">🏃 Commuting</option>
-                    <option value="stationary">🧍 Stationary</option>
-                </select>
-                <button id="goBtn" onclick="run()" style="flex:1;padding:10px 14px;border:none;border-radius:10px;background:#e94560;color:#fff;font-size:13px;font-weight:600;cursor:pointer;">🤖 Generate Offer</button>
-            </div>
+        <div class="ctrls" style="display:flex;gap:6px;">
+            <select id="intent" style="flex:0.4;padding:10px 14px;border:1px solid #A1887F;border-radius:10px;background:#5D4037;color:#fff;font-size:13px;">
+                <option value="browsing_food">🍽️ Browsing Food</option>
+                <option value="browsing_general">🚶 General</option>
+                <option value="commuting">🏃 Commuting</option>
+                <option value="stationary">🧍 Stationary</option>
+            </select>
+            <button id="goBtn" onclick="run()" style="flex:1;padding:10px 14px;border:none;border-radius:10px;background:#E65100;color:#fff;font-size:13px;font-weight:600;cursor:pointer;">🤖 Generate Offer</button>
         </div>
     </div>
     <div class="panel" id="panel">
@@ -265,7 +257,8 @@ function showOfferPopup(offer){
             '<p style="font-size:12px;">\ud83c\udfe0 '+(m.name||'')+' \u00b7 \u2605'+(m.rating||0)+' \u00b7 '+(m.distance_m||0)+'m</p>'+
             '<div class="disc" style="background:'+(c.color_accent||'#D2691E')+';">'+(c.discount_percent||0)+'% OFF</div>'+
             '<p style="font-size:11px;">\u23f1\ufe0f '+(c.valid_minutes||15)+' min \u00b7 '+(c.mood||'')+' mood</p>'+
-            '<button style="background:'+(c.color_primary||'#8B4513')+';">'+(c.cta_text||'Claim')+'</button>'+
+            '<button onclick="acceptOffer(\''+offer.id+'\')" style="background:'+(c.color_primary||'#8B4513')+';">'+(c.cta_text||'Claim')+'</button>'+
+            '<div id="qrArea_'+offer.id+'" style="margin-top:8px;"></div>'+
             '</div>'
     });
     infoWin.open(map);
@@ -279,12 +272,38 @@ function updateMarkers(merchants){
             position:{lat:m.lat,lng:m.lon}, map:map, title:m.name,
             label:{text:icons[m.category]||'\ud83d\udccd',fontSize:'14px'},
             icon:{path:google.maps.SymbolPath.CIRCLE,
-                fillColor:i===0?'#e94560':'#555',fillOpacity:0.9,
+                fillColor:i===0?'#E65100':'#8D6E63',fillOpacity:0.9,
                 strokeColor:'#fff',strokeWeight:2,scale:i===0?16:10}
         });
         mk._id=m.id;
         markers.push(mk);
     });
+}
+
+async function acceptOffer(offerId){
+    try{
+        const r=await fetch(API+'/offers/'+offerId+'/accept',{method:'POST'});
+        const d=await r.json();
+        if(d.qr_code){
+            // Update the popup to show QR code
+            if(infoWin) infoWin.close();
+            const m=d.merchant||{};
+            infoWin=new google.maps.InfoWindow({
+                position:userMk.getPosition(),
+                content:'<div class="map-popup" style="background:#FFF8DC;text-align:center;">'+
+                    '<div style="font-size:24px;">✅ Offer Accepted!</div>'+
+                    '<p style="margin:8px 0;font-size:13px;color:#5D4037;">Show this QR code at</p>'+
+                    '<p style="font-weight:700;font-size:15px;color:#3E2723;">'+(m.name||'merchant')+'</p>'+
+                    '<img src="'+d.qr_code+'" style="width:180px;margin:12px auto;border-radius:12px;display:block;">'+
+                    '<p style="font-family:monospace;font-size:10px;color:#999;margin:4px 0;">'+(d.token||'')+'</p>'+
+                    '<p style="font-size:12px;color:#E65100;font-weight:600;margin-top:8px;">⏱️ Valid until '+(d.expires_at?d.expires_at.split('T')[1].substring(0,5):'--:--')+'</p>'+
+                    '</div>'
+            });
+            infoWin.open(map);
+        }
+    }catch(e){
+        alert('Accept error: '+e.message);
+    }
 }
 
 async function searchLocation(){
@@ -313,7 +332,7 @@ function initMap(){
         center:{lat,lng:lon},zoom:16,
         styles:[{featureType:'poi',stylers:[{visibility:'off'}]},{featureType:'transit',stylers:[{visibility:'off'}]}],
         mapTypeControl:false,streetViewControl:false,fullscreenControl:false,
-        backgroundColor:'#0f0f1a'
+        backgroundColor:'#FFF8F0'
     });
     userMk=new google.maps.Marker({position:{lat,lng:lon},map,title:'You',
         icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:'#4285F4',fillOpacity:1,strokeColor:'#fff',strokeWeight:3,scale:10}});

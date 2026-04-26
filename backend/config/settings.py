@@ -31,6 +31,9 @@ class Settings:
     # Google Places
     PLACES_SEARCH_RADIUS: int = int(os.getenv("PLACES_SEARCH_RADIUS", "500"))
 
+    # Eventbrite
+    EVENTBRITE_TOKEN: str = os.getenv("EVENTBRITE_TOKEN", "")
+
     # Frontend URL (for CORS)
     FRONTEND_URL: str = os.getenv("FRONTEND_URL", "http://localhost:3000")
 

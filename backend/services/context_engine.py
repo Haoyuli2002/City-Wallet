@@ -14,6 +14,7 @@ from config.settings import settings
 from services.weather import get_weather
 from services.places import search_nearby
 from services.transaction_sim import get_current_density
+from services.events import get_nearby_events
 from models.database import get_db
 
 _client = None
@@ -138,7 +139,8 @@ def _get_top5_by_preference(merchants: list, preference_scores: dict) -> list:
 
 async def _llm_judge(candidates: list, weather: dict, time_ctx: dict,
                      user_intent: str, confidence: float,
-                     preference_scores: dict, history_summary: str) -> dict:
+                     preference_scores: dict, history_summary: str,
+                     events: list = None) -> dict:
     """
     LLM as Judge: GPT-4o picks the best merchant from candidates
     considering BOTH merchant need AND user interest AND current context.
@@ -170,12 +172,17 @@ USER PREFERENCE (from past 7 days):
 - Preference scores: {pref_text if pref_text else 'no history yet'}
 - History: {history_summary if history_summary else 'new user, no history'}
 
+NEARBY EVENTS:
+{chr(10).join([f"  - {e['name']} ({e['category']}) at {e.get('venue_name','')} — {e['start']}" for e in (events or [])[:5]]) if events else '  No nearby events found'}
+
 SELECTION CRITERIA (consider ALL of these):
 1. User interest: pick something the user is likely to ACCEPT (based on preference scores)
 2. Merchant need: prefer merchants that are QUIET and need customers (high demand_gap)
 3. Context fit: match weather (cold→warm drinks, rain→indoor) and time (morning→coffee, lunch→food)
-4. Distance: closer is better
-5. Rating: higher rated merchants provide better experience
+4. Nearby events: if there are relevant events happening, consider merchants near event venues
+5. For browsing_general users: you may suggest visiting a nearby event instead of a merchant
+6. Distance: closer is better
+7. Rating: higher rated merchants provide better experience
 
 Choose exactly ONE merchant. Respond with ONLY valid JSON:
 {{
@@ -227,6 +234,7 @@ async def build_context(lat: float, lon: float, user_intent: str = "browsing_gen
     weather = await get_weather(lat, lon)
     time_ctx = _get_time_context()
     merchants = await search_nearby(lat, lon, radius=500)
+    events = await get_nearby_events(lat, lon, radius_km=10)
 
     # Add transaction density to each merchant
     for m in merchants:
@@ -277,7 +285,8 @@ async def build_context(lat: float, lon: float, user_intent: str = "browsing_gen
         judge_result = await _llm_judge(
             candidates, weather, time_ctx,
             user_intent, confidence,
-            preference_scores, history_summary
+            preference_scores, history_summary,
+            events=events
         )
     else:
         judge_result = {
@@ -305,7 +314,7 @@ async def build_context(lat: float, lon: float, user_intent: str = "browsing_gen
         "time": time_ctx,
         "user_intent": {"type": user_intent, "confidence": confidence},
         "nearby_merchants": merchants[:10],
-        "events": [],
+        "events": events[:5] if events else [],
         "composite_trigger": judge_result.get("trigger_type", "none"),
         "trigger_score": trigger_score,
         "ai_analysis": {
