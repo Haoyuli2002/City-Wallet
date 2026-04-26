@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>City Wallet — Debug Frontend</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f0f2f5; }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff; padding: 16px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .header h1 { font-size: 20px; }
+        .header h1 span { color: #e94560; }
+        .header .status { font-size: 12px; color: #aaa; }
+        
+        .main { display: flex; height: calc(100vh - 56px); }
+        
+        /* Left: Map */
+        #mapContainer { flex: 1; position: relative; }
+        #map { width: 100%; height: 100%; }
+        .context-bar {
+            position: absolute; top: 12px; left: 12px; right: 12px; z-index: 10;
+            background: rgba(255,255,255,0.95); padding: 10px 16px; border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+            display: flex; gap: 16px; align-items: center; font-size: 13px;
+        }
+        .context-bar .signal { display: flex; align-items: center; gap: 4px; }
+        
+        .controls {
+            position: absolute; bottom: 20px; left: 12px; right: 12px; z-index: 10;
+            display: flex; gap: 8px;
+        }
+        .btn {
+            padding: 10px 16px; border: none; border-radius: 10px; font-size: 14px;
+            font-weight: 600; cursor: pointer; flex: 1;
+        }
+        .btn-primary { background: #e94560; color: #fff; }
+        .btn-secondary { background: #fff; color: #333; border: 1px solid #ddd; }
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Right: Panel */
+        #panel {
+            width: 420px; background: #fff; border-left: 1px solid #e0e0e0;
+            overflow-y: auto; padding: 0;
+        }
+        .panel-section {
+            padding: 16px 20px; border-bottom: 1px solid #f0f0f0;
+        }
+        .panel-section h3 {
+            font-size: 12px; color: #888; text-transform: uppercase;
+            letter-spacing: 0.8px; margin-bottom: 10px;
+        }
+        
+        /* Offer card */
+        .offer-card {
+            border-radius: 16px; padding: 24px; margin: 8px 0;
+            transition: all 0.3s;
+        }
+        .offer-icon { font-size: 40px; margin-bottom: 8px; }
+        .offer-headline { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .offer-subtext { font-size: 14px; opacity: 0.8; margin-bottom: 12px; }
+        .offer-meta { font-size: 13px; opacity: 0.7; margin-bottom: 4px; }
+        .offer-discount {
+            display: inline-block; padding: 4px 12px; border-radius: 20px;
+            font-size: 16px; font-weight: 700; margin: 8px 0;
+        }
+        .offer-cta {
+            display: block; width: 100%; padding: 14px; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 12px;
+            color: #fff;
+        }
+        
+        /* QR */
+        .qr-container { text-align: center; padding: 20px; }
+        .qr-container img { max-width: 200px; border-radius: 12px; }
+        .qr-token { font-family: monospace; font-size: 12px; color: #888; margin-top: 8px; }
+        
+        /* Pricing */
+        .pricing-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+        .pricing-row .label { color: #666; }
+        .pricing-row .value { font-weight: 600; }
+        
+        /* Log */
+        #log { font-family: monospace; font-size: 11px; color: #666; max-height: 200px; overflow-y: auto; }
+        #log .entry { padding: 3px 0; border-bottom: 1px solid #f8f8f8; }
+        .entry.error { color: #e74c3c; }
+        .entry.success { color: #2ecc71; }
+        
+        /* Empty state */
+        .empty { text-align: center; padding: 40px; color: #ccc; }
+        .empty .icon { font-size: 48px; margin-bottom: 12px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏙️ City <span>Wallet</span> — Debug Frontend</h1>
+        <div class="status" id="serverStatus">Checking server...</div>
+    </div>
+    
+    <div class="main">
+        <div id="mapContainer">
+            <div class="context-bar" id="contextBar">
+                <div class="signal" id="weatherSignal">🌤️ --</div>
+                <div class="signal" id="timeSignal">🕐 --</div>
+                <div class="signal" id="intentSignal">🚶 --</div>
+                <div class="signal" id="triggerSignal">🎯 --</div>
+            </div>
+            <div id="map"></div>
+            <div class="controls">
+                <select id="intentSelect" class="btn btn-secondary" style="flex:0.5;">
+                    <option value="browsing_food">🍽️ Browsing Food</option>
+                    <option value="browsing_general">🚶 Browsing General</option>
+                    <option value="commuting">🏃 Commuting</option>
+                    <option value="stationary">🧍 Stationary</option>
+                </select>
+                <button class="btn btn-primary" onclick="getContextAndOffer()" id="generateBtn">
+                    🤖 Get Context + Generate Offer
+                </button>
+            </div>
+        </div>
+        
+        <div id="panel">
+            <div class="panel-section">
+                <h3>🎨 Generated Offer</h3>
+                <div id="offerArea">
+                    <div class="empty">
+                        <div class="icon">👈</div>
+                        <p>Click "Generate Offer" on the map</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel-section" id="pricingSection" style="display:none;">
+                <h3>💰 Dynamic Pricing Breakdown</h3>
+                <div id="pricingArea"></div>
+            </div>
+            
+            <div class="panel-section" id="qrSection" style="display:none;">
+                <h3>📱 QR Code</h3>
+                <div id="qrArea"></div>
+            </div>
+            
+            <div class="panel-section" id="redeemSection" style="display:none;">
+                <h3>🏪 Redeem</h3>
+                <div id="redeemArea"></div>
+            </div>
+            
+            <div class="panel-section">
+                <h3>📋 API Log</h3>
+                <div id="log"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const API = 'http://localhost:8000/api';
+    let map, userMarker, merchantMarkers = [];
+    let currentOffer = null;
+    let userLat = 48.1371, userLon = 11.5754; // Munich Marienplatz default
+
+    // ===== Logging =====
+    function log(msg, type = '') {
+        const el = document.getElementById('log');
+        const time = new Date().toLocaleTimeString();
+        el.innerHTML = `<div class="entry ${type}">${time} ${msg}</div>` + el.innerHTML;
+    }
+
+    // ===== Server Health =====
+    async function checkServer() {
+        try {
+            const r = await fetch(`${API}/health`);
+            const d = await r.json();
+            document.getElementById('serverStatus').textContent = `✅ ${d.city} · v${d.version}`;
+            log('Server connected', 'success');
+        } catch {
+            document.getElementById('serverStatus').textContent = '❌ Server offline';
+            log('Server not reachable — start with: cd backend && uvicorn main:app --reload', 'error');
+        }
+    }
+
+    // ===== Get Context + Generate Offer =====
+    async function getContextAndOffer() {
+        const btn = document.getElementById('generateBtn');
+        btn.disabled = true;
+        btn.textContent = '⏳ Loading...';
+        
+        const intent = document.getElementById('intentSelect').value;
+        
+        try {
+            // Step 1: Context
+            log(`POST /api/context (${userLat.toFixed(4)}, ${userLon.toFixed(4)}, ${intent})`);
+            const ctxRes = await fetch(`${API}/context`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({lat: userLat, lon: userLon, user_intent: intent, confidence: 0.85})
+            });
+            const ctx = await ctxRes.json();
+            
+            // Update context bar
+            const w = ctx.weather || {};
+            document.getElementById('weatherSignal').textContent = `${w.icon || '🌤️'} ${w.temp}°C ${w.condition}`;
+            const t = ctx.time || {};
+            document.getElementById('timeSignal').textContent = `🕐 ${t.day_of_week} ${t.time}`;
+            document.getElementById('intentSignal').textContent = `🚶 ${intent}`;
+            document.getElementById('triggerSignal').textContent = 
+                `🎯 ${ctx.composite_trigger} (${ctx.trigger_score})`;
+            
+            log(`Context: ${ctx.nearby_merchants?.length || 0} merchants, trigger=${ctx.composite_trigger} score=${ctx.trigger_score}`, 'success');
+            log(`AI: "${ctx.ai_analysis?.reasoning}"`, 'success');
+            
+            // Update map markers
+            updateMapMarkers(ctx.nearby_merchants || []);
+            
+            // Step 2: Generate Offer
+            if (ctx.trigger_score > 0.3) {
+                const merchantId = ctx.nearby_merchants?.[0]?.id;
+                log(`POST /api/offers/generate (merchant: ${merchantId})`);
+                
+                const offerRes = await fetch(`${API}/offers/generate`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        lat: userLat, lon: userLon, user_intent: intent,
+                        confidence: 0.85, merchant_id: merchantId, user_id: 'user_demo_001'
+                    })
+                });
+                const offer = await offerRes.json();
+                currentOffer = offer;
+                
+                log(`Offer: "${offer.content?.headline}" ${offer.content?.discount_percent}% off`, 'success');
+                renderOffer(offer);
+                renderPricing(offer.dynamic_pricing);
+            } else {
+                document.getElementById('offerArea').innerHTML = 
+                    '<div class="empty"><div class="icon">🤷</div><p>AI decided not to trigger (score too low)</p></div>';
+                log(`No offer — trigger_score=${ctx.trigger_score} < 0.3`, '');
+            }
+        } catch (e) {
+            log(`Error: ${e.message}`, 'error');
+        }
+        
+        btn.disabled = false;
+        btn.textContent = '🤖 Get Context + Generate Offer';
+    }
+
+    // ===== Render Offer Card =====
+    function renderOffer(offer) {
+        const c = offer.content || {};
+        const m = offer.merchant || {};
+        const bg = c.color_background || '#FFF8DC';
+        const primary = c.color_primary || '#8B4513';
+        const accent = c.color_accent || '#D2691E';
+        
+        document.getElementById('offerArea').innerHTML = `
+            <div class="offer-card" style="background:${bg};">
+                <div class="offer-icon">${c.icon || '🎁'}</div>
+                <div class="offer-headline" style="color:${primary}">${c.headline || 'Special offer!'}</div>
+                <div class="offer-subtext">${c.subtext || ''}</div>
+                <div class="offer-meta">🏪 ${m.name} · ★${m.rating} · ${m.distance_m}m</div>
+                <div class="offer-discount" style="background:${accent};color:#fff;">
+                    ${c.discount_percent}% OFF
+                </div>
+                <div class="offer-meta">⏱️ Valid ${c.valid_minutes} min · Mood: ${c.mood}</div>
+                <div class="offer-meta" style="font-size:11px;margin-top:8px;">
+                    💡 ${c.reasoning || ''}
+                </div>
+                <button class="offer-cta" style="background:${primary}" onclick="acceptOffer('${offer.id}')">
+                    ${c.cta_text || 'Claim Now'}
+                </button>
+                <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="dismissOffer('${offer.id}')">
+                    ❌ Dismiss
+                </button>
+            </div>
+        `;
+        document.getElementById('qrSection').style.display = 'none';
+        document.getElementById('redeemSection').style.display = 'none';
+    }
+
+    // ===== Render Pricing =====
+    function renderPricing(pricing) {
+        if (!pricing) { document.getElementById('pricingSection').style.display = 'none'; return; }
+        const b = pricing.breakdown || {};
+        document.getElementById('pricingSection').style.display = 'block';
+        document.getElementById('pricingArea').innerHTML = `
+            <div class="pricing-row"><span class="label">Base (demand gap)</span><span class="value">${b.base_from_demand}%</span></div>
+            <div class="pricing-row"><span class="label">Weather bonus</span><span class="value">+${b.weather_bonus}%</span></div>
+            <div class="pricing-row"><span class="label">Distance bonus</span><span class="value">+${b.distance_bonus}%</span></div>
+            <div class="pricing-row"><span class="label">Dismiss bonus</span><span class="value">+${b.dismiss_bonus}%</span></div>
+            <div class="pricing-row"><span class="label">Budget factor</span><span class="value">×${b.budget_factor}</span></div>
+            <div class="pricing-row" style="border-top:1px solid #eee;padding-top:8px;font-weight:600;">
+                <span class="label">Final discount</span><span class="value" style="color:#e94560;">${b.final_capped}%</span>
+            </div>
+        `;
+    }
+
+    // ===== Accept Offer =====
+    async function acceptOffer(offerId) {
+        try {
+            log(`POST /api/offers/${offerId}/accept`);
+            const r = await fetch(`${API}/offers/${offerId}/accept`, { method: 'POST' });
+            const d = await r.json();
+            
+            if (d.qr_code) {
+                document.getElementById('qrSection').style.display = 'block';
+                document.getElementById('qrArea').innerHTML = `
+                    <div class="qr-container">
+                        <img src="${d.qr_code}" alt="QR Code">
+                        <div class="qr-token">${d.token}</div>
+                        <p style="margin-top:12px;font-size:13px;color:#666;">Show this at ${d.merchant?.name || 'merchant'}</p>
+                    </div>
+                `;
+                // Show redeem section
+                document.getElementById('redeemSection').style.display = 'block';
+                document.getElementById('redeemArea').innerHTML = `
+                    <div style="padding:8px 0;">
+                        <label style="font-size:13px;color:#666;">Transaction amount (€):</label>
+                        <input type="number" id="redeemAmount" value="4.50" step="0.50" min="1" 
+                            style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;margin:8px 0;">
+                        <button class="btn btn-primary" style="width:100%;" onclick="redeemOffer('${offerId}', '${d.token}')">
+                            📱 Simulate Merchant Scan
+                        </button>
+                    </div>
+                `;
+                log(`Accepted! Token: ${d.token}`, 'success');
+            }
+        } catch (e) {
+            log(`Accept error: ${e.message}`, 'error');
+        }
+    }
+
+    // ===== Dismiss Offer =====
+    async function dismissOffer(offerId) {
+        try {
+            log(`POST /api/offers/${offerId}/dismiss`);
+            const r = await fetch(`${API}/offers/${offerId}/dismiss`, { method: 'POST' });
+            const d = await r.json();
+            document.getElementById('offerArea').innerHTML = 
+                `<div class="empty"><div class="icon">👋</div><p>${d.message || 'Dismissed'}</p></div>`;
+            log(`Dismissed: ${d.message}`, '');
+        } catch (e) {
+            log(`Dismiss error: ${e.message}`, 'error');
+        }
+    }
+
+    // ===== Redeem =====
+    async function redeemOffer(offerId, token) {
+        const amount = parseFloat(document.getElementById('redeemAmount').value) || 4.50;
+        try {
+            log(`POST /api/offers/${offerId}/redeem (€${amount})`);
+            const r = await fetch(`${API}/offers/${offerId}/redeem`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ token, transaction_amount: amount })
+            });
+            const d = await r.json();
+            
+            document.getElementById('redeemArea').innerHTML = `
+                <div style="background:#d4edda;padding:16px;border-radius:10px;text-align:center;">
+                    <div style="font-size:24px;">🎉</div>
+                    <div style="font-size:16px;font-weight:600;color:#155724;">Redeemed!</div>
+                    <div style="font-size:13px;color:#155724;margin-top:4px;">
+                        Discount: €${d.discount_applied} · Cashback: €${d.cashback_credited}
+                    </div>
+                    <div style="font-size:13px;color:#155724;">
+                        Wallet: €${d.wallet_new_balance}
+                    </div>
+                </div>
+                <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="checkWallet()">
+                    💰 Check Wallet
+                </button>
+            `;
+            log(`Redeemed! Discount: €${d.discount_applied}, Cashback: €${d.cashback_credited}`, 'success');
+        } catch (e) {
+            log(`Redeem error: ${e.message}`, 'error');
+        }
+    }
+
+    // ===== Wallet =====
+    async function checkWallet() {
+        try {
+            const r = await fetch(`${API}/wallet/user_demo_001`);
+            const d = await r.json();
+            log(`Wallet balance: €${d.balance}`, 'success');
+            alert(`💰 Wallet Balance: €${d.balance}\n\nTransactions:\n${
+                d.transactions?.map(t => `${t.type}: €${t.amount} — ${t.description}`).join('\n') || 'none'
+            }`);
+        } catch (e) {
+            log(`Wallet error: ${e.message}`, 'error');
+        }
+    }
+
+    // ===== Map =====
+    function updateMapMarkers(merchants) {
+        merchantMarkers.forEach(m => m.setMap(null));
+        merchantMarkers = [];
+        
+        const icons = { cafe: '☕', restaurant: '🍽️', bakery: '🥖', bar: '🍺', book_store: '📚' };
+        
+        merchants.forEach((m, i) => {
+            const marker = new google.maps.Marker({
+                position: { lat: m.lat, lng: m.lon },
+                map: map,
+                title: m.name,
+                label: { text: icons[m.category] || '📍', fontSize: '16px' },
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: i === 0 ? '#e94560' : '#666',
+                    fillOpacity: 0.9,
+                    strokeColor: '#fff',
+                    strokeWeight: 2,
+                    scale: i === 0 ? 18 : 12,
+                },
+            });
+            merchantMarkers.push(marker);
+        });
+    }
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: userLat, lng: userLon },
+            zoom: 16,
+            styles: [
+                { featureType: 'poi', stylers: [{ visibility: 'off' }] },
+                { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+            ],
+            mapTypeControl: false, streetViewControl: false, fullscreenControl: false,
+        });
+
+        // User marker
+        userMarker = new google.maps.Marker({
+            position: { lat: userLat, lng: userLon },
+            map: map,
+            title: 'You',
+            icon: {
+                path: google.maps.SymbolPath.CIRCLE,
+                fillColor: '#4285F4',
+                fillOpacity: 1,
+                strokeColor: '#fff',
+                strokeWeight: 3,
+                scale: 10,
+            },
+        });
+
+        // Click map to move user
+        map.addListener('click', (e) => {
+            userLat = e.latLng.lat();
+            userLon = e.latLng.lng();
+            userMarker.setPosition(e.latLng);
+            log(`📍 Moved to (${userLat.toFixed(4)}, ${userLon.toFixed(4)})`);
+        });
+
+        checkServer();
+    }
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHpj6gdFSAMnuUTVqZavxu_9xNa5ujpek&callback=initMap">
+    </script>
+</body>
+</html>

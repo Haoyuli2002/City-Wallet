@@ -60,6 +60,22 @@ def _get_top5_by_demand(merchants: list) -> list:
 
 # ==================== Step 2: Top 5 by User Preference ====================
 
+async def _get_explicit_preferences(user_id: str) -> dict:
+    """Get user's self-selected interest preferences (cold start)."""
+    import json as _json
+    db = await get_db()
+    try:
+        cursor = await db.execute(
+            "SELECT preferences FROM user_preferences WHERE user_id = ?", [user_id]
+        )
+        row = await cursor.fetchone()
+        if row:
+            return _json.loads(row["preferences"])
+        return {}
+    finally:
+        await db.close()
+
+
 async def _get_user_history(user_id: str) -> list:
     """Get user's offer interaction history from past 7 days (max 21 records)."""
     seven_days_ago = (datetime.now() - timedelta(days=7)).isoformat()
@@ -219,9 +235,25 @@ async def build_context(lat: float, lon: float, user_intent: str = "browsing_gen
     # Step 1: Top 5 by demand gap
     top5_demand = _get_top5_by_demand(merchants)
 
-    # Step 2: Top 5 by user preference
+    # Step 2: Top 5 by user preference (explicit + history merged)
+    explicit_prefs = await _get_explicit_preferences(user_id)
     history = await _get_user_history(user_id)
-    preference_scores = _calculate_preference_scores(history)
+    history_scores = _calculate_preference_scores(history)
+
+    # Merge: explicit (cold start) + history (behavioral)
+    # If user has history, weight: 70% history + 30% explicit
+    # If no history, use 100% explicit
+    # If neither, all categories default to 0.3
+    all_categories = set(list(explicit_prefs.keys()) + list(history_scores.keys()))
+    preference_scores = {}
+    for cat in all_categories:
+        exp = explicit_prefs.get(cat, 0.3)
+        hist = history_scores.get(cat)
+        if hist is not None and len(history) > 0:
+            preference_scores[cat] = round(hist * 0.7 + exp * 0.3, 2)
+        else:
+            preference_scores[cat] = round(exp, 2)
+
     top5_preference = _get_top5_by_preference(list(merchants), preference_scores)
 
     # Merge candidates (deduplicate by id)

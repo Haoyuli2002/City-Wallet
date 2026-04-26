@@ -128,7 +128,18 @@ async def init_db():
             )
         """)
 
-        # 表7: wallet_transactions — 钱包流水
+        # 表7: user_preferences — 用户自选兴趣（冷启动）
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS user_preferences (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id TEXT UNIQUE NOT NULL,
+                preferences TEXT NOT NULL DEFAULT '{}',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+
+        # 表8: wallet_transactions — 钱包流水
         await db.execute("""
             CREATE TABLE IF NOT EXISTS wallet_transactions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

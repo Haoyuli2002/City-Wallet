@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>City Wallet — Demo Showcase</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#0f0f1a; color:#e0e0e0; }
+        .top { background:linear-gradient(90deg,#1a1a2e,#16213e); padding:12px 24px; display:flex; align-items:center; justify-content:space-between; }
+        .top h1 { font-size:18px; color:#fff; } .top h1 span { color:#e94560; }
+        .top .info { font-size:11px; color:#888; display:flex; gap:16px; }
+        .layout { display:flex; height:calc(100vh - 44px); }
+        /* Map */
+        .map-side { flex:1; position:relative; }
+        #map { width:100%; height:100%; }
+        .ctx-bar { position:absolute; top:10px; left:10px; right:10px; z-index:10; background:rgba(26,26,46,0.92); padding:8px 14px; border-radius:10px; display:flex; gap:14px; font-size:12px; color:#aaa; backdrop-filter:blur(8px); }
+        .ctx-bar b { color:#e94560; }
+        .ctrls { position:absolute; bottom:16px; left:10px; right:10px; z-index:10; display:flex; gap:8px; }
+        .ctrls select, .ctrls button { padding:10px 14px; border:none; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; }
+        .ctrls select { background:#1a1a2e; color:#fff; border:1px solid #333; flex:0.4; }
+        .ctrls button { background:#e94560; color:#fff; flex:1; }
+        .ctrls button:disabled { opacity:0.5; }
+        /* Right panel */
+        .panel { width:420px; background:#13132a; border-left:1px solid #222; overflow-y:auto; }
+        .step { border-bottom:1px solid #1a1a3a; }
+        .step-header { padding:12px 16px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; }
+        .step-header:hover { background:#1a1a3a; }
+        .step-num { background:#e94560; color:#fff; width:22px; height:22px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; margin-right:8px; }
+        .step-title { font-size:13px; font-weight:600; }
+        .step-status { font-size:11px; color:#666; }
+        .step-body { padding:0 16px 14px; display:none; }
+        .step.open .step-body { display:block; }
+        .step.done .step-num { background:#2ecc71; }
+        .step.active .step-num { background:#f39c12; animation:pulse 1s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+        /* Signal cards */
+        .sig { background:#1a1a3a; border-radius:8px; padding:10px 12px; margin:4px 0; font-size:12px; }
+        .sig .label { color:#888; font-size:10px; text-transform:uppercase; letter-spacing:0.5px; }
+        .sig .val { color:#fff; font-weight:600; margin-top:2px; }
+        /* Candidate list */
+        .cand { display:flex; align-items:center; gap:8px; padding:6px 8px; margin:2px 0; border-radius:6px; font-size:12px; }
+        .cand.top { background:#1a2a1a; border:1px solid #2ecc71; }
+        .cand .rank { width:20px; height:20px; border-radius:50%; background:#333; color:#fff; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; }
+        .cand .name { flex:1; color:#ccc; }
+        .cand .score { color:#e94560; font-weight:600; font-size:11px; }
+        /* Pricing */
+        .price-row { display:flex; justify-content:space-between; padding:4px 0; font-size:12px; }
+        .price-row .k { color:#888; } .price-row .v { color:#fff; font-weight:600; }
+        .price-final { background:#e94560; color:#fff; padding:8px 12px; border-radius:8px; text-align:center; font-size:16px; font-weight:700; margin-top:6px; }
+        /* LLM output */
+        .llm-quote { background:#1a2a3a; border-left:3px solid #3498db; padding:10px 12px; border-radius:0 8px 8px 0; margin:6px 0; font-size:12px; color:#aaa; font-style:italic; }
+        .llm-choice { background:#2ecc71; color:#fff; padding:8px 12px; border-radius:8px; font-size:13px; font-weight:600; margin:6px 0; }
+        /* JSON output */
+        .json-box { background:#0a0a1a; border:1px solid #222; border-radius:8px; padding:10px; font-family:monospace; font-size:10px; color:#8be; max-height:200px; overflow-y:auto; white-space:pre-wrap; word-break:break-all; }
+        /* Popup offer on map */
+        .map-popup { background:#fff; border-radius:16px; padding:20px; width:300px; box-shadow:0 8px 30px rgba(0,0,0,0.3); }
+        .map-popup .icon { font-size:32px; }
+        .map-popup h3 { font-size:18px; margin:4px 0; }
+        .map-popup p { font-size:13px; color:#666; margin:2px 0; }
+        .map-popup .disc { display:inline-block; padding:4px 12px; border-radius:16px; color:#fff; font-weight:700; font-size:14px; margin:8px 0; }
+        .map-popup button { width:100%; padding:12px; border:none; border-radius:10px; font-size:14px; font-weight:600; color:#fff; cursor:pointer; margin-top:4px; }
+        .empty-panel { text-align:center; padding:40px 20px; color:#444; }
+        .empty-panel .big { font-size:40px; margin-bottom:10px; }
+    </style>
+</head>
+<body>
+<div class="top">
+    <h1>🏙️ City <span>Wallet</span> — System Demo</h1>
+    <div class="info">
+        <span id="srvStatus">⏳ connecting...</span>
+        <span id="srvCity"></span>
+    </div>
+</div>
+<div class="layout">
+    <div class="map-side">
+        <div class="ctx-bar">
+            <span id="sigW">🌤️ --</span>
+            <span id="sigT">🕐 --</span>
+            <span id="sigI">🚶 --</span>
+            <span>🎯 <b id="sigTrig">--</b></span>
+        </div>
+        <div id="map"></div>
+        <div class="ctrls">
+            <select id="intent">
+                <option value="browsing_food">🍽️ Browsing Food</option>
+                <option value="browsing_general">🚶 General</option>
+                <option value="commuting">🏃 Commuting</option>
+                <option value="stationary">🧍 Stationary</option>
+            </select>
+            <button id="goBtn" onclick="run()">🤖 Generate Offer</button>
+        </div>
+    </div>
+    <div class="panel" id="panel">
+        <div class="empty-panel" id="emptyPanel">
+            <div class="big">👈</div>
+            <p>Click <b>Generate Offer</b> to see the decision pipeline</p>
+        </div>
+        <!-- Steps injected dynamically -->
+        <div id="steps"></div>
+    </div>
+</div>
+
+<script>
+const API='http://localhost:8000/api';
+let map,userMk,markers=[],infoWin=null;
+let lat=48.1371,lon=11.5754;
+
+async function checkSrv(){
+    try{ const r=await fetch(API+'/health'); const d=await r.json();
+        document.getElementById('srvStatus').textContent='✅ online';
+        document.getElementById('srvCity').textContent=d.city;
+    }catch{ document.getElementById('srvStatus').textContent='❌ offline'; }
+}
+
+function setStep(n,status,html){
+    const el=document.getElementById('step'+n);
+    if(!el)return;
+    el.className='step '+status;
+    if(html!==undefined) el.querySelector('.step-body').innerHTML=html;
+    if(status==='open'||status==='done open') el.querySelector('.step-body').style.display='block';
+}
+
+function initSteps(){
+    document.getElementById('emptyPanel').style.display='none';
+    const titles=['Context Signals','Candidate Selection','LLM Judge','Dynamic Pricing','AI Offer Output'];
+    let h='';
+    titles.forEach((t,i)=>{
+        h+=`<div class="step" id="step${i+1}">
+            <div class="step-header" onclick="this.parentElement.classList.toggle('open')">
+                <span><span class="step-num">${i+1}</span><span class="step-title">${t}</span></span>
+                <span class="step-status" id="stat${i+1}">waiting</span>
+            </div>
+            <div class="step-body"></div>
+        </div>`;
+    });
+    document.getElementById('steps').innerHTML=h;
+}
+
+async function run(){
+    const btn=document.getElementById('goBtn');
+    btn.disabled=true; btn.textContent='⏳ Processing...';
+    initSteps();
+    const intent=document.getElementById('intent').value;
+
+    // Step 1: Context
+    setStep(1,'active',''); document.getElementById('stat1').textContent='fetching...';
+    let ctx;
+    try{
+        const r=await fetch(API+'/context',{method:'POST',headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({lat,lon,user_intent:intent,confidence:0.85})});
+        ctx=await r.json();
+    }catch(e){ setStep(1,'','<div class="sig"><div class="val" style="color:#e74c3c">Error: '+e.message+'</div></div>'); btn.disabled=false; btn.textContent='🤖 Generate Offer'; return; }
+
+    const w=ctx.weather||{}, t=ctx.time||{}, ai=ctx.ai_analysis||{}, rd=ctx.recommendation_details||{};
+    document.getElementById('sigW').textContent=`${w.icon||'🌤️'} ${w.temp}°C ${w.condition}`;
+    document.getElementById('sigT').textContent=`🕐 ${t.day_of_week||''} ${t.time||''}`;
+    document.getElementById('sigI').textContent=`🚶 ${intent}`;
+    document.getElementById('sigTrig').textContent=`${ctx.composite_trigger} (${ctx.trigger_score})`;
+
+    setStep(1,'done open',`
+        <div class="sig"><div class="label">Weather</div><div class="val">${w.icon} ${w.temp}°C, feels ${w.feels_like}°C, ${w.condition} — ${w.description}</div></div>
+        <div class="sig"><div class="label">Time</div><div class="val">${t.day_of_week} ${t.date} ${t.time} | weekend: ${t.is_weekend} | holiday: ${t.is_holiday}${t.holiday_name?' ('+t.holiday_name+')':''}</div></div>
+        <div class="sig"><div class="label">User Intent</div><div class="val">${intent} (confidence: 0.85)</div></div>
+        <div class="sig"><div class="label">Nearby Merchants</div><div class="val">${ctx.nearby_merchants?.length||0} within 500m</div></div>
+    `); document.getElementById('stat1').textContent='✅ done';
+    updateMarkers(ctx.nearby_merchants||[]);
+
+    // Step 2: Candidates
+    setStep(2,'active',''); document.getElementById('stat2').textContent='analyzing...';
+    await new Promise(r=>setTimeout(r,300));
+    let candsHtml='<div style="margin-bottom:8px;font-size:11px;color:#666;">TOP 5 BY DEMAND GAP</div>';
+    (rd.top5_demand||[]).forEach((m,i)=>{
+        candsHtml+=`<div class="cand${i===0?' top':''}"><span class="rank">${i+1}</span><span class="name">${m.name} (${m.category})</span><span class="score">gap: ${m.demand_gap}</span></div>`;
+    });
+    candsHtml+='<div style="margin:8px 0 4px;font-size:11px;color:#666;">TOP 5 BY USER PREFERENCE</div>';
+    (rd.top5_preference||[]).forEach((m,i)=>{
+        candsHtml+=`<div class="cand${i===0?' top':''}"><span class="rank">${i+1}</span><span class="name">${m.name} (${m.category})</span><span class="score">pref: ${m.interest_score}</span></div>`;
+    });
+    candsHtml+=`<div class="sig" style="margin-top:8px;"><div class="label">Total Candidates</div><div class="val">${rd.total_candidates||0} (after dedup) · User history: ${rd.history_count||0} offers</div></div>`;
+    if(rd.user_preference_scores && Object.keys(rd.user_preference_scores).length>0){
+        candsHtml+='<div class="sig"><div class="label">Preference Scores</div><div class="val">'+Object.entries(rd.user_preference_scores).map(([k,v])=>`${k}=${v}`).join(', ')+'</div></div>';
+    }
+    setStep(2,'done open',candsHtml); document.getElementById('stat2').textContent='✅ done';
+
+    // Step 3: LLM Judge
+    setStep(3,'active',''); document.getElementById('stat3').textContent='GPT-4o judging...';
+    await new Promise(r=>setTimeout(r,300));
+    setStep(3,'done open',
+        '<div class="llm-choice">\u2192 '+( ai.chosen_merchant||'(none)')+'</div>'+
+        '<div class="llm-quote">"'+(ai.reasoning||'no reasoning')+'"</div>'+
+        '<div class="sig"><div class="label">Trigger Type</div><div class="val">'+(ai.suggested_category||ctx.composite_trigger)+'</div></div>'+
+        '<div class="sig"><div class="label">Confidence</div><div class="val">'+(ctx.trigger_score||0)+'</div></div>'
+    ); document.getElementById('stat3').textContent='\u2705 done';
+
+    // Step 4 + 5: Generate offer (includes dynamic pricing)
+    if(ctx.trigger_score>0.3){
+        setStep(4,'active',''); document.getElementById('stat4').textContent='calculating...';
+        setStep(5,'active',''); document.getElementById('stat5').textContent='GPT-4o generating...';
+        
+        let offer;
+        try{
+            const mid=ctx.nearby_merchants?.[0]?.id;
+            const r2=await fetch(API+'/offers/generate',{method:'POST',headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({lat,lon,user_intent:intent,confidence:0.85,merchant_id:mid,user_id:'user_demo_001'})});
+            offer=await r2.json();
+        }catch(e){ setStep(4,'done open','<div class="sig"><div class="val" style="color:#e74c3c">'+e.message+'</div></div>'); btn.disabled=false; btn.textContent='\ud83e\udd16 Generate Offer'; return; }
+
+        // Step 4: Pricing
+        const dp=offer.dynamic_pricing||{};
+        const b=dp.breakdown||{};
+        setStep(4,'done open',
+            '<div class="price-row"><span class="k">Base (demand gap)</span><span class="v">'+(b.base_from_demand||0)+'%</span></div>'+
+            '<div class="price-row"><span class="k">Weather bonus</span><span class="v">+'+(b.weather_bonus||0)+'%</span></div>'+
+            '<div class="price-row"><span class="k">Distance bonus</span><span class="v">+'+(b.distance_bonus||0)+'%</span></div>'+
+            '<div class="price-row"><span class="k">Dismiss bonus</span><span class="v">+'+(b.dismiss_bonus||0)+'%</span></div>'+
+            '<div class="price-row"><span class="k">Budget factor</span><span class="v">\u00d7'+(b.budget_factor||1)+'</span></div>'+
+            '<div class="price-final">'+(b.final_capped||(offer.content?.discount_percent||10))+'% OFF</div>'
+        ); document.getElementById('stat4').textContent='\u2705 done';
+
+        // Step 5: AI output
+        const c=offer.content||{};
+        setStep(5,'done open',
+            '<div class="sig"><div class="label">Headline</div><div class="val" style="font-size:16px;">'+(c.icon||'')+' '+(c.headline||'')+'</div></div>'+
+            '<div class="sig"><div class="label">Subtext</div><div class="val">'+(c.subtext||'')+'</div></div>'+
+            '<div class="sig"><div class="label">Discount</div><div class="val" style="color:#e94560;">'+(c.discount_percent||0)+'%</div></div>'+
+            '<div class="sig"><div class="label">Mood / Colors</div><div class="val">'+(c.mood||'')+' | '+(c.color_primary||'')+' / '+(c.color_background||'')+' / '+(c.color_accent||'')+'</div></div>'+
+            '<div class="sig"><div class="label">CTA</div><div class="val">'+(c.cta_text||'')+'</div></div>'+
+            '<div class="sig"><div class="label">Reasoning</div><div class="val" style="font-style:italic;color:#aaa;">'+(c.reasoning||'')+'</div></div>'+
+            '<div style="margin-top:8px;font-size:10px;color:#555;">Full JSON:</div>'+
+            '<div class="json-box">'+JSON.stringify(c,null,2)+'</div>'
+        ); document.getElementById('stat5').textContent='\u2705 done';
+
+        // Show popup on map
+        showOfferPopup(offer);
+    } else {
+        setStep(4,'done open','<div class="sig"><div class="val">Skipped — trigger too low</div></div>');
+        setStep(5,'done open','<div class="sig"><div class="val">No offer generated</div></div>');
+        document.getElementById('stat4').textContent='skipped';
+        document.getElementById('stat5').textContent='skipped';
+    }
+    btn.disabled=false; btn.textContent='\ud83e\udd16 Generate Offer';
+}
+
+function showOfferPopup(offer){
+    const c=offer.content||{}, m=offer.merchant||{};
+    if(infoWin) infoWin.close();
+    const merchant=markers.find(mk=>mk._id===m.id);
+    const pos=merchant?merchant.getPosition():{lat:lat,lng:lon};
+    
+    infoWin=new google.maps.InfoWindow({
+        position:pos,
+        content:'<div class="map-popup" style="background:'+(c.color_background||'#FFF8DC')+';">'+
+            '<div class="icon">'+(c.icon||'\ud83c\udf81')+'</div>'+
+            '<h3 style="color:'+(c.color_primary||'#333')+';">'+(c.headline||'Special!')+'</h3>'+
+            '<p>'+(c.subtext||'')+'</p>'+
+            '<p style="font-size:12px;">\ud83c\udfe0 '+(m.name||'')+' \u00b7 \u2605'+(m.rating||0)+' \u00b7 '+(m.distance_m||0)+'m</p>'+
+            '<div class="disc" style="background:'+(c.color_accent||'#D2691E')+';">'+(c.discount_percent||0)+'% OFF</div>'+
+            '<p style="font-size:11px;">\u23f1\ufe0f '+(c.valid_minutes||15)+' min \u00b7 '+(c.mood||'')+' mood</p>'+
+            '<button style="background:'+(c.color_primary||'#8B4513')+';">'+(c.cta_text||'Claim')+'</button>'+
+            '</div>'
+    });
+    infoWin.open(map);
+}
+
+function updateMarkers(merchants){
+    markers.forEach(m=>m.setMap(null)); markers=[];
+    const icons={cafe:'\u2615',restaurant:'\ud83c\udf7d\ufe0f',bakery:'\ud83e\udd56',bar:'\ud83c\udf7a',book_store:'\ud83d\udcda'};
+    merchants.forEach((m,i)=>{
+        const mk=new google.maps.Marker({
+            position:{lat:m.lat,lng:m.lon}, map:map, title:m.name,
+            label:{text:icons[m.category]||'\ud83d\udccd',fontSize:'14px'},
+            icon:{path:google.maps.SymbolPath.CIRCLE,
+                fillColor:i===0?'#e94560':'#555',fillOpacity:0.9,
+                strokeColor:'#fff',strokeWeight:2,scale:i===0?16:10}
+        });
+        mk._id=m.id;
+        markers.push(mk);
+    });
+}
+
+function initMap(){
+    map=new google.maps.Map(document.getElementById('map'),{
+        center:{lat,lng:lon},zoom:16,
+        styles:[{featureType:'poi',stylers:[{visibility:'off'}]},{featureType:'transit',stylers:[{visibility:'off'}]}],
+        mapTypeControl:false,streetViewControl:false,fullscreenControl:false,
+        backgroundColor:'#0f0f1a'
+    });
+    userMk=new google.maps.Marker({position:{lat,lng:lon},map,title:'You',
+        icon:{path:google.maps.SymbolPath.CIRCLE,fillColor:'#4285F4',fillOpacity:1,strokeColor:'#fff',strokeWeight:3,scale:10}});
+    map.addListener('click',e=>{lat=e.latLng.lat();lon=e.latLng.lng();userMk.setPosition(e.latLng);});
+    checkSrv();
+}
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHpj6gdFSAMnuUTVqZavxu_9xNa5ujpek&callback=initMap"></script>
+</body>
+</html>
