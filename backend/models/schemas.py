@@ -23,10 +23,13 @@ class WeatherData(BaseModel):
 # ==================== 时间 ====================
 
 class TimeContext(BaseModel):
-    current: str = Field(description="当前时间 ISO格式")
-    slot: str = Field(description="时段: early_morning/morning/lunch_break/afternoon/evening/night")
-    day_type: str = Field(description="weekday/weekend")
-    label: str = Field(description="可读标签: Tuesday Lunch")
+    datetime: str = Field(description="完整日期时间 ISO格式")
+    date: str = Field(description="日期 YYYY-MM-DD")
+    time: str = Field(description="时间 HH:MM")
+    day_of_week: str = Field(description="星期: Monday/Tuesday/.../Sunday")
+    is_weekend: bool = Field(description="是否周末")
+    is_holiday: bool = Field(description="是否公共假期(德国巴伐利亚)")
+    holiday_name: str = Field(default=None, description="假期名称(如有)")
 
 
 # ==================== 用户意图 ====================

@@ -9,3 +9,4 @@ qrcode[pil]==7.4.2
 Pillow==10.4.0
 googlemaps==4.10.0
 python-multipart==0.0.9
+holidays>=0.40

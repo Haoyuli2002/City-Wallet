@@ -27,25 +27,27 @@ def _get_client():
 
 
 def _get_time_context() -> dict:
-    """Analyze current time and return time context."""
+    """Return real time data — GPT-4o interprets it directly.
+    No pre-classification into slots. Includes holiday detection for Bavaria/Germany.
+    """
+    import holidays
     now = datetime.now()
-    hour = now.hour
-    weekday = now.weekday()
-    day_type = "weekend" if weekday >= 5 else "weekday"
-
-    if 6 <= hour < 8: slot = "early_morning"
-    elif 8 <= hour < 11: slot = "morning"
-    elif 11 <= hour < 14: slot = "lunch_break"
-    elif 14 <= hour < 17: slot = "afternoon"
-    elif 17 <= hour < 21: slot = "evening"
-    else: slot = "night"
-
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    slot_labels = {"early_morning": "Early Morning", "morning": "Morning",
-                   "lunch_break": "Lunch", "afternoon": "Afternoon",
-                   "evening": "Evening", "night": "Night"}
-    label = f"{days[weekday]} {slot_labels.get(slot, slot)}"
-    return {"current": now.isoformat(), "slot": slot, "day_type": day_type, "label": label}
+    
+    # Holiday detection (Bavaria, Germany)
+    de_holidays = holidays.Germany(state="BY", years=now.year)
+    is_holiday = now.date() in de_holidays
+    holiday_name = de_holidays.get(now.date(), None)
+
+    return {
+        "datetime": now.isoformat(),
+        "date": now.strftime("%Y-%m-%d"),
+        "time": now.strftime("%H:%M"),
+        "day_of_week": days[now.weekday()],
+        "is_weekend": now.weekday() >= 5,
+        "is_holiday": is_holiday,
+        "holiday_name": holiday_name,
+    }
 
 
 # ==================== Step 1: Top 5 by Demand Gap ====================
@@ -145,7 +147,7 @@ CANDIDATES (from two selection strategies):
 
 CURRENT CONTEXT:
 - Weather: {weather.get('condition', '?')} ({weather.get('temp', '?')}°C, feels like {weather.get('feels_like', '?')}°C)
-- Time: {time_ctx.get('label', '?')} ({time_ctx.get('slot', '?')}, {time_ctx.get('day_type', '?')})
+- Time: {time_ctx.get('day_of_week', '?')} {time_ctx.get('date', '?')} {time_ctx.get('time', '?')} (weekend: {time_ctx.get('is_weekend', False)}, holiday: {time_ctx.get('is_holiday', False)}{', ' + time_ctx['holiday_name'] if time_ctx.get('holiday_name') else ''})
 - User intent: {user_intent} (confidence: {confidence})
 
 USER PREFERENCE (from past 7 days):
