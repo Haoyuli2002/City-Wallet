@@ -81,14 +81,22 @@
             <span>🎯 <b id="sigTrig">--</b></span>
         </div>
         <div id="map"></div>
-        <div class="ctrls">
-            <select id="intent">
-                <option value="browsing_food">🍽️ Browsing Food</option>
-                <option value="browsing_general">🚶 General</option>
-                <option value="commuting">🏃 Commuting</option>
-                <option value="stationary">🧍 Stationary</option>
-            </select>
-            <button id="goBtn" onclick="run()">🤖 Generate Offer</button>
+        <div class="ctrls" style="flex-direction:column;gap:6px;">
+            <div style="display:flex;gap:6px;">
+                <input id="searchBox" type="text" placeholder="🔍 Search location (e.g. Marienplatz Munich)" 
+                    style="flex:1;padding:10px 14px;border:1px solid #333;border-radius:10px;background:#1a1a2e;color:#fff;font-size:13px;"
+                    onkeydown="if(event.key==='Enter')searchLocation()">
+                <button onclick="searchLocation()" style="padding:10px 14px;border:none;border-radius:10px;background:#3498db;color:#fff;font-size:13px;font-weight:600;cursor:pointer;">📍 Go</button>
+            </div>
+            <div style="display:flex;gap:6px;">
+                <select id="intent" style="flex:0.4;padding:10px 14px;border:1px solid #333;border-radius:10px;background:#1a1a2e;color:#fff;font-size:13px;">
+                    <option value="browsing_food">🍽️ Browsing Food</option>
+                    <option value="browsing_general">🚶 General</option>
+                    <option value="commuting">🏃 Commuting</option>
+                    <option value="stationary">🧍 Stationary</option>
+                </select>
+                <button id="goBtn" onclick="run()" style="flex:1;padding:10px 14px;border:none;border-radius:10px;background:#e94560;color:#fff;font-size:13px;font-weight:600;cursor:pointer;">🤖 Generate Offer</button>
+            </div>
         </div>
     </div>
     <div class="panel" id="panel">
@@ -277,6 +285,27 @@ function updateMarkers(merchants){
         mk._id=m.id;
         markers.push(mk);
     });
+}
+
+async function searchLocation(){
+    const query=document.getElementById('searchBox').value.trim();
+    if(!query) return;
+    try{
+        const r=await fetch(API+'/geocode?query='+encodeURIComponent(query));
+        const d=await r.json();
+        if(d.lat && d.lon){
+            lat=d.lat; lon=d.lon;
+            map.setCenter({lat,lng:lon});
+            map.setZoom(16);
+            userMk.setPosition({lat,lng:lon});
+            document.getElementById('searchBox').value=d.formatted_address||query;
+            // Clear old markers
+            markers.forEach(m=>m.setMap(null)); markers=[];
+            if(infoWin) infoWin.close();
+        }
+    }catch(e){
+        alert('Location not found: '+e.message);
+    }
 }
 
 function initMap(){
