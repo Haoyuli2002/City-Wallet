@@ -44,3 +44,35 @@ export function getSavedCity(): string {
 export function saveCity(city: string) {
   safeStorage()?.setItem("cw_city", city);
 }
+
+// ── Redeemed order history ─────────────────────────────────────
+
+export interface RedeemedOrder {
+  id: string;
+  merchantName: string;
+  icon: string;
+  headline: string;
+  discount_percent: number;
+  redeemedAt: string;   // ISO timestamp
+}
+
+export function getRedeemedOrders(): RedeemedOrder[] {
+  const s = safeStorage();
+  if (!s) return [];
+  try {
+    const raw = s.getItem("cw_redeemed_orders");
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+export function addRedeemedOrder(order: RedeemedOrder) {
+  const s = safeStorage();
+  if (!s) return;
+  try {
+    const orders = getRedeemedOrders();
+    // Avoid duplicates
+    if (!orders.find(o => o.id === order.id)) {
+      s.setItem("cw_redeemed_orders", JSON.stringify([order, ...orders]));
+    }
+  } catch {}
+}

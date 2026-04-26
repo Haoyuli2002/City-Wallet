@@ -149,7 +149,6 @@ export default function ScannerPage() {
                 {[
                   { label: "Discount applied",  value: `€${result.discount_applied?.toFixed(2)}` },
                   { label: "Cashback credited", value: `€${result.cashback_credited?.toFixed(2)}` },
-                  { label: "Customer wallet",   value: `€${result.wallet_new_balance?.toFixed(2)}` },
                 ].map((row, i) => (
                   <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "9px 0", borderTop: i > 0 ? "1px solid #d1fae5" : undefined }}>
                     <span style={{ fontSize: 13, color: "#166534" }}>{row.label}</span>

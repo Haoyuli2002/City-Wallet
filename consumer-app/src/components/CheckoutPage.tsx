@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import TabBar from "@/components/TabBar";
 import { getOffer, type OfferResponse } from "@/lib/api";
-import { getActiveOfferIds, removeActiveOffer } from "@/lib/store";
+import { getActiveOfferIds, removeActiveOffer, addRedeemedOrder, getRedeemedOrders, type RedeemedOrder } from "@/lib/store";
 
 function useCountdown(expiresAt: string) {
   const getRemaining = () => Math.max(0, Math.floor((new Date(expiresAt).getTime() - Date.now()) / 1000));
@@ -26,7 +26,19 @@ function OfferItem({ offerId }: { offerId: string }) {
   useEffect(() => {
     getOffer(offerId)
       .then(o => {
-        if (o.status !== "accepted") {
+        if (o.status === "redeemed") {
+          // Save to redeemed history before removing from active
+          addRedeemedOrder({
+            id: o.id,
+            merchantName: o.merchant.name,
+            icon: o.content.icon,
+            headline: o.content.headline,
+            discount_percent: o.content.discount_percent,
+            redeemedAt: new Date().toISOString(),
+          });
+          removeActiveOffer(offerId);
+          setError(true);
+        } else if (o.status !== "accepted") {
           removeActiveOffer(offerId);
           setError(true);
         } else {
@@ -281,9 +293,11 @@ function MockOfferItem({ offer }: { offer: OfferResponse }) {
 
 export default function CheckoutPage() {
   const [offerIds, setOfferIds] = useState<string[]>([]);
+  const [redeemedOrders, setRedeemedOrders] = useState<RedeemedOrder[]>([]);
 
   useEffect(() => {
     setOfferIds(getActiveOfferIds());
+    setRedeemedOrders(getRedeemedOrders());
   }, []);
 
   return (
@@ -319,6 +333,36 @@ export default function CheckoutPage() {
             <div style={{ textAlign: "center", padding: "16px 20px", color: "var(--text-tertiary)", fontSize: 12, fontStyle: "italic" }}>
               Accept offers from the Explore tab to add more
             </div>
+          )}
+
+          {/* Redeemed order history */}
+          {redeemedOrders.length > 0 && (
+            <>
+              <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--text-tertiary)", marginTop: 12, marginBottom: 4 }}>
+                Redeemed
+              </div>
+              {redeemedOrders.map((order, i) => (
+                <div key={i} style={{
+                  background: "var(--surface)", border: "1px solid var(--border-subtle)",
+                  borderRadius: "var(--radius-lg)", padding: "12px 16px",
+                  display: "flex", alignItems: "center", gap: 12, opacity: 0.7,
+                }}>
+                  <span style={{ fontSize: 24, flexShrink: 0 }}>{order.icon}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>{order.merchantName}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 1 }}>
+                      {order.headline} · -{order.discount_percent}%
+                    </div>
+                  </div>
+                  <div style={{ textAlign: "right", flexShrink: 0 }}>
+                    <div style={{ fontSize: 11, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
+                      {new Date(order.redeemedAt).toLocaleDateString("de-DE", { month: "short", day: "numeric" })}
+                    </div>
+                    <div style={{ fontSize: 10, color: "#16a34a", fontFamily: "var(--font-mono)", marginTop: 2 }}>✓ Redeemed</div>
+                  </div>
+                </div>
+              ))}
+            </>
           )}
         </>
       </div>
