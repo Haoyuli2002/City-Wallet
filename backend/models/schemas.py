@@ -18,7 +18,6 @@ class WeatherData(BaseModel):
     humidity: int = Field(description="湿度 %")
     wind_speed: float = Field(description="风速 m/s")
     icon: str = Field(description="天气emoji图标")
-    trigger: str = Field(description="天气触发标签: cold/hot/rainy/nice")
 
 
 # ==================== 时间 ====================

@@ -1,6 +1,7 @@
 """
 Weather service — fetches real-time weather from OpenWeatherMap API.
 Falls back to simulated data if API key is missing or API fails.
+Returns raw weather data — GPT-4o interprets it directly.
 """
 
 import httpx
@@ -10,20 +11,6 @@ from config.settings import settings
 # Simple cache: {cache_key: (timestamp, data)}
 _cache = {}
 CACHE_TTL = 600  # 10 minutes
-
-
-def _get_weather_trigger(temp: float, condition: str) -> str:
-    """Determine weather trigger label based on temperature and condition."""
-    condition_lower = condition.lower()
-    if condition_lower in ("rain", "drizzle", "thunderstorm"):
-        return "rainy"
-    if condition_lower == "snow":
-        return "snowy"
-    if temp < 10:
-        return "cold"
-    if temp > 28:
-        return "hot"
-    return "nice"
 
 
 def _get_weather_icon(condition: str) -> str:
@@ -45,7 +32,8 @@ def _get_weather_icon(condition: str) -> str:
 async def get_weather(lat: float, lon: float) -> dict:
     """
     Get current weather for a location.
-    Returns: {temp, feels_like, condition, description, humidity, wind_speed, icon, trigger}
+    Returns: {temp, feels_like, condition, description, humidity, wind_speed, icon}
+    GPT-4o interprets the raw data directly — no trigger labels needed.
     """
     cache_key = f"{round(lat, 2)}_{round(lon, 2)}"
 
@@ -83,12 +71,8 @@ async def get_weather(lat: float, lon: float) -> dict:
                         "humidity": main.get("humidity", 50),
                         "wind_speed": round(wind.get("speed", 2.0), 1),
                         "icon": _get_weather_icon(weather.get("main", "Clouds")),
-                        "trigger": _get_weather_trigger(
-                            main.get("temp", 15), weather.get("main", "Clouds")
-                        ),
                     }
 
-                    # Cache the result
                     _cache[cache_key] = (time.time(), result)
                     return result
                 else:
@@ -105,7 +89,6 @@ async def get_weather(lat: float, lon: float) -> dict:
         "humidity": 68,
         "wind_speed": 3.5,
         "icon": "☁️",
-        "trigger": "cold",
     }
     _cache[cache_key] = (time.time(), fallback)
     return fallback
