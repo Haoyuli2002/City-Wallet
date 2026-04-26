@@ -1,4 +1,6 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://city-wallet-production.up.railway.app/api";
+const RAILWAY_URL = "https://city-wallet-production.up.railway.app/api";
+const LOCAL_URL = "http://localhost:8000/api";
+const API_BASE = typeof window !== "undefined" && window.location.hostname === "localhost" ? LOCAL_URL : RAILWAY_URL;
 
 export interface Merchant {
   id: string;
