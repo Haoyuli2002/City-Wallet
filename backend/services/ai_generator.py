@@ -42,41 +42,166 @@ async def get_merchant_rules(merchant_id: str) -> dict:
         await db.close()
 
 
+# ==================== Dynamic Pricing ====================
+
+async def _get_user_dismiss_rate(user_id: str) -> float:
+    """Get user's historical offer dismiss rate (0-1)."""
+    db = await get_db()
+    try:
+        cursor = await db.execute(
+            """SELECT 
+                COUNT(CASE WHEN status = 'dismissed' THEN 1 END) as dismissed,
+                COUNT(*) as total
+               FROM offers WHERE user_id = ? AND status IN ('accepted','redeemed','dismissed')""",
+            [user_id]
+        )
+        row = await cursor.fetchone()
+        if row and row["total"] > 0:
+            return round(row["dismissed"] / row["total"], 2)
+        return 0.0
+    finally:
+        await db.close()
+
+
+def calculate_dynamic_discount(
+    max_discount: int,
+    demand_gap: float,
+    weather_condition: str,
+    weather_temp: float,
+    distance_m: float,
+    user_dismiss_rate: float,
+    budget_remaining_pct: float,
+) -> dict:
+    """
+    Dynamic pricing: calculate optimal discount based on multiple factors.
+    
+    Factors:
+    1. Demand gap (primary driver): quiet merchant → higher discount
+    2. Weather: bad weather → +2% (harder to attract people)
+    3. Distance: farther → +1-3% (more effort to walk)
+    4. User dismiss history: high reject rate → +1-3% (need bigger incentive)
+    5. Budget remaining: low budget → reduce discount
+    
+    Returns: {discount, breakdown}
+    """
+    # 1. Base discount from demand gap
+    base_discount = max(5, max_discount * demand_gap)
+
+    # 2. Weather bonus
+    weather_bonus = 0
+    if weather_condition in ("Rain", "Drizzle", "Thunderstorm", "Snow"):
+        weather_bonus = 2
+    elif weather_temp < 5:
+        weather_bonus = 2
+    elif weather_temp < 10:
+        weather_bonus = 1
+
+    # 3. Distance bonus
+    distance_bonus = 0
+    if distance_m > 300:
+        distance_bonus = 3
+    elif distance_m > 200:
+        distance_bonus = 2
+    elif distance_m > 100:
+        distance_bonus = 1
+
+    # 4. User dismiss rate bonus
+    dismiss_bonus = 0
+    if user_dismiss_rate > 0.7:
+        dismiss_bonus = 3
+    elif user_dismiss_rate > 0.5:
+        dismiss_bonus = 2
+    elif user_dismiss_rate > 0.3:
+        dismiss_bonus = 1
+
+    # 5. Budget decay factor
+    budget_factor = 1.0
+    if budget_remaining_pct < 0.1:
+        budget_factor = 0.5
+    elif budget_remaining_pct < 0.3:
+        budget_factor = 0.7
+    elif budget_remaining_pct < 0.5:
+        budget_factor = 0.85
+
+    # Combine
+    raw_discount = (base_discount + weather_bonus + distance_bonus + dismiss_bonus) * budget_factor
+    final_discount = int(min(max_discount, max(5, round(raw_discount))))
+
+    return {
+        "discount": final_discount,
+        "breakdown": {
+            "base_from_demand": round(base_discount, 1),
+            "weather_bonus": weather_bonus,
+            "distance_bonus": distance_bonus,
+            "dismiss_bonus": dismiss_bonus,
+            "budget_factor": budget_factor,
+            "raw_total": round(raw_discount, 1),
+            "final_capped": final_discount,
+        },
+    }
+
+
+# ==================== Offer Generation ====================
+
 async def generate_offer(context: dict, merchant: dict, rules: dict = None) -> dict:
     """
-    Generate a personalized offer using GPT-4o.
+    Generate a personalized offer using GPT-4o with dynamic pricing.
     Returns the complete offer data including visual parameters.
     """
     if rules is None:
         rules = await get_merchant_rules(merchant["id"])
 
-    # Build the prompt
+    # Build context data
     weather = context.get("weather", {})
     time_ctx = context.get("time", {})
     user_intent = context.get("user_intent", {})
     tx_density = merchant.get("tx_density", {})
+    user_id = context.get("user_id", "anonymous")
 
+    # === Dynamic Pricing ===
+    max_discount = rules.get("max_discount_percent", 15)
+    demand_gap = tx_density.get("demand_gap", 0.5)
+    budget_total = rules.get("daily_budget_eur", 50)
+    budget_spent = rules.get("budget_spent_today", 0)
+    budget_remaining_pct = max(0, (budget_total - budget_spent) / max(budget_total, 1))
+    user_dismiss_rate = await _get_user_dismiss_rate(user_id)
+
+    pricing = calculate_dynamic_discount(
+        max_discount=max_discount,
+        demand_gap=demand_gap,
+        weather_condition=weather.get("condition", "Clear"),
+        weather_temp=weather.get("temp", 15),
+        distance_m=merchant.get("distance_m", 100),
+        user_dismiss_rate=user_dismiss_rate,
+        budget_remaining_pct=budget_remaining_pct,
+    )
+    suggested_discount = pricing["discount"]
+
+    # Build the prompt with dynamic pricing hint
     prompt = f"""You are a hyper-local offer generator for City Wallet, an AI-powered city wallet app.
 Generate a JSON offer that matches the current context and respects merchant rules.
 
 CURRENT CONTEXT:
 - Weather: {weather.get('condition', 'Clouds')} ({weather.get('temp', 15)}°C, feels like {weather.get('feels_like', 13)}°C)
-- Time: {time_ctx.get('label', 'Afternoon')} ({time_ctx.get('slot', 'afternoon')})
+- Time: {time_ctx.get('day_of_week', '?')} {time_ctx.get('date', '?')} {time_ctx.get('time', '?')} (weekend: {time_ctx.get('is_weekend', False)}, holiday: {time_ctx.get('is_holiday', False)})
 - User intent: {user_intent.get('type', 'browsing_general')} (confidence: {user_intent.get('confidence', 0.5)})
 - Merchant: {merchant.get('name', 'Local Shop')} ({merchant.get('category', 'cafe')})
 - Distance: {merchant.get('distance_m', 100)}m from user
-- Current demand: {tx_density.get('status', 'normal')} ({tx_density.get('current_hour', 5)} tx this hour vs {tx_density.get('avg_hour', 10)} avg)
+- Current demand: {tx_density.get('status', 'normal')} ({tx_density.get('current_hour', 5)} tx this hour vs {tx_density.get('avg_hour', 10)} avg, demand_gap={demand_gap})
 - Rating: {merchant.get('rating', 4.0)}★
 
 MERCHANT RULES:
-- Max discount: {rules.get('max_discount_percent', 15)}%
+- Max discount: {max_discount}%
 - Target: {rules.get('target', 'fill_quiet_hours')}
 - Product scope: {rules.get('product_scope', '["all"]')}
 - Brand tone: {rules.get('brand_tone', 'cozy')}
-- Remaining daily budget: €{rules.get('daily_budget_eur', 50) - rules.get('budget_spent_today', 0)}
+- Remaining daily budget: €{round(budget_total - budget_spent, 2)}
+
+DYNAMIC PRICING (system-calculated):
+- Suggested discount: {suggested_discount}% (based on demand gap, weather, distance, user history, budget)
+- Use this as your discount_percent value. You may adjust ±2% if context strongly suggests it.
 
 Generate a compelling, context-aware offer. The headline should be emotional and situational (max 6 words).
-The discount must be within the merchant's max discount percentage.
 
 Respond with ONLY valid JSON (no markdown, no code blocks):
 {{
@@ -173,6 +298,7 @@ Respond with ONLY valid JSON (no markdown, no code blocks):
             "distance_m": merchant.get("distance_m", 0),
         },
         "content": offer_data,
+        "dynamic_pricing": pricing,
         "status": "generated",
         "created_at": now.isoformat(),
         "expires_at": expires_at.isoformat(),
