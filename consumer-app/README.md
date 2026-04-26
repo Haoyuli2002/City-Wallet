@@ -1,28 +1,43 @@
-# 📱 Consumer App — City Wallet
+# City Wallet — Consumer App
 
-消费者端界面，负责展示AI生成的offer卡片、QR码结算、钱包等。
+Mobile-first consumer wallet, built to the high-fidelity prototypes in
+`../City Wallet prototype/` (`U-4 Offer Card.html` + `phase2/Phase 2 Consumer
+Flow.html`). Sparkasse design language: red HKS 13 as ink, Inter type,
+tabular numerals, German "Du" copy, no gradients, no emoji in UI.
 
-## 负责人
-前端队友
+## Stack
 
-## 技术栈
-React / Next.js + TypeScript + Tailwind CSS
+- Next.js 14 (App Router) + React 18 + TypeScript
+- Plain CSS using `design-tokens.css` (ported from the prototype) — no Tailwind
+- `next/font` for Inter + JetBrains Mono
+- Mock API layer in `src/lib/api.ts` matching `../API_DOCS.md`
 
-## 需要实现的页面
-1. **Home** — 地图 + 上下文状态栏 + GenUI offer卡片
-2. **Checkout** — QR码展示 + 倒计时 + 接受/拒绝
-3. **Wallet** — 钱包余额 + 返现历史
+## Run
 
-## 需要调用的后端接口
-- `POST /api/context` — 获取上下文
-- `POST /api/offers/generate` — AI生成offer
-- `POST /api/offers/{id}/accept` — 接受offer
-- `POST /api/offers/{id}/dismiss` — 拒绝offer
-- `GET /api/wallet/{user_id}` — 钱包余额
+```bash
+npm install
+npm run dev          # http://localhost:3000
+npm run typecheck
+npm run build
+```
 
-## 前端独立实现
-- **intentEngine.ts** — 设备端GPS轨迹分析→意图推断（不发原始GPS给后端）
-- **GenUI卡片渲染** — 根据后端返回的JSON动态渲染offer卡片
+## Screens
 
-## 详细接口文档
-见根目录 `API_DOCS.md`
+| Route          | Spec | What it shows |
+| -------------- | ---- | --- |
+| `/`            | U-3  | Greeting + ContextState 2×2 + Live-Angebot compact card |
+| `/offer/[id]`  | U-4  | GenUI hero card, KI-Erklärung bottom sheet, Einlösen CTA |
+| `/redeem/[id]` | U-6  | Full-screen dark QR + countdown + "Eingelöst" confirmation |
+| `/wallet`      | U-5  | Dark balance card (cashback) + transaction history |
+| `/settings`    |      | Profile + privacy toggles |
+
+The demo flow (`/` → `/offer/offer_cappuccino_lunch` → `/redeem/...` →
+"Eingelöst markieren" → `/wallet`) writes to an in-memory store so the
+cashback amount appears in the wallet's transaction list.
+
+## Hooking up the real backend
+
+`src/lib/api.ts` is a single-file mock. To swap to the FastAPI backend, replace
+each function with a `fetch()` call against `process.env.NEXT_PUBLIC_API_BASE`
+(defaults to `http://localhost:8000`); the response shapes already mirror
+`API_DOCS.md`.
