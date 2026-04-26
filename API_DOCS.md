@@ -26,6 +26,9 @@
 | PUT | `/api/merchants/{id}/rules` | 商户Dashboard | 更新AI规则 |
 | GET | `/api/merchants/{id}/analytics` | 商户Dashboard | 漏斗 + 收入数据 |
 | GET | `/api/merchants/{id}/feed` | 商户Dashboard | 实时事件流 |
+| PUT | `/api/users/{user_id}/preferences` | 消费者App | 设置用户兴趣偏好（冷启动）|
+| GET | `/api/users/{user_id}/preferences` | 消费者App | 获取用户兴趣偏好 |
+| GET | `/api/geocode` | 通用 | 地名/地址 → 经纬度 |
 
 ---
 
@@ -60,20 +63,22 @@
 ```json
 {
     "weather": {
-        "temp": 11.2,
-        "feels_like": 8.5,
-        "condition": "Clouds",
-        "description": "overcast clouds",
-        "humidity": 72,
-        "wind_speed": 4.1,
-        "icon": "☁️",
-        "trigger": "cold"
+        "temp": 9.7,
+        "feels_like": 9.7,
+        "condition": "Clear",
+        "description": "clear sky",
+        "humidity": 76,
+        "wind_speed": 1.1,
+        "icon": "☀️"
     },
     "time": {
-        "current": "2025-01-14T12:15:00",
-        "slot": "lunch_break",
-        "day_type": "weekday",
-        "label": "Tuesday Lunch"
+        "datetime": "2026-04-26T08:27:00",
+        "date": "2026-04-26",
+        "time": "08:27",
+        "day_of_week": "Sunday",
+        "is_weekend": true,
+        "is_holiday": false,
+        "holiday_name": null
     },
     "user_intent": {
         "type": "browsing_food",
@@ -82,23 +87,45 @@
     "nearby_merchants": [
         {
             "id": "m_abc123",
-            "name": "Café Glockenspiel",
+            "name": "Wildmosers Restaurant-Cafe",
             "category": "cafe",
-            "lat": 48.1369,
-            "lon": 11.5752,
-            "rating": 4.6,
+            "lat": 48.1370,
+            "lon": 11.5753,
+            "rating": 4.8,
             "photo_url": "https://maps.googleapis.com/...",
-            "distance_m": 80,
+            "distance_m": 12.4,
             "tx_density": {
-                "current_hour": 3,
-                "avg_hour": 12,
+                "current_hour": 0,
+                "avg_hour": 8,
                 "status": "very_low",
-                "demand_gap": 0.75
-            }
+                "demand_gap": 1.0
+            },
+            "interest_score": 0.5
         }
     ],
-    "composite_trigger": "warm_drink_opportunity",
-    "trigger_score": 0.92
+    "events": [
+        {
+            "name": "Munich Street Art Festival",
+            "category": "Music",
+            "start": "2026-04-26T14:00:00",
+            "venue_name": "Marienplatz"
+        }
+    ],
+    "composite_trigger": "breakfast",
+    "trigger_score": 0.9,
+    "ai_analysis": {
+        "should_trigger": true,
+        "reasoning": "Cold Sunday morning, user browsing for food, café is very quiet and closest",
+        "suggested_category": "breakfast",
+        "chosen_merchant": "Wildmosers Restaurant-Cafe"
+    },
+    "recommendation_details": {
+        "top5_demand": [...],
+        "top5_preference": [...],
+        "total_candidates": 5,
+        "user_preference_scores": {},
+        "history_count": 0
+    }
 }
 ```
 
@@ -478,6 +505,68 @@
 {
     "status": "expired",
     "message": "此offer已过期"
+}
+```
+
+---
+
+### 12. PUT `/api/users/{user_id}/preferences` — 设置用户兴趣偏好
+
+**用途**: 用户首次打开App时选择喜欢的商户类别（冷启动）。偏好会与历史行为融合用于推荐。
+
+**请求体**:
+```json
+{
+    "preferences": {
+        "cafe": 1.0,
+        "bakery": 0.8,
+        "book_store": 0.6,
+        "restaurant": 0.3
+    }
+}
+```
+
+**响应** (200):
+```json
+{
+    "status": "saved",
+    "user_id": "user_demo_001",
+    "preferences": {"cafe": 1.0, "bakery": 0.8, "book_store": 0.6, "restaurant": 0.3}
+}
+```
+
+**偏好融合逻辑**:
+- 新用户（无历史）→ 100% 自选偏好
+- 老用户（有历史）→ 70% 历史行为 + 30% 自选偏好
+- 完全新用户（无偏好无历史）→ 所有类别默认 0.3
+
+---
+
+### 13. GET `/api/users/{user_id}/preferences` — 获取用户偏好
+
+**响应** (200):
+```json
+{
+    "user_id": "user_demo_001",
+    "preferences": {"cafe": 1.0, "bakery": 0.8}
+}
+```
+
+---
+
+### 14. GET `/api/geocode` — 地名转坐标
+
+**用途**: 输入地名或地址，返回经纬度。用于搜索功能。
+
+**查询参数**: `?query=Marienplatz Munich`
+
+**响应** (200):
+```json
+{
+    "lat": 48.1371,
+    "lon": 11.5754,
+    "formatted_address": "Marienplatz, 80331 München, Germany",
+    "place_id": "ChIJ..."
 }
 ```
 
