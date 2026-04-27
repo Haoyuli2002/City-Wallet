@@ -215,7 +215,7 @@ Respond with ONLY valid JSON (no markdown, no code blocks):
     "color_background": "#hex",
     "color_accent": "#hex",
     "icon": "single emoji",
-    "valid_minutes": number_between_10_and_30,
+    "valid_minutes": number_between_60_and_120,
     "reasoning": "one sentence explaining why this offer fits this moment"
 }}"""
 

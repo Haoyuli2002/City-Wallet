@@ -7,6 +7,13 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException
 from models.schemas import OfferGenerateRequest
 from models.database import get_db
+
+def _ensure_utc(ts: str) -> str:
+    """Ensure ISO timestamp ends with Z for proper browser parsing."""
+    if ts and not ts.endswith('Z'):
+        return ts + 'Z'
+    return ts or ''
+
 from services.context_engine import build_context
 from services.ai_generator import generate_offer, get_merchant_rules
 from services.qr_service import create_redemption
@@ -122,8 +129,8 @@ async def get_offer(offer_id: str):
                 "reasoning": offer["reasoning"],
             },
             "status": offer["status"],
-            "created_at": offer["created_at"],
-            "expires_at": offer["expires_at"],
+            "created_at": _ensure_utc(offer["created_at"]),
+            "expires_at": _ensure_utc(offer["expires_at"]),
             "qr_code": qr_code,
             "token": token,
         }
