@@ -251,7 +251,7 @@ Respond with ONLY valid JSON (no markdown, no code blocks):
     # Create offer ID and save to database
     offer_id = f"offer_{uuid4().hex[:12]}"
     now = datetime.utcnow()
-    expires_at = now + timedelta(minutes=offer_data.get("valid_minutes", 15))
+    expires_at = now + timedelta(minutes=offer_data.get("valid_minutes", 120))
 
     db = await get_db()
     try:
@@ -275,7 +275,7 @@ Respond with ONLY valid JSON (no markdown, no code blocks):
                 offer_data.get("color_background", "#FFF8DC"),
                 offer_data.get("color_accent", "#D2691E"),
                 offer_data.get("icon", "🎁"),
-                offer_data.get("valid_minutes", 15),
+                offer_data.get("valid_minutes", 120),
                 offer_data.get("reasoning", ""),
                 json.dumps(context),
                 "generated",
@@ -356,6 +356,6 @@ def _generate_fallback_offer(merchant: dict, weather: dict, rules: dict) -> dict
         "color_background": t["colors"][1],
         "color_accent": t["colors"][2],
         "icon": t["icon"],
-        "valid_minutes": 15,
+        "valid_minutes": 120,
         "reasoning": f"Fallback offer for {category} — weather: {weather.get('trigger', 'nice')}",
     }
