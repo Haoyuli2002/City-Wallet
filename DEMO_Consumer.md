@@ -8,6 +8,18 @@ No system connects these two facts. Until now.
 
 ---
 
+---
+
+## Step 0 — A Push Notification Arrives
+
+![Push Notification](Demo/Consumer-App/Push_notification.png)
+
+Three seconds after opening the app, Mia receives a **push notification** — an AI-generated offer slides in from the top of her screen. She didn't search for anything. She didn't tap a single button. City Wallet detected the right moment and delivered the right offer automatically.
+
+The notification shows the AI-generated headline, the merchant name, the discount, and the distance. Mia can **Accept** the offer instantly or **Dismiss** it. If she accepts, a QR code is generated and she's taken straight to her Offers page.
+
+This is the core experience: **the offer comes to you, not the other way around.**
+
 ## Step 1 — The App Reads Mia's World
 
 ![Context Page 1](Demo/Consumer-App/Consumer_Context_Page_1.png)
@@ -78,6 +90,7 @@ After redemption, the cashback is credited instantly to Mia's **City Wallet**. T
 
 | Step | What City Wallet did |
 |------|---------------------|
+| Push notification | AI offer delivered automatically 3s after app opens — no user action needed |
 | Sensed context | Live weather + time slot + on-device intent — no raw GPS transmitted |
 | Discovered merchants | Real Google Places data, ranked by live demand gap |
 | Generated the offer | GPT-4o created a unique offer in under 500ms |
